@@ -1,5 +1,7 @@
-import Image from "next/image";
+
 
 export default function HomePage() {
-    return "Bajs";
+    return (<div>
+       
+    </div>);
 }
