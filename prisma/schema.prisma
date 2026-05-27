@@ -99,6 +99,17 @@ model Article {
     @@map("article")
 }
 
+model Comment {
+    id        String   @id @default(ulid())
+    user_id   String
+    user      UserInfo @relation(fields: [user_id], references: [id])
+    content   String
+    likes     Int      @default(0)
+    createdAt DateTime
+    updatedAt DateTime
+    replyTo   String?  @map("reply_to") // Stores a comment id to which the comment in questions is a r
+}
+
 model Bookmark {
     id        String   @id @default(ulid())
     user_id   String
@@ -139,6 +150,7 @@ model UserInfo {
     role         Role          @default(UNSUBSCRIBED)
     subscription Subscription?
     bookmark     Bookmark[]
+    comments     Comment[]
 
     @@map("user_info")
 }
