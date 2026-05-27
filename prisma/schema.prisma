@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
     provider = "prisma-client"
     output   = "../src/generated/prisma"
@@ -64,7 +59,7 @@ model Account {
     scope                 String?
     password              String?
     createdAt             DateTime  @default(now())
-    updatedAt             DateTime  @updatedAt
+    updatedAt             DateTime  @default(now())
 
     @@index([userId])
     @@map("account")
@@ -139,18 +134,17 @@ model Author {
 }
 
 model UserInfo {
-    id           String        @id @default(ulid())
-    userId       String        @unique @map("user_id")
-    user         User          @relation(fields: [userId], references: [id])
-    phoneNumber  String?       @map("phone_number")
-    email        String
-    address_id   String
-    address      Address       @relation(fields: [address_id], references: [id])
-    birthdate    DateTime
-    role         Role          @default(UNSUBSCRIBED)
-    subscription Subscription?
-    bookmark     Bookmark[]
-    comments     Comment[]
+    id          String     @id @default(ulid())
+    userId      String     @unique @map("user_id")
+    user        User       @relation(fields: [userId], references: [id])
+    phoneNumber String?    @map("phone_number")
+    email       String
+    address_id  String
+    address     Address    @relation(fields: [address_id], references: [id])
+    birthdate   DateTime
+    role        Role       @default(UNSUBSCRIBED)
+    bookmark    Bookmark[]
+    comments    Comment[]
 
     @@map("user_info")
 }
@@ -164,18 +158,6 @@ model Address {
     userInfos UserInfo[]
 
     @@map("address")
-}
-
-model Subscription {
-    id           String   @id @default(ulid())
-    price        Int
-    createdAt    DateTime @default(now()) @map("created_at")
-    updatedAt    DateTime @default(now()) @map("updated_at")
-    startedAt    DateTime
-    user_info_id String   @unique
-    user_info    UserInfo @relation(fields: [user_info_id], references: [id])
-
-    @@map("subscription")
 }
 
 enum Role {
