@@ -7,6 +7,9 @@
 //     const data = "testestest";
 //     return { success: true, data: data };
 // }
+// If there was an error, you return { success: false, error: "error message" }.
+// When we do CRUD-operations that doesn't fetch any data, you can leave it out
+// and just write return { success: true }
 
 type SuccessResult<T> = {
     success: true;
