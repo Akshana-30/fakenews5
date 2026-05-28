@@ -34,10 +34,10 @@ export default function RootLayout({
             lang="en"
             className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased h-full`}
         >
-            <body className=" flex flex-col">
+            <body className="flex flex-col bg-gray-200">
                 <Header />
                 <main>
-                    <div className="min-h-screen max-w-6xl shadow-2xl border-x border-gray-300 flex-1 mx-auto p-4">
+                    <div className="min-h-screen max-w-6xl shadow-2xl border-x border-gray-500 flex-1 mx-auto p-4 bg-white">
                         {children}
                     </div>
                 </main>
