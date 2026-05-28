@@ -13,7 +13,7 @@ import { ChevronDown } from "lucide-react";
 
 export default function Navbar() {
   return (
-    <div className="max-w-6xl mx-auto border-b-4 border-b-primary">
+    <div className="flex w-full">
       <div className="lg:hidden">
         <SidebarProvider
           style={
@@ -27,17 +27,17 @@ export default function Navbar() {
           <SidebarTrigger size="lg" />
         </SidebarProvider>
       </div>
-      <div className="hidden lg:flex items-center gap-2 px-6  sticky top-0 z-50 bg-secondary">
-        <ul className="flex items-center">
+      <div className="hidden lg:flex w-full items-center gap-2 px-6  sticky top-0 z-50 bg-[#2d2d2d]">
+        <ul className="flex items-center mx-auto">
           <li>
-            <Button asChild>
+            <Button variant="ghost" className="text-white" asChild>
               <Link href="/">HOME</Link>
             </Button>
           </li>
           <li>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button>
+                <Button variant="ghost" className="text-white">
                   Nyheter
                   <ChevronDown color="white" />
                 </Button>
@@ -61,7 +61,7 @@ export default function Navbar() {
           <li>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button>
+                <Button variant="ghost" className="text-white">
                   Sport
                   <ChevronDown color="white" />
                 </Button>
