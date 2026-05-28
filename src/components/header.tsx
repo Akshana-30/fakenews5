@@ -10,20 +10,22 @@ const fontUltra = Young_Serif({
 
 export default function Header() {
     return (
-        <Link href="/">
-            <div className="flex w-full text-center p-5 bg-[#2d2d2d] mx-auto justify-center border-b-5 border-b-[#c8a84b]">
-                <Image src={"logo.svg"} width={90} height={90} alt="Logo" />
-                <div className="flex flex-col justify-center">
-                    <h1
-                        className={`font-serif text-5xl font-bold  text-white text-shadow-lg text-shadow-black`}
-                    >
-                        Fakenews5
-                    </h1>
-                    <h2 className="text-[#c8a84b] text-sm uppercase mr-auto text-shadow-black text-shadow-sm">
-                        Your daily dose of doubt
-                    </h2>
+        <div className="flex w-full text-center p-5 bg-[#2d2d2d] mx-auto justify-center border-b-5 border-b-[#c8a84b]">
+            <Link href="/">
+                <div className="flex">
+                    <Image src={"logo.svg"} width={90} height={90} alt="Logo" />
+                    <div className="flex flex-col justify-center">
+                        <h1
+                            className={`font-serif text-5xl font-bold  text-white text-shadow-lg text-shadow-black`}
+                        >
+                            Fakenews5
+                        </h1>
+                        <h2 className="text-[#c8a84b] text-sm uppercase mr-auto text-shadow-black text-shadow-sm">
+                            Your daily dose of doubt
+                        </h2>
+                    </div>
                 </div>
-            </div>
-        </Link>
+            </Link>
+        </div>
     );
 }
