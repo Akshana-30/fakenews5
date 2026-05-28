@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/navbar/navbar";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { Toaster } from "sonner";
 
 const fontSans = Anuphan({
     subsets: ["latin"],
@@ -37,13 +38,14 @@ export default function RootLayout({
         >
             <body className="flex flex-col bg-gray-200">
                 <Header />
-              <Navbar/>
+                <Navbar />
                 <main>
                     <div className="min-h-screen max-w-6xl shadow-2xl border-x border-gray-500 flex-1 mx-auto p-4 bg-white">
                         {children}
                     </div>
                 </main>
                 <Footer />
+                <Toaster position="top-center" />
             </body>
         </html>
     );
