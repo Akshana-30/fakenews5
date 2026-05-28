@@ -15,9 +15,7 @@ export default function Header() {
                 <div className="flex">
                     <Image src={"logo.svg"} width={90} height={90} alt="Logo" />
                     <div className="flex flex-col justify-center">
-                        <h1
-                            className={`font-serif text-5xl font-bold  text-white text-shadow-lg text-shadow-black`}
-                        >
+                        <h1 className="font-serif text-4xl font-bold  text-white text-shadow-lg text-shadow-black md:text-5xl">
                             Fakenews5
                         </h1>
                         <h2 className="text-[#c8a84b] text-sm uppercase mr-auto text-shadow-black text-shadow-sm">
