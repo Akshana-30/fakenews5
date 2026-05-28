@@ -17,7 +17,7 @@ export default function Header() {
                     <h1
                         className={`font-serif text-5xl font-bold  text-white text-shadow-lg text-shadow-black`}
                     >
-                        Fake news
+                        Fakenews5
                     </h1>
                     <h2 className="text-[#c8a84b] text-sm uppercase mr-auto text-shadow-black text-shadow-sm">
                         Your daily dose of doubt
