@@ -117,7 +117,7 @@ model Bookmark {
 
 model Category {
     id      String    @id @default(ulid())
-    name    String
+    name    String     @unique
     article Article[]
 
     @@map("category")
@@ -125,7 +125,7 @@ model Category {
 
 model Author {
     id        String    @id @default(ulid())
-    alias     String?
+    alias     String    @unique
     userId    String    @unique @map("user_id")
     articles  Article[]
     user_info User      @relation(fields: [userId], references: [id])
