@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Anuphan, Geist, Geist_Mono, Lora, Roboto_Mono } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/navbar/navbar";
 
 const fontSans = Anuphan({
   subsets: ["latin"],
@@ -33,7 +34,9 @@ export default function RootLayout({
             lang="en"
             className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased h-full`}
         >
-            <body className="min-h-full flex flex-col">{children}</body>
+            <body className="min-h-full flex flex-col">
+                <Navbar/>
+                {children}</body>
         </html>
     );
 }
