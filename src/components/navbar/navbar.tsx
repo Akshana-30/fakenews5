@@ -14,7 +14,7 @@ import { ChevronDown } from "lucide-react";
 export default function Navbar() {
   return (
     <div className="flex w-full">
-      <div className="lg:hidden">
+      {/* <div className="lg:hidden">
         <SidebarProvider
           style={
             {
@@ -26,12 +26,12 @@ export default function Navbar() {
 
           <SidebarTrigger size="lg" />
         </SidebarProvider>
-      </div>
+      </div> */}
       <div className="hidden lg:flex w-full items-center gap-2 px-6  sticky top-0 z-50 bg-[#2d2d2d]">
         <ul className="flex items-center mx-auto">
           <li>
             <Button variant="ghost" className="text-white" asChild>
-              <Link href="/article/add-article">Add article</Link>
+              <Link href="/">Home</Link>
             </Button>
           </li>
           <li>
@@ -81,6 +81,26 @@ export default function Navbar() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          </li>
+          <li>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="text-white">
+                  Author/Editor/Admin
+                  <ChevronDown color="white" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem>
+                  <Link href="/article/add-article">Create article</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </li>
+          <li>
+            <Button asChild variant="ghost" className="text-white">
+              <Link href="/api/auth/register">Register</Link>
+            </Button>
           </li>
         </ul>
       </div>

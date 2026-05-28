@@ -96,6 +96,35 @@ export function AppSidebar() {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarMenu>
+             <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton>
+                    Author/Editor/Admin
+                    <ChevronDown color="black" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                  <Link href="/article/add-article">Create article</Link>
+                </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+
+          
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href="/api/auth/register">Register</Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          
+
+        </SidebarGroup>
        
       </SidebarContent>
       <SidebarFooter>

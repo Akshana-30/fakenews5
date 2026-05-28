@@ -1,6 +1,12 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import z from "zod";
 import { useForm } from "@tanstack/react-form";
 import {
@@ -16,12 +22,13 @@ import { Button } from "@/components/ui/button";
 import addArticle from "../_actions/add-article-action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
   summary: z
     .string()
-    .min(20, "Title is required")
+    .min(1, "Summary is required")
     .max(200, "Between 20-200 characters"),
   content: z.string(),
   image: z.string(),
@@ -33,6 +40,7 @@ const formSchema = z.object({
 export default function AddArticleForm() {
   const [categoryInput, setCategoryInput] = useState("");
   const [authorInput, setAuthorInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const form = useForm({
     defaultValues: {
@@ -48,23 +56,30 @@ export default function AddArticleForm() {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
+      setLoading(true);
       const result = await addArticle(value);
       console.log(result);
       if (result.error) {
         toast.error(result.error, { position: "top-center" });
+        setLoading(false);
       } else {
         toast.success("Article was added to Fakenews5 database", {
           position: "bottom-right",
         });
         router.push("/");
+        setLoading(false);
       }
     },
   });
 
   return (
-    <Card>
+    <Card className="w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle>Create a new article</CardTitle>
+      </CardHeader>
       <CardContent>
         <form
+          id="create-article-form"
           onSubmit={(ev) => {
             ev.preventDefault();
             form.handleSubmit(ev);
@@ -325,7 +340,7 @@ export default function AddArticleForm() {
               </form.Field>
             </div>
 
-            <Field orientation="horizontal">
+            {/* <Field orientation="horizontal">
               <Button className="cursor-pointer" type="submit">
                 Submit
               </Button>
@@ -337,10 +352,30 @@ export default function AddArticleForm() {
               >
                 Reset
               </Button>
-            </Field>
+            </Field> */}
           </FieldGroup>
         </form>
       </CardContent>
+      <CardFooter className="flex justify-center gap-4">
+        <Button
+          form="create-article-form"
+          type="reset"
+          size="lg"
+          className="cursor-pointer"
+          onClick={() => form.reset()}
+        >
+          Reset
+        </Button>
+        <Button
+          form="create-article-form"
+          type="submit"
+          size="lg"
+          className="cursor-pointer"
+          disabled={loading}
+        >
+          {loading ? <Spinner /> : "Submit"}
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
