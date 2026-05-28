@@ -13,7 +13,7 @@ export default function Header() {
         <div className="flex w-full text-center p-5 bg-[#2d2d2d] mx-auto justify-center border-b-5 border-b-[#c8a84b]">
             <Link href="/">
                 <div className="flex">
-                    <Image src={"logo.svg"} width={90} height={90} alt="Logo" />
+                    <Image src={"/logo.svg"} width={90} height={90} alt="Logo" />
                     <div className="flex flex-col justify-center">
                         <h1 className="font-serif text-4xl font-bold  text-white text-shadow-lg text-shadow-black md:text-5xl">
                             Fakenews5

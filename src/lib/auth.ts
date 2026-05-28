@@ -10,10 +10,13 @@ import { admin } from "better-auth/plugins";
 dotenv.config();
 
 export const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT),
+    host: "smtp.ethereal.email",
+    port: 587,
+    auth: {
+        user: "lura45@ethereal.email",
+        pass: "DhGNwTGAtgkuMy5P8d",
+    },
     secure: false,
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
 });
 
 const prisma = new PrismaClient({
@@ -32,18 +35,19 @@ export const auth = betterAuth({
         autoSignIn: true,
         requireEmailVerification: true,
         resetPasswordTokenExpiresIn: 60 * 30,
-        sendResetPassword: async ({ user, token }) => {
-            const text = `Click the link to change your password: ${token}`;
+        sendResetPassword: async ({ user, url }) => {
+            const text = `Click the link to change your password: ${url}`;
             console.log(text);
             await transporter.sendMail(
                 {
+                    secure: true,
                     from: '"Fakenews" <noreply@fakenews.com>',
                     to: user.email,
                     subject: "Reset your password",
                     text: text,
                 },
                 function (error, info) {
-                    console.error(`Unable to send email.\n\n${error}`);
+                    console.error(`Unable to send email.\n\n${error}\n${info}`);
                 },
             );
         },
@@ -52,18 +56,19 @@ export const auth = betterAuth({
     emailVerification: {
         autoSignInAfterVerification: true,
         sendOnSignUp: true,
-        sendVerificationEmail: async ({ user, token }) => {
-            const text = `Click the link to verify your email address: ${token}`;
+        sendVerificationEmail: async ({ user, url }) => {
+            const text = `Click the link to verify your email address: ${url}`;
             console.log(text);
             await transporter.sendMail(
                 {
                     from: '"Fakenews" <noreply@fakenews.com>',
                     to: user.email,
-                    subject: "Reset your password",
+                    subject: "Verify your email",
                     text: text,
+                    secure: true,
                 },
                 function (error, info) {
-                    console.error(`Unable to send email.\n\n${error}`);
+                    console.error(`Unable to send email.\n\n${error} ${info}`);
                 },
             );
         },
