@@ -31,7 +31,7 @@ export default function Navbar() {
         <ul className="flex items-center mx-auto">
           <li>
             <Button variant="ghost" className="text-white" asChild>
-              <Link href="/">HOME</Link>
+              <Link href="/article/add-article">Add article</Link>
             </Button>
           </li>
           <li>
