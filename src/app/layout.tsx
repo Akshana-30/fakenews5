@@ -6,6 +6,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/navbar/_components/app-sidebar";
+import { Toaster } from "sonner";
 
 const fontSans = Anuphan({
     subsets: ["latin"],
@@ -32,30 +33,33 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return (
-        <html
-            lang="en"
-            className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased h-full`}
-        >
-            <body className="flex flex-col bg-gray-200">
-                <Header />
-                <Navbar />
-                <div className="min-h-screen lg:min-w-5xl max-w-6xl shadow-2xl border-x border-gray-500 flex-1 mx-auto p-4 bg-white">
-                    <SidebarProvider
-                        defaultOpen={false}
-                        style={
-                            {
-                                "--sidebar-width-mobile": "20rem",
-                            } as React.CSSProperties
-                        }
-                    >
-                        <AppSidebar />
-                        <main>
-                            <SidebarTrigger size="lg" className="lg:hidden" />
-                            {children}
-                        </main>
-                    </SidebarProvider>
-                </div>
+  return (
+    <html
+      lang="en"
+      className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased h-full`}
+      suppressHydrationWarning
+    >
+      <body className="flex flex-col bg-gray-200">
+        <Header />
+        <Navbar />
+        <div className="min-h-screen max-w-6xl shadow-2xl border-x border-gray-500 flex-1 mx-auto p-4 bg-white">
+          <SidebarProvider
+            suppressHydrationWarning
+            defaultOpen={false}
+            style={
+              {
+                "--sidebar-width-mobile": "20rem",
+              } as React.CSSProperties
+            }
+          >
+            <AppSidebar />
+            <main>
+              <SidebarTrigger size="lg" className="lg:hidden" />
+              {children}
+            </main>
+            <Toaster />
+          </SidebarProvider>
+        </div>
 
                 <Footer />
             </body>
