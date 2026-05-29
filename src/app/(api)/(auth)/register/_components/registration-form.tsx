@@ -12,7 +12,7 @@ import Button from "@/components/button";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { isEmailAddressUsed } from "@/_actions/user-actions";
+import { isEmailAddressUsed, setUserInfo } from "@/_actions/user-actions";
 import prisma from "@/lib/prisma";
 import { toast } from "sonner";
 
@@ -74,8 +74,18 @@ export default function RegisterForm() {
                     email: value.email,
                     password: value.password,
                 });
-                console.log(data, error);
-                router.push("/api/auth/verify-email");
+                if (data && error == null) {
+                    const userInfo = await setUserInfo({
+                        userId: data.user.id,
+                        birthdate: value.birthdate,
+                        phone: value.phone,
+                        country: value.country,
+                        street: value.street,
+                        zip: value.zip,
+                        city: value.city,
+                    });
+                }
+                router.push("/verify");
             }
             setLoading(false);
         },

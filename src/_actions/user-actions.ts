@@ -33,5 +33,28 @@ export async function isEmailAddressUsed(emailAddress: string): Promise<Result<b
 }
 
 export async function setUserInfo(values: userInfoValues) {
-    const data = userInfoSchema.parse(values);
+    try {
+        const data = userInfoSchema.parse(values);
+        const address = await prisma.address.create({
+            data: {
+                city: data.city,
+                country: data.country,
+                street: data.street,
+                zip: data.zip,
+            },
+        });
+        const userInfo = await prisma.userInfo.create({
+            data: {
+                address_id: address.id,
+                birthdate: new Date(data.birthdate),
+                phoneNumber: data.phone,
+                role: "UNSUBSCRIBED",
+                userId: data.userId,
+            },
+        });
+        return { success: true, data: { data, userInfo, address } };
+    } catch (err) {
+        //console.log(`Didn't work: ${err}`);
+        return { success: false, error: `Couldn't set user info.\n\n${err}` };
+    }
 }
