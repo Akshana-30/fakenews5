@@ -39,10 +39,10 @@ export default function RootLayout({
       className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased h-full`}
       suppressHydrationWarning
     >
-      <body className="flex flex-col bg-gray-200">
+      <body className="flex flex-col bg-[#fffdf5]">
         <Header />
         <Navbar />
-        <div className="min-h-screen max-w-6xl shadow-2xl border-x border-gray-500 flex-1 mx-auto p-4 bg-white">
+        <div className="min-h-screen max-w-6xl shadow-2xl border border-gray-500/35 flex-1 mx-auto p-4 bg-white">
           <SidebarProvider
             suppressHydrationWarning
             defaultOpen={false}
