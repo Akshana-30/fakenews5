@@ -1,13 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+
  
 @custom-variant dark (&:is(.dark *));
- 
+
 :root {
     --background: rgb(250, 249, 244);
     --foreground: rgb(74, 63, 53);
-    --card: rgb(243, 232, 209);
+    --card: rgb(255, 252, 245);
     --card-foreground: rgb(74, 63, 53);
     --popover: rgb(255, 252, 245);
     --popover-foreground: rgb(74, 63, 53);
@@ -58,7 +59,7 @@
     --tracking-normal: 0em;
     --spacing: 0.25rem;
 }
- 
+
 .dark {
     --background: rgb(45, 38, 33);
     --foreground: rgb(236, 229, 216);
@@ -111,7 +112,7 @@
     --shadow-xl: 2px 3px 0px -13px hsl(28 13% 20% / 0.45), 2px 8px 10px -14px hsl(28 13% 20% / 0.45);
     --shadow-2xl: 2px 3px 0px -13px hsl(28 13% 20% / 1.13);
 }
- 
+
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -145,17 +146,19 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
  
     --font-sans: var(--font-sans);
     --font-mono: var(--font-mono);
     --font-serif: var(--font-serif);
  
+
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
     --radius-xl: calc(var(--radius) + 4px);
 }
- 
+
 @layer base {
     * {
         @apply border-border outline-ring/50;
@@ -170,3 +173,4 @@
     }
 }
  
+

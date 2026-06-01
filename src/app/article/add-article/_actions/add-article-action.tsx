@@ -2,14 +2,15 @@
 
 import z from "zod";
 import prisma from "@/lib/prisma";
+import { SuccessResult, ErrorResult, Result } from "@/lib/types"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
   summary: z
     .string()
-    .min(20, "Title is required")
-    .max(200, "Between 20-200 characters"),
-  content: z.string(),
+    .min(1, "Summary is required")
+    .max(200, "Between 1-200 characters"),
+  content: z.string().min(1, "Content text is required"),
   image: z.string(),
   category: z.array(z.string()),
   location: z.string(),
@@ -18,7 +19,7 @@ const formSchema = z.object({
 
 type AddArticleValues = z.infer<typeof formSchema>;
 
-export default async function addArticle(values: AddArticleValues) {
+export default async function addArticle(values: AddArticleValues):  Promise<Result<string>> {
   const data = formSchema.parse(values);
   const authors = await prisma.author.findMany({
     where: {
@@ -48,8 +49,8 @@ export default async function addArticle(values: AddArticleValues) {
         },
       },
     });
-    return {error: null, articleId: newArticle.id};
-  } catch {
-    return {error: "Unknown error occurred", articleId: null}
+    return {success: true, data: newArticle.id};
+  } catch (err) {
+    return {success: false, error: `Error ${err}`}
   }
 }
