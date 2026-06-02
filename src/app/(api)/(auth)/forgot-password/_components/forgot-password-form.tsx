@@ -9,6 +9,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Field,
   FieldError,
   FieldGroup,
@@ -40,20 +50,20 @@ export default function ForgotPasswordForm() {
     onSubmit: async ({ value }) => {
       const { error } = await authClient.requestPasswordReset({
         email: value.email,
-        redirectTo: '/forgot-password'
+        redirectTo: "/password-reset",
       });
       if (error) {
-        toast.error(error.message || 'An unknown error occurred', {
-            position: 'top-center'
-        })
-        }alert("y5y");
-      router.push("/");
-      router.refresh();
-        // alert(error.message || "An unknown error occurred");
-        // return;
+        toast.error(error.message || "An unknown error occurred", {
+          position: "top-center",
+        });
       }
-      
-    });
+      // alert("y5y");
+      router.push("/forgot-password");
+      router.refresh();
+      // alert(error.message || "An unknown error occurred");
+      // return;
+    },
+  });
 
   return (
     <div className="w-6xl">
@@ -99,9 +109,24 @@ export default function ForgotPasswordForm() {
           </CardContent>
         </CardHeader>
         <CardFooter>
-          <Button type="submit" className="w-full" form="forgot-password-form">
-            Send Link
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                type="submit"
+                className="w-full"
+                form="forgot-password-form"
+              >
+                Send Link
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Verification link sent!</DialogTitle>
+                <DialogDescription>Click on the sent to your e-mail to create a new password</DialogDescription>
+              </DialogHeader>
+              <DialogFooter><DialogClose asChild><Button>close</Button></DialogClose></DialogFooter>
+            </DialogContent>
+          </Dialog>
         </CardFooter>
       </Card>
     </div>
