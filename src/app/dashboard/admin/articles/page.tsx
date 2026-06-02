@@ -3,12 +3,15 @@ import { DataTable } from "@/components/Data-table";
 import RouteHeading from "@/components/route-heading";
 import { columns } from "@/lib/article-columns";
 
-const articles = await prisma.article.findMany({})
 
-export default function ArticleTablePage(){
+export default async function ArticleTablePage() {
+  
+  const articles = await prisma.article.findMany({});
 
-    return (<div className="w-full">
-        <RouteHeading label="Articles"/>
-        <DataTable columns={columns} data={articles}/>
-    </div>)
+  return (
+    <div className="w-full">
+      <RouteHeading label="Articles" />
+      <DataTable columns={columns} data={articles} />
+    </div>
+  );
 }
