@@ -157,7 +157,7 @@ export default function SignInForm() {
       </CardHeader>
       <CardFooter>
         <Button
-          onClick={() => {if ('password' != Error && 'email' != Error ) {toast("Logged for new updates")}}}
+          onClick={() => {toast("Logged for new updates")}}
           className="w-full"
           form="sign-in-form"
         >
