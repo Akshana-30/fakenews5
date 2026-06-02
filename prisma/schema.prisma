@@ -78,41 +78,54 @@ model Verification {
 }
 
 model Article {
-    id        String     @id @default(ulid())
-    title     String
-    summary   String?
-    content   String
-    views     Int        @default(0)
-    image     String?
-    createdAt DateTime   @default(now()) @map("created_at")
-    updatedAt DateTime   @default(now()) @map("updated_at")
-    category  Category[]
-    location  String?
-    author    Author[]
-    bookmark  Bookmark[]
+    id            String            @id @default(ulid())
+    title         String
+    summary       String?
+    content       String
+    views         ArticleView[]
+    reactions     ArticleReaction[]
+    image         String?
+    createdAt     DateTime          @default(now()) @map("created_at")
+    updatedAt     DateTime          @default(now()) @map("updated_at")
+    category      Category[]
+    location      String?
+    author        Author[]
+    bookmark      Bookmark[]
+    commentaries  Comment[]
+    editorsChoice Boolean           @default(false)
+    deleted       DateTime?
 
     @@map("article")
 }
 
 model Comment {
     id        String   @id @default(ulid())
+    articleId String   @map("article_id")
+    article   Article  @relation(fields: [articleId], references: [id])
     user_id   String
     user      UserInfo @relation(fields: [user_id], references: [id])
     content   String
     likes     Int      @default(0)
     createdAt DateTime
     updatedAt DateTime
-    replyTo   String?  @map("reply_to") // Stores a comment id to which the comment in questions is a r
+    replyTo   String?  @map("reply_to") // Stores a comment id to which the comment in questions is a reply
 }
 
 model Bookmark {
     id        String   @id @default(ulid())
     user_id   String
     user      UserInfo @relation(fields: [user_id], references: [id])
-    article   Article? @relation(fields: [articleId], references: [id])
-    articleId String?
+    article   Article  @relation(fields: [articleId], references: [id])
+    articleId String
 
     @@map("bookmark")
+}
+
+model ArticleView {
+    id        String  @id @default(ulid())
+    userId    String
+    articleId String
+    article   Article @relation(fields: [articleId], references: [id])
 }
 
 model Category {
@@ -146,6 +159,16 @@ model UserInfo {
     comments    Comment[]
 
     @@map("user_info")
+}
+
+model ArticleReaction {
+    id         String  @id @default(ulid())
+    userId     String  @unique
+    article_id String
+    article    Article @relation(fields: [article_id], references: [id])
+    val        Int     @default(1)
+
+    @@map("article_like")
 }
 
 model Address {
