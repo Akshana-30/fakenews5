@@ -34,8 +34,11 @@ const formSchema = z.object({
   email: z.email().max(128),
   password: z.string().min(8).max(128),
 });
+
+
 export default function SignInForm() {
   const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false)
   const router = useRouter();
   const form = useForm({
     defaultValues: {
@@ -51,6 +54,7 @@ export default function SignInForm() {
         email: value.email,
         password: value.password,
       });
+      setLoading(false)
       if (error) {
         if (error.code === "EMAIL NOT VERIFIED") {
           router.push("/auth/verify-email");
@@ -66,11 +70,12 @@ export default function SignInForm() {
   });
 
   return (
-    <Card className="max-w-xl mx-auto">
+    <div className="w-6xl">
+    <Card className="  w-xl mt-10 mx-auto">
       <CardHeader>
         <CardTitle>Sign In</CardTitle>
         <CardDescription>
-          Fill out the form below to create an account
+        Fill the fields below to Login
         </CardDescription>
         <CardContent className="py-4">
           <form
@@ -137,7 +142,7 @@ export default function SignInForm() {
                           </InputGroupButton>
                         </InputGroupAddon>
                       </InputGroup>
-                      <Link href={'/'} className="flex justify-end">Forgot password</Link>
+                      <Link href={'/forgot-password'} className="flex justify-end text-primary" >Forgot password</Link>
                       {isInvalid && (
                         <FieldError errors={field.state.meta.errors} />
                       )}
@@ -152,7 +157,7 @@ export default function SignInForm() {
       </CardHeader>
       <CardFooter>
         <Button
-          onClick={() => toast("Logged for new updates")}
+          onClick={() => {toast("Logged for new updates")}}
           className="w-full"
           form="sign-in-form"
         >
@@ -160,5 +165,6 @@ export default function SignInForm() {
         </Button>
       </CardFooter>
     </Card>
+    </div>
   );
 }

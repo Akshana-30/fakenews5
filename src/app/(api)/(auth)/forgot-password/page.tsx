@@ -1,7 +1,8 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import SignInForm from "./_components/sign-in-form";
+import ForgotPasswordForm from "./_components/forgot-password-form";
+
 
 export default async function SignInPage(){
     const session = await auth.api.getSession({
@@ -13,6 +14,6 @@ export default async function SignInPage(){
     }
     return(
        
-    <div className=" h-full min-w-full"><SignInForm/></div>
+    <div className=""><ForgotPasswordForm/></div>
 )
 }

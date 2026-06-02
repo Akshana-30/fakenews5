@@ -5,13 +5,16 @@ import prisma from "@/lib/prisma";
 import { SuccessResult, ErrorResult, Result } from "@/lib/types";
 
 const formSchema = z.object({
-    title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
-    summary: z.string().min(1, "Title is required").max(200, "Between 20-200 characters"),
-    content: z.string(),
-    image: z.string(),
-    category: z.array(z.string()),
-    location: z.string(),
-    author: z.array(z.string()),
+  title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
+  summary: z
+    .string()
+    .min(1, "Summary is required")
+    .max(200, "Between 1-200 characters"),
+  content: z.string().min(1, "Content text is required"),
+  image: z.string(),
+  category: z.array(z.string()),
+  location: z.string(),
+  author: z.array(z.string()),
 });
 
 type AddArticleValues = z.infer<typeof formSchema>;

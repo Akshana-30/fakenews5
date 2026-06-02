@@ -27,10 +27,6 @@ export const NewsPages: { title: string; href: string }[] = [
     title: "Utrikes",
     href: "/",
   },
-  {
-    title: "Register",
-    href: "/api/auth/register",
-  },
 ];
 
 export const SportPages: { title: string; href: string }[] = [
@@ -68,7 +64,7 @@ export function NewsDropdown({label, links}:{label: string, links: NavLink[]}){
             <DropdownMenuItem key={page.title} asChild>
               <Link
                 href={page.href}
-                className="text-center border justify-center"
+                className="text-center justify-center"
               >
                 {page.title}
               </Link>
