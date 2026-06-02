@@ -1,4 +1,5 @@
 "use client";
+import EditorsChoice from "@/components/editors-choice-btn";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenuContent,
@@ -54,6 +55,10 @@ function ActionsCell({ id }: { id: string }) {
           >
             Edit article
           </DropdownMenuItem>
+          <DropdownMenuItem>
+          
+          </DropdownMenuItem>
+          
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
@@ -105,6 +110,13 @@ export const columns: ColumnDef<Article>[] = [
       const total = views.length
       return <span className="flex justify-center">{total}</span>;
     },
+  },
+  {id: "Editors choice",
+    header: () => <span className="flex justify-center">Editors choice</span>,
+    cell: ({row}) => {
+    const id = row.original.id
+    const isChoice = row.original.editorsChoice;
+    return  <span className="flex justify-center"><EditorsChoice articleId={id} initialChoice={isChoice}/></span>}
   },
   {
     id: "actions",
