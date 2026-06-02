@@ -12,11 +12,12 @@ dotenv.config();
 export const transporter = nodemailer.createTransport({
     host: "smtp.ethereal.email",
     port: 587,
+    secure: false,
     auth: {
         user: "nikki.leuschke@ethereal.email",
         pass: "NWXrggTFV1VkSHmYhd",
     },
-    secure: true,
+    
 });
 
 const prisma = new PrismaClient({
@@ -51,7 +52,7 @@ export const auth = betterAuth({
             );
         },
     },
-    plugins: [nextCookies(), admin()],
+    plugins: [ admin() ,nextCookies()],
     emailVerification: {
         autoSignInAfterVerification: true,
         sendOnSignUp: true,

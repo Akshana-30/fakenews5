@@ -32,7 +32,7 @@ export async function LoginRegButtons() {
           </li>
           <li>
             <Button asChild variant="ghost" className="text-white">
-              <Link href="/auth/sign-in">Sign in</Link>
+              <Link href="/sign-in">Sign in</Link>
             </Button>
           </li>{" "}
         </>
