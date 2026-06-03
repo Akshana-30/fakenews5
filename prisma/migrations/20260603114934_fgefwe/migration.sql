@@ -70,11 +70,12 @@ CREATE TABLE "article" (
     "title" TEXT NOT NULL,
     "summary" TEXT,
     "content" TEXT NOT NULL,
-    "views" INTEGER NOT NULL DEFAULT 0,
     "image" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "location" TEXT,
+    "editorsChoice" BOOLEAN NOT NULL DEFAULT false,
+    "deleted" TIMESTAMP(3),
 
     CONSTRAINT "article_pkey" PRIMARY KEY ("id")
 );
@@ -82,9 +83,9 @@ CREATE TABLE "article" (
 -- CreateTable
 CREATE TABLE "Comment" (
     "id" TEXT NOT NULL,
+    "article_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "content" TEXT NOT NULL,
-    "likes" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "reply_to" TEXT,
@@ -93,12 +94,32 @@ CREATE TABLE "Comment" (
 );
 
 -- CreateTable
+CREATE TABLE "CommentReaction" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "commentId" TEXT NOT NULL,
+    "val" INTEGER NOT NULL DEFAULT 1,
+    "userInfoId" TEXT,
+
+    CONSTRAINT "CommentReaction_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "bookmark" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
-    "articleId" TEXT,
+    "articleId" TEXT NOT NULL,
 
     CONSTRAINT "bookmark_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ArticleView" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "articleId" TEXT NOT NULL,
+
+    CONSTRAINT "ArticleView_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -128,6 +149,16 @@ CREATE TABLE "user_info" (
     "role" "Role" NOT NULL DEFAULT 'UNSUBSCRIBED',
 
     CONSTRAINT "user_info_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "article_reaction" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "article_id" TEXT NOT NULL,
+    "val" INTEGER NOT NULL DEFAULT 1,
+
+    CONSTRAINT "article_reaction_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -173,6 +204,12 @@ CREATE INDEX "account_userId_idx" ON "account"("userId");
 CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "CommentReaction_userId_key" ON "CommentReaction"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "CommentReaction_commentId_key" ON "CommentReaction"("commentId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "category_name_key" ON "category"("name");
 
 -- CreateIndex
@@ -183,6 +220,9 @@ CREATE UNIQUE INDEX "author_user_id_key" ON "author"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_info_user_id_key" ON "user_info"("user_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "article_reaction_userId_key" ON "article_reaction"("userId");
 
 -- CreateIndex
 CREATE INDEX "_ArticleToCategory_B_index" ON "_ArticleToCategory"("B");
@@ -197,13 +237,25 @@ ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "account" ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_article_id_fkey" FOREIGN KEY ("article_id") REFERENCES "article"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Comment" ADD CONSTRAINT "Comment_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user_info"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CommentReaction" ADD CONSTRAINT "CommentReaction_commentId_fkey" FOREIGN KEY ("commentId") REFERENCES "Comment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CommentReaction" ADD CONSTRAINT "CommentReaction_userInfoId_fkey" FOREIGN KEY ("userInfoId") REFERENCES "user_info"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "bookmark" ADD CONSTRAINT "bookmark_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user_info"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "bookmark" ADD CONSTRAINT "bookmark_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "article"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "bookmark" ADD CONSTRAINT "bookmark_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "article"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ArticleView" ADD CONSTRAINT "ArticleView_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "article"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "author" ADD CONSTRAINT "author_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -213,6 +265,9 @@ ALTER TABLE "user_info" ADD CONSTRAINT "user_info_user_id_fkey" FOREIGN KEY ("us
 
 -- AddForeignKey
 ALTER TABLE "user_info" ADD CONSTRAINT "user_info_address_id_fkey" FOREIGN KEY ("address_id") REFERENCES "address"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "article_reaction" ADD CONSTRAINT "article_reaction_article_id_fkey" FOREIGN KEY ("article_id") REFERENCES "article"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_ArticleToCategory" ADD CONSTRAINT "_ArticleToCategory_A_fkey" FOREIGN KEY ("A") REFERENCES "article"("id") ON DELETE CASCADE ON UPDATE CASCADE;
