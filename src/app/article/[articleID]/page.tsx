@@ -22,7 +22,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
     const userId = await getUserId();
     const article = await getArticle(articleID);
     console.log(article);
-    console.log(article.data.comments);
 
     if (userId && article.success && article.data) {
         // Check if the user has viewed the article and add a view if not
@@ -99,7 +98,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                 </div>
                 <div className="w-2xl mx-auto">
                     <h1 className="font-extrabold text-2xl text-center">Comments</h1>
-                    <CommentarySection comments={article.data.comments} />
+                    {article.data.comments ? (
+                        <CommentarySection comments={article.data.comments} />
+                    ) : (
+                        ""
+                    )}
                     {userId !== null ? (
                         <CommentaryForm articleId={articleID} replyTo={null} />
                     ) : (
