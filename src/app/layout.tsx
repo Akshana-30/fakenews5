@@ -40,7 +40,7 @@ export default function RootLayout({
             <body className="flex flex-col bg-gray-200">
                 <Header />
                 <Navbar />
-                <div className="flex min-h-screen lg:min-w-5xl max-w-6xl shadow-2xl border-x border-gray-500 flex-1 mx-auto px-4 bg-white">
+                <div className="flex min-h-screen lg:min-w-5xl max-w-6xl shadow-2xl border-x border-gray-500 flex-1 mx-auto bg-white">
                     <SidebarProvider
                         defaultOpen={false}
                         style={
