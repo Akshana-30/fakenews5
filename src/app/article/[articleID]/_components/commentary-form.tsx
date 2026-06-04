@@ -6,7 +6,10 @@ import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "@tanstack/react-form";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
+import { X } from "lucide-react";
 import z from "zod";
 
 const formSchema = z.object({
@@ -21,6 +24,8 @@ export default function CommentaryForm({
     replyTo: string | null;
 }) {
     const [loading, setLoading] = useState(false);
+    const [show, setShow] = useState(true);
+    const router = useRouter();
     const form = useForm({
         defaultValues: {
             comment: "",
@@ -31,61 +36,76 @@ export default function CommentaryForm({
         onSubmit: async ({ value }) => {
             setLoading(true);
             const comment = await addComment(articleId, value.comment, replyTo);
-            console.log(comment);
+            if (comment.success === false) {
+                toast.error(`Couldn't add comment.\n\n${comment.error}`);
+            }
+            setShow(false);
+            router.refresh();
             setLoading(false);
         },
     });
 
     return (
         <div>
-            <Card className="w-2xl mx-auto mt-4">
-                <CardHeader>
-                    <CardTitle>Leave a comment ...</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form
-                        id="comment"
-                        onSubmit={(ev) => {
-                            ev.preventDefault();
-                            form.handleSubmit(ev);
-                        }}
-                    >
-                        <FieldGroup>
-                            <form.Field name="comment">
-                                {(field) => {
-                                    const isInvalid =
-                                        field.state.meta.isTouched && !field.state.meta.isValid;
+            {show ? (
+                <Card className="w-2xl mx-auto mb-4">
+                    <CardHeader>
+                        <CardTitle className="flex">
+                            <div className="mr-auto">
+                                {replyTo ? "Reply" : "Leave a comment ..."}
+                            </div>
+                            <Button onClick={() => setShow(false)}>
+                                <X />
+                            </Button>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <form
+                            id="comment"
+                            onSubmit={(ev) => {
+                                ev.preventDefault();
+                                form.handleSubmit(ev);
+                            }}
+                        >
+                            <FieldGroup>
+                                <form.Field name="comment">
+                                    {(field) => {
+                                        const isInvalid =
+                                            field.state.meta.isTouched && !field.state.meta.isValid;
 
-                                    return (
-                                        <Field data-invalid={isInvalid}>
-                                            <Textarea
-                                                id={field.name}
-                                                name={field.name}
-                                                value={field.state.value}
-                                                onBlur={field.handleBlur}
-                                                onChange={(ev) =>
-                                                    field.handleChange(ev.target.value)
-                                                }
-                                            />
-                                            {isInvalid && (
-                                                <FieldError errors={field.state.meta.errors} />
-                                            )}
-                                        </Field>
-                                    );
-                                }}
-                            </form.Field>
-                        </FieldGroup>
-                        <CardFooter className="flex gap-2 justify-center">
-                            <Button type="reset" variant="outline" onClick={() => form.reset()}>
-                                Clear
-                            </Button>
-                            <Button type="submit" disabled={loading}>
-                                {loading ? <Spinner /> : "Submit"}
-                            </Button>
-                        </CardFooter>
-                    </form>
-                </CardContent>
-            </Card>
+                                        return (
+                                            <Field data-invalid={isInvalid}>
+                                                <Textarea
+                                                    id={field.name}
+                                                    name={field.name}
+                                                    value={field.state.value}
+                                                    onBlur={field.handleBlur}
+                                                    onChange={(ev) =>
+                                                        field.handleChange(ev.target.value)
+                                                    }
+                                                />
+                                                {isInvalid && (
+                                                    <FieldError errors={field.state.meta.errors} />
+                                                )}
+                                            </Field>
+                                        );
+                                    }}
+                                </form.Field>
+                            </FieldGroup>
+                            <CardFooter className="flex gap-2 justify-center p-1">
+                                <Button type="reset" variant="outline" onClick={() => form.reset()}>
+                                    Clear
+                                </Button>
+                                <Button type="submit" disabled={loading}>
+                                    {loading ? <Spinner /> : "Submit"}
+                                </Button>
+                            </CardFooter>
+                        </form>
+                    </CardContent>
+                </Card>
+            ) : (
+                ""
+            )}
         </div>
     );
 }
