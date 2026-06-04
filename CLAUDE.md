@@ -64,8 +64,10 @@ src/
     article/[articleID]/            ← Single article page
     article/[articleID]/edit/       ← Edit article page
     article/add-article/            ← Create article page
-    dashboard/admin/                ← Admin dashboard
-    dashboard/user/                 ← User dashboard
+    dashboard/admin/                ← Admin dashboard (charts: line, bar, pie, user counts)
+    dashboard/admin/_actions/       ← chart-actions.ts (data for charts)
+    dashboard/admin/_components/charts/ ← bar-chart, line-chart, pie-chart, user-counts
+    dashboard/user/                 ← User dashboard / account page
   components/
     hero-card.tsx                   ← Large featured article (Editor's Choice)
     news-card.tsx                   ← Multi-size card (hero/medium/small/text)
@@ -131,8 +133,9 @@ Roles live on the `User.role` (Better Auth) field, NOT on `UserInfo` (that colum
 | Branch | Purpose |
 |---|---|
 | `main` | Team's main branch — never push directly |
-| `feature/landing-page-cards` | Newspaper layout, live APIs, new components |
-| `fix/remove-userinfo-role` | Removes role from UserInfo schema |
+| `feature/landing-page-cards` | ✅ Merged into main |
+| `fix/remove-userinfo-role` | Removes role from UserInfo schema — PR open, not merged |
+| `comments` | Team branch, in progress |
 
 ## Common problems & fixes
 
