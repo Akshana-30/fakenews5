@@ -40,8 +40,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body>
-        <Header />
-        <Navbar />
+        <div><Header /></div>
+        <div className="sticky top-0"><Navbar /></div>
+        
         
           <SidebarProvider
             suppressHydrationWarning
