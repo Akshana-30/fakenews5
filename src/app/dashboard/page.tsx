@@ -10,5 +10,6 @@ export default async function AdminDashboardRoot() {
     }
 
     const isAdmin = session?.user.role === "admin";
-    redirect(isAdmin ? "/dashboard/admin" : "/dashboard/user");
+    redirect(isAdmin ? "/dashboard/admin" : "/dashboard/profile");
+
 }

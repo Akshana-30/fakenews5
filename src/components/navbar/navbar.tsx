@@ -15,7 +15,7 @@ import {NewsPages} from "./_components/dropdown-menus"
 export default function Navbar() {
   return (
     <div className="flex w-full">
-      <div className="hidden lg:flex w-full items-center gap-2 px-6  sticky top-0 bg-[#2d2d2d]">
+      <div className="hidden lg:flex w-full items-center gap-2 px-6 bg-[#2d2d2d]">
         <ul className="flex items-center mx-auto">
           <li>
             <NewsDropdown label="News" links={NewsPages}/>

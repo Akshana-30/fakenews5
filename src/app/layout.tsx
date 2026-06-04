@@ -32,14 +32,16 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return (
-        <html
-            lang="en"
-            className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased h-full`}
-        >
+
+  return (
+    <html
+      lang="en"
+      className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased h-full`}
+      suppressHydrationWarning
+    >
             <body className="flex flex-col bg-gray-200">
                 <Header />
-                <Navbar />
+                <div className="sticky top-0"><Navbar /></div>
                 <div className="flex min-h-screen lg:min-w-5xl max-w-6xl shadow-2xl border-x border-gray-500 flex-1 mx-auto bg-white">
                     <SidebarProvider
                         defaultOpen={false}
@@ -56,7 +58,6 @@ export default function RootLayout({
                         </main>
                     </SidebarProvider>
                 </div>
-
                 <Footer />
             </body>
         </html>
