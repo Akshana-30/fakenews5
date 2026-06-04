@@ -1,7 +1,10 @@
 "use server";
 
+import { User, UserInfo } from "@/generated/prisma/client";
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
+import { headers } from "next/headers";
 import { z } from "zod";
 
 const userInfoSchema = z.object({
@@ -15,6 +18,20 @@ const userInfoSchema = z.object({
 });
 
 type userInfoValues = z.infer<typeof userInfoSchema>;
+
+// A simple function for linking together the ids of UserInfo with the user id
+// We do actually not use the normal id from the User table, but we use the id from
+// the UserInfo table for running all queries, so we don't touch the better-auth stuffs.
+// The function returns the correct user id if logged in, otherwise false.
+export async function getUserId() {
+    const user = await auth.api.getSession({ headers: await headers() });
+    if (user) {
+        const userInfo = await prisma.userInfo.findUnique({ where: { userId: user.user.id } });
+        return userInfo?.id;
+    } else {
+        return false;
+    }
+}
 
 export async function isEmailAddressUsed(emailAddress: string): Promise<Result<boolean>> {
     try {
@@ -56,5 +73,19 @@ export async function setUserInfo(values: userInfoValues) {
     } catch (err) {
         //console.log(`Didn't work: ${err}`);
         return { success: false, error: `Couldn't set user info.\n\n${err}` };
+    }
+}
+
+export async function getAllUserDataFromId(userId: string) {
+    const userInfoTable = await prisma.userInfo.findUnique({ where: { id: userId } });
+    if (userInfoTable) {
+        const user = await prisma.user.findUnique({ where: { id: userInfoTable.userId } });
+        if (user) {
+            return { success: true, data: [user, userInfoTable] };
+        }
+        return { success: false, error: `Couldn't find data for user with id ${userId}.` };
+    } else {
+        console.error(`Couldn't find user with id ${userId}.`);
+        return { success: false, error: `Couldn't find user with id ${userId}.` };
     }
 }

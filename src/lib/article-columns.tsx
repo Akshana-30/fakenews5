@@ -1,4 +1,5 @@
 "use client";
+import EditorsChoice from "@/components/editors-choice-btn";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenuContent,
@@ -10,17 +11,24 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export type Article = {
-  id: string;
-  summary: string | null;
-  title: string;
-  image: string | null;
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
-  views: number;
-  location: string | null;
-};
+export type Article =  ({
+    views: {
+        id: string;
+        userId: string;
+        articleId: string;
+    }[];
+} & {
+    id: string;
+    title: string;
+    summary: string | null;
+    content: string;
+    image: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    location: string | null;
+    editorsChoice: boolean;
+    deleted: Date | null;
+})
 
 function ActionsCell({ id }: { id: string }) {
   const router = useRouter();
@@ -47,6 +55,10 @@ function ActionsCell({ id }: { id: string }) {
           >
             Edit article
           </DropdownMenuItem>
+          <DropdownMenuItem>
+          
+          </DropdownMenuItem>
+          
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
@@ -95,8 +107,16 @@ export const columns: ColumnDef<Article>[] = [
     header: "Views",
     cell: ({ row }) => {
       const views = row.original.views;
-      return <span className="flex justify-center">{views}</span>;
+      const total = views.length
+      return <span className="flex justify-center">{total}</span>;
     },
+  },
+  {id: "Editors choice",
+    header: () => <span className="flex justify-center">Editors choice</span>,
+    cell: ({row}) => {
+    const id = row.original.id
+    const isChoice = row.original.editorsChoice;
+    return  <span className="flex justify-center"><EditorsChoice articleId={id} initialChoice={isChoice}/></span>}
   },
   {
     id: "actions",
