@@ -359,3 +359,52 @@ export async function hasUserViewedArticle(
         return { success: false, error: `Couldn't access views to article ${articleId}.\n\n` };
     }
 }
+
+export type ArticleWithScore = {
+    a: {
+        id: string;
+        title: string;
+        summary: string | null;
+        image: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        location: string | null;
+        editorsChoice: boolean;
+        deleted: Date | null;
+        reactions: ArticleReaction[];
+    };
+    totalScore: number;
+};
+
+export async function topUpvotedArticle(): Promise<Result<ArticleWithScore[]>> {
+    try {
+        const articles = await prisma.article.findMany({ include: { reactions: true } });
+        const articleWithScore = [];
+        function compare(a: ArticleWithScore, b: ArticleWithScore) {
+            if (a.totalScore < b.totalScore) {
+                return 1;
+            }
+            if (a.totalScore > b.totalScore) {
+                return -1;
+            }
+            return 0;
+        }
+        for (const a of articles) {
+            let totalScore = 0;
+            for (const r of a.reactions) {
+                totalScore += r.val;
+            }
+            articleWithScore.push({ a, totalScore });
+        }
+        const sorted = articleWithScore.sort(compare);
+        return { success: true, data: sorted };
+    } catch (err) {
+        console.error(
+            `An unknown error occured when trying to fetch articles from the database.\n\n${err}`,
+        );
+        return {
+            success: false,
+            error: `An unknown error occured when trying to fetch articles from the database.\n\n${err}`,
+        };
+    }
+}
