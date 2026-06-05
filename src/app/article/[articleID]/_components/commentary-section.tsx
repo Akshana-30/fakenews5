@@ -17,12 +17,26 @@ type CommentReaction = {
 };
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import Comment from "./comment";
-export default function CommentarySection({ comments }: { comments: Comment[] }) {
+import { Role } from "@/generated/prisma/enums";
+import CommentItem from "./comment-item";
+export default function CommentarySection({
+    articleId,
+    comments,
+}: {
+    articleId: string;
+    comments: Comment[];
+}) {
+    const topLevelComments = [];
+    for (const c of comments) {
+        if (!c.replyTo) {
+            topLevelComments.push(c);
+        }
+    }
+
     return (
         <div>
-            {comments.map((c, i) => {
-                return <Comment key={i} num={i} data={c} />;
+            {topLevelComments.map((c, i) => {
+                return <CommentItem key={i} num={i} data={c} articleId={articleId} level={0} />;
             })}
         </div>
     );

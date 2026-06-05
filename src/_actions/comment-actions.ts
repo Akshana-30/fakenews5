@@ -60,6 +60,7 @@ export async function addComment(
                     user_id: userId,
                     createdAt: new Date(),
                     updatedAt: new Date(),
+                    replyTo: replyTo,
                 },
             });
             return { success: true, data: true };
@@ -154,7 +155,7 @@ export async function changeReaction(
         }
     } catch (err) {
         console.error(
-            `An unknown error occurred when trying to update user reaction to comment with id ${commentId}.`,
+            `An unknown error occurred when trying to update user reaction to comment with id ${commentId}.\n\n${err}`,
         );
         return {
             success: false,
@@ -180,5 +181,17 @@ export async function removeUserReaction(
             success: false,
             error: `An unknown error occurred when trying to remove reaction for user ${userId} on comment ${commentId}\n\n${err}`,
         };
+    }
+}
+
+export async function getReplies(commentId: string) {
+    try {
+        const replies = await prisma.comment.findMany({
+            where: { replyTo: commentId },
+            include: { reactions: true },
+        });
+        return { success: true, data: replies };
+    } catch (err) {
+        console.error(`Couldn't fetch replies to comment ${commentId}.\n\n${err}`);
     }
 }
