@@ -1,4 +1,3 @@
-
 import {
     addView,
     getArticle,
@@ -14,6 +13,11 @@ import Views from "./_components/views";
 import { format } from "date-fns";
 import CommentarySection from "./_components/commentary-section";
 import TopLevelCommentForm from "./_components/top-level-comment-form";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ArticlePreview from "./_components/article-preview";
+import RouteHeading from "@/components/route-heading";
 
 export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
     const { articleID } = await params;
@@ -22,7 +26,18 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
     const article = await getArticle(articleID);
     console.log(article);
 
-    if (userId && article.success && article.data) {
+    const session = await auth.api.getSession({ headers: await headers() });
+    const hasPermission = await auth.api.userHasPermission({
+        body: {
+            userId: session?.user.id,
+            permissions: {
+                article: ["comment", "read", "like", "dislike"],
+            },
+        },
+    });
+    console.log(hasPermission);
+
+    if (userId && article.success && article.data && hasPermission.success) {
         // Check if the user has viewed the article and add a view if not
         const res = await hasUserViewedArticle(article.data.id, userId);
         if (res.success && !res.data) {
@@ -54,14 +69,21 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
             bookmarked = false;
         }
 
+        let heading = "";
+        if (article.data.category.length > 0) {
+            article.data.category.map((c, i) => {
+                if (i + 1 !== article.data.category.length) {
+                    heading += `${c.name}, `;
+                } else {
+                    heading += `${c.name}`;
+                }
+            });
+        }
+
         return (
             <div className="p-2">
                 <div className="w-5xl">
-                    {article.data.category.length > 0
-                        ? article.data.category.map((c, i) =>
-                              i + 1 !== article.data.category.length ? `${c.name}, ` : `${c.name}`,
-                          )
-                        : ""}
+                    {heading.length > 0 && <RouteHeading label={heading} />}
                     <h1 className="font-extrabold text-2xl text-center">{article.data.title}</h1>
                     <p className="text-lg font-semibold text-center">
                         by{" "}
@@ -78,7 +100,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                             <Likes
                                 articleId={article.data.id}
                                 userId={userId}
-                                userReaction={userReaction}
+                                userReaction={userReaction?.val}
                                 num={totalReactions}
                             />
                         </div>
@@ -115,5 +137,20 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                 )}
             </div>
         );
+    } else if (article.success === false) {
+        return (
+            <div className="p-2 mx-auto mt-10">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Couldn&apos;t find article</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        The article you were looking for doesn&apos;t exists in the database.
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    } else if (!hasPermission.success) {
+        return <ArticlePreview article={article.data} />;
     }
 }
