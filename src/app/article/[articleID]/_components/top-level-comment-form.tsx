@@ -36,6 +36,7 @@ export default function TopLevelCommentForm({ articleId }: { articleId: string }
                     `An unknown error occurred while trying to save comment to the database.\n\n${comment.error}`,
                 );
             }
+            form.reset();
             setLoading(false);
             router.refresh();
         },

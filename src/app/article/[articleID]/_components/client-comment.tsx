@@ -1,10 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Role } from "@/generated/prisma/enums";
 import CommentaryReactions from "./commentary-reactions";
 import { format } from "date-fns";
-import { useState, type ReactNode } from "react";
+import { Children, useState, type ReactNode } from "react";
 import ReplyForm from "./reply-form";
 
 type CommentData = {
@@ -18,9 +17,9 @@ type CommentData = {
     reactions: CommentReaction[];
 };
 type CommentReaction = { id: string; commentId: string; userId: string; val: number };
+
 type UserInfo = {
     id: string;
-    role: Role;
     userId: string;
     phoneNumber: string | null;
     address_id: string;
@@ -59,11 +58,12 @@ export default function ClientComment({
     userReaction: number | undefined;
     articleId: string;
     level: number;
-    parentComment: string;
+    parentComment: string | null;
     children?: ReactNode;
 }) {
     const [showReplyForm, setShowReplyForm] = useState(false);
     const totalReactions = comment.reactions.reduce((acc, r) => acc + r.val, 0);
+    //const replies = Children.toArray(children);
 
     return (
         <div className="max-w-3xl mx-auto">
@@ -81,7 +81,7 @@ export default function ClientComment({
 
                             <Button
                                 className="cursor-pointer"
-                                onClick={() => setShowReplyForm((v) => !v)}
+                                onClick={() => setShowReplyForm(true)}
                             >
                                 Reply
                             </Button>
