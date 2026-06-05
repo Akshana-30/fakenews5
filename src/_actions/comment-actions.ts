@@ -155,7 +155,7 @@ export async function changeReaction(
         }
     } catch (err) {
         console.error(
-            `An unknown error occurred when trying to update user reaction to comment with id ${commentId}.`,
+            `An unknown error occurred when trying to update user reaction to comment with id ${commentId}.\n\n${err}`,
         );
         return {
             success: false,

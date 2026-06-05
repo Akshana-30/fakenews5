@@ -1,59 +1,63 @@
 "use client";
+
 import { addComment } from "@/_actions/comment-actions";
-import Button from "@/components/button";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "@tanstack/react-form";
+import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { X } from "lucide-react";
 import z from "zod";
 
 const formSchema = z.object({
-    comment: z.string().min(1, "Comment has to be at least one character.").max(2000),
+    reply: z
+        .string()
+        .min(1, "You can't leave an empty comment.")
+        .max(2000, "Comment can't be longer than 2000 characters."),
 });
 
-export default function CommentaryForm({
+export default function ReplyForm({
     articleId,
     replyTo,
+    edit,
 }: {
     articleId: string;
-    replyTo: string | null;
+    replyTo: string;
+    edit: boolean;
 }) {
     const [loading, setLoading] = useState(false);
     const [show, setShow] = useState(true);
     const router = useRouter();
     const form = useForm({
         defaultValues: {
-            comment: "",
+            reply: "",
         },
         validators: {
             onSubmit: formSchema,
         },
         onSubmit: async ({ value }) => {
             setLoading(true);
-            const comment = await addComment(articleId, value.comment, replyTo);
+            const comment = await addComment(articleId, value.reply, replyTo);
             if (comment.success === false) {
-                toast.error(`Couldn't add comment.\n\n${comment.error}`);
+                toast.error(`Couldn't save reply to the database.\n\n${comment.error}`);
             }
             setShow(false);
-            router.refresh();
             setLoading(false);
+            router.refresh();
         },
     });
 
     return (
         <div>
-            {show ? (
+            {show && (
                 <Card className="w-2xl mx-auto mb-4">
                     <CardHeader>
                         <CardTitle className="flex">
-                            <div className="mr-auto">
-                                {replyTo ? "Reply" : "Leave a comment ..."}
-                            </div>
+                            <span className="mr-auto">Reply</span>
                             <Button onClick={() => setShow(false)}>
                                 <X />
                             </Button>
@@ -61,14 +65,14 @@ export default function CommentaryForm({
                     </CardHeader>
                     <CardContent>
                         <form
-                            id="comment"
+                            id="reply"
                             onSubmit={(ev) => {
                                 ev.preventDefault();
                                 form.handleSubmit(ev);
                             }}
                         >
                             <FieldGroup>
-                                <form.Field name="comment">
+                                <form.Field name="reply">
                                     {(field) => {
                                         const isInvalid =
                                             field.state.meta.isTouched && !field.state.meta.isValid;
@@ -96,15 +100,13 @@ export default function CommentaryForm({
                                 <Button type="reset" variant="outline" onClick={() => form.reset()}>
                                     Clear
                                 </Button>
-                                <Button type="submit" disabled={loading}>
+                                <Button type="submit" disabled={loading} form="reply">
                                     {loading ? <Spinner /> : "Submit"}
                                 </Button>
                             </CardFooter>
                         </form>
                     </CardContent>
                 </Card>
-            ) : (
-                ""
             )}
         </div>
     );

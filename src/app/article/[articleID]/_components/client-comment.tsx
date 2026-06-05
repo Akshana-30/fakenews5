@@ -4,8 +4,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Role } from "@/generated/prisma/enums";
 import CommentaryReactions from "./commentary-reactions";
 import { format } from "date-fns";
-import CommentaryForm from "./commentary-form";
 import { useState, type ReactNode } from "react";
+import ReplyForm from "./reply-form";
 
 type CommentData = {
     id: string;
@@ -59,7 +59,7 @@ export default function ClientComment({
     userReaction: number | undefined;
     articleId: string;
     level: number;
-    parentComment: string | null;
+    parentComment: string;
     children?: ReactNode;
 }) {
     const [showReplyForm, setShowReplyForm] = useState(false);
@@ -79,14 +79,12 @@ export default function ClientComment({
                                 )}
                             </div>
 
-                            {currentUserId !== comment.user_id && (
-                                <Button
-                                    className="cursor-pointer"
-                                    onClick={() => setShowReplyForm((v) => !v)}
-                                >
-                                    Reply
-                                </Button>
-                            )}
+                            <Button
+                                className="cursor-pointer"
+                                onClick={() => setShowReplyForm((v) => !v)}
+                            >
+                                Reply
+                            </Button>
                         </div>
                     </CardTitle>
                 </CardHeader>
@@ -106,9 +104,10 @@ export default function ClientComment({
                 </CardFooter>
             </Card>
             {showReplyForm && (
-                <CommentaryForm
+                <ReplyForm
                     articleId={articleId}
                     replyTo={level > 1 ? parentComment : comment.id}
+                    edit={false}
                 />
             )}
             {children}

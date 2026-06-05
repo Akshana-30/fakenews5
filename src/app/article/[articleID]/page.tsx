@@ -7,7 +7,6 @@ import {
     hasUserViewedArticle,
 } from "@/_actions/article-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import CommentaryForm from "./_components/commentary-form";
 import Link from "next/link";
 import Likes from "./_components/likes";
 import Bookmark from "./_components/bookmark";
@@ -15,6 +14,7 @@ import { getUserId } from "@/_actions/user-actions";
 import Views from "./_components/views";
 import { format } from "date-fns";
 import CommentarySection from "./_components/commentary-section";
+import TopLevelCommentForm from "./_components/top-level-comment-form";
 
 export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
     const { articleID } = await params;
@@ -109,7 +109,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                 </div>
                 {userId !== null ? (
                     <div className="mt-4">
-                        <CommentaryForm articleId={articleID} replyTo={null} />
+                        <TopLevelCommentForm articleId={article.data.id} />
                     </div>
                 ) : (
                     <Link href="login">Log in to write a comment.</Link>
