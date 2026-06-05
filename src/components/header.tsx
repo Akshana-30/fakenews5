@@ -2,6 +2,7 @@ import { Young_Serif } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { LoginRegButtons } from "./navbar/_components/login-register-buttons";
+import { ThemeToggle } from "./theme-toggle";
 
 const fontUltra = Young_Serif({
   weight: "400",
@@ -28,7 +29,8 @@ export default function Header() {
           </div>
         </Link>
       </div>
-      <div className="flex justify-end mt-auto">
+      <div className="flex items-end gap-3 pb-3 pr-4">
+        <ThemeToggle />
         <LoginRegButtons />
       </div>
     </div>

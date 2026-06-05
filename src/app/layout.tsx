@@ -36,10 +36,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-theme="light"
       className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased h-full`}
       suppressHydrationWarning
     >
-            <body className="flex flex-col bg-gray-200">
+      <head>
+        {/* Prevents flash of wrong theme on load */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');if(t==='dark')document.documentElement.classList.add('dark');document.documentElement.setAttribute('data-theme',t);}catch(_){}})();` }} />
+      </head>
+            <body className="flex flex-col bg-gray-200 dark:bg-gray-900">
                 <Header />
                 <div className="sticky top-0"><Navbar /></div>
                 <div className="flex min-h-screen lg:min-w-5xl max-w-6xl shadow-2xl border-x border-gray-500 flex-1 mx-auto bg-white">
