@@ -65,7 +65,6 @@ export async function setUserInfo(values: userInfoValues) {
                 address_id: address.id,
                 birthdate: new Date(data.birthdate),
                 phoneNumber: data.phone,
-                role: "UNSUBSCRIBED",
                 userId: data.userId,
             },
         });
