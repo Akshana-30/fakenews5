@@ -174,7 +174,7 @@ model UserInfo {
 
 model ArticleReaction {
     id         String  @id @default(ulid())
-    userId     String  @unique
+    userId     String
     article_id String
     article    Article @relation(fields: [article_id], references: [id])
     val        Int     @default(1)
@@ -191,12 +191,4 @@ model Address {
     userInfos UserInfo[]
 
     @@map("address")
-}
-
-enum Role {
-    UNSUBSCRIBED
-    SUBSCRIBER
-    AUTHOR
-    EDITOR
-    ADMIN
 }
