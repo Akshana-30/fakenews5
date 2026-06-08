@@ -36,38 +36,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-    return (
-        <html
-            lang="en"
-            className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased h-full`}
-            suppressHydrationWarning
-        >
-            <body className="flex flex-col bg-gray-200">
-                <Header />
-                <div className="sticky top-0">
-                    <Navbar />
-                </div>
-                <div className="flex min-h-screen lg:min-w-5xl max-w-6xl shadow-2xl border-x border-gray-500 flex-1 mx-auto bg-white">
-                    <SidebarProvider
-                        defaultOpen={false}
-                        style={
-                            {
-                                "--sidebar-width-mobile": "20rem",
-                            } as React.CSSProperties
-                        }
-                    >
-                        <AppSidebar />
-                        <main className="flex max-w-6xl lg:min-w-5xl">
-                            <SidebarTrigger size="lg" className="lg:hidden" />
-                            {children}
-                        </main>
-                        <Toaster />
-                    </SidebarProvider>
-                </div>
-                <Footer />
-            </body>
-        </html>
-    );
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -86,6 +54,7 @@ export default async function RootLayout({
       hasPermission = true;
     }
   }
+
   return (
     <html
       lang="en"
@@ -103,7 +72,6 @@ export default async function RootLayout({
           <Navbar />
           {hasPermission && <AdminNavbar />}
         </div>
-
         <div className="flex min-h-screen lg:min-w-5xl max-w-6xl shadow-2xl border-x border-gray-500 flex-1 mx-auto bg-white">
           <SidebarProvider
             defaultOpen={false}
@@ -114,13 +82,13 @@ export default async function RootLayout({
             }
           >
             <AppSidebar />
-
             <main className="flex max-w-6xl lg:min-w-5xl">
               <SidebarTrigger size="lg" className="lg:hidden" />
               {children}
             </main>
           </SidebarProvider>
         </div>
+        <Toaster />
         <Footer />
       </body>
     </html>
