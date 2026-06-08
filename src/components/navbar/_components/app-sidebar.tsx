@@ -1,10 +1,5 @@
 "use client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import {
   Sidebar,
   SidebarContent,
@@ -12,10 +7,8 @@ import {
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ChevronDown } from "lucide-react";
 import { NewsDropdownSM, NewsPages, SportPages } from "./dropdown-menus";
 import { SidebarLink } from "./sidebar-link";
 
@@ -37,38 +30,8 @@ export default function AppSidebar() {
             <NewsDropdownSM label="Sports" links={SportPages} />
           </SidebarMenu>
         </SidebarGroup>
-        {/* User section */}
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton className="text-lg">
-                    Author/Editor/Admin
-                    <ChevronDown color="black" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem>
-                    <SidebarLink href="/article/add-article">
-                      Create article
-                    </SidebarLink>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        {/* <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton className="w-full">
-              <X color="black" />
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu> */}
-      </SidebarFooter>
+      <SidebarFooter></SidebarFooter>
     </Sidebar>
   );
 }

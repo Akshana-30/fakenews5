@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function VerifyEmailPage() {
     return (
-        <Card className="w-2xl mx-auto">
+        <Card className="flex w-2xl mx-auto h-30 mt-10">
             <CardHeader>
                 <CardTitle>Verify email</CardTitle>
             </CardHeader>

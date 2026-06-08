@@ -65,7 +65,6 @@ export async function setUserInfo(values: userInfoValues) {
                 address_id: address.id,
                 birthdate: new Date(data.birthdate),
                 phoneNumber: data.phone,
-                role: "UNSUBSCRIBED",
                 userId: data.userId,
             },
         });
@@ -81,7 +80,7 @@ export async function getAllUserDataFromId(userId: string) {
     if (userInfoTable) {
         const user = await prisma.user.findUnique({ where: { id: userInfoTable.userId } });
         if (user) {
-            return { success: true, data: [user, userInfoTable] };
+            return { success: true, data: { user, userInfoTable } };
         }
         return { success: false, error: `Couldn't find data for user with id ${userId}.` };
     } else {

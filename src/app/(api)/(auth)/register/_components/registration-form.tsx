@@ -99,7 +99,7 @@ export default function RegisterForm() {
     });
 
     return (
-        <Card className="w-2xl">
+        <Card className="w-2xl mt-13">
             <CardHeader>
                 <CardTitle>Create a new account</CardTitle>
             </CardHeader>

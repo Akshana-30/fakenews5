@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+
 import {
     addView,
     getArticle,
@@ -6,8 +6,6 @@ import {
     hasUserBookmarkedArticle,
     hasUserViewedArticle,
 } from "@/_actions/article-actions";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import CommentaryForm from "./_components/commentary-form";
 import Link from "next/link";
 import Likes from "./_components/likes";
 import Bookmark from "./_components/bookmark";
@@ -15,6 +13,7 @@ import { getUserId } from "@/_actions/user-actions";
 import Views from "./_components/views";
 import { format } from "date-fns";
 import CommentarySection from "./_components/commentary-section";
+import TopLevelCommentForm from "./_components/top-level-comment-form";
 
 export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
     const { articleID } = await params;
@@ -56,8 +55,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         }
 
         return (
-            <div>
-                <div className="w-5xl p-2">
+            <div className="p-2">
+                <div className="w-5xl">
                     {article.data.category.length > 0
                         ? article.data.category.map((c, i) =>
                               i + 1 !== article.data.category.length ? `${c.name}, ` : `${c.name}`,
@@ -96,19 +95,24 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                         </div>
                     </div>
                 </div>
-                <div className="w-2xl mx-auto">
-                    <h1 className="font-extrabold text-2xl text-center">Comments</h1>
+                <h1 className="font-extrabold text-2xl text-center my-2">Comments</h1>
+                <div className="border-b-2">
                     {article.data.comments ? (
-                        <CommentarySection comments={article.data.comments} />
+                        <CommentarySection
+                            comments={article.data.comments}
+                            articleId={article.data.id}
+                        />
                     ) : (
                         ""
                     )}
-                    {userId !== null ? (
-                        <CommentaryForm articleId={articleID} replyTo={null} />
-                    ) : (
-                        <Link href="login">Log in to write a comment.</Link>
-                    )}
                 </div>
+                {userId !== null ? (
+                    <div className="mt-4">
+                        <TopLevelCommentForm articleId={article.data.id} />
+                    </div>
+                ) : (
+                    <Link href="login">Log in to write a comment.</Link>
+                )}
             </div>
         );
     }

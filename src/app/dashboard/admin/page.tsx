@@ -5,71 +5,84 @@ import { redirect } from "next/navigation";
 import { ChartLineLinear } from "./_components/charts/line-chart";
 import { CountryChart } from "./_components/charts/bar-chart";
 import {
-  userCountryChart,
-  userReg,
-  articleCounts,
-  userCounts,
-  commentCount,
-  topCommenter,
+    userCountryChart,
+    userReg,
+    articleCounts,
+    userCounts,
+    commentCount,
+    topCommenter,
+    topViewedArticle,
 } from "./_actions/chart-actions";
 import {
-  LatestRegUsers,
-  Counts,
-  TopCommenter,
+    LatestRegUsers,
+    Counts,
+    TopViewedArticles,
+    TopUpvotedArticle,
 } from "./_components/charts/user-counts";
 import { ChartPieUserSub } from "./_components/charts/pie-chart";
+import { topUpvotedArticle } from "@/_actions/article-actions";
 
 export default async function AdminDashboardPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session) {
-    redirect("/");
-  }
-  const hasPermission = await auth.api.userHasPermission({
-    body: {
-      userId: session?.user.id,
-      permissions: {
-        article: ["create", "update", "delete", "read"],
-      },
-    },
-  });
-  console.log(hasPermission);
-  if (!hasPermission.success) {
-    redirect("/");
-  }
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+    if (!session) {
+        redirect("/");
+    }
+    const hasPermission = await auth.api.userHasPermission({
+        body: {
+            userId: session?.user.id,
+            permissions: {
+                article: ["create", "update", "delete", "read"],
+            },
+        },
+    });
+    if (!hasPermission.success) {
+        redirect("/");
+    }
 
-  const chartData = await userCountryChart();
-  const latest = await userReg();
-  const articleCount = await articleCounts();
-  const users = await userCounts();
-  const comments = await commentCount();
-  const topComment = await topCommenter();
+    const chartData = await userCountryChart();
+    const latest = await userReg();
+    const articleCount = await articleCounts();
+    const users = await userCounts();
+    const comments = await commentCount();
+    const topArticles = await topViewedArticle();
+    const likes = await topUpvotedArticle();
+    let mostUpvotedArticle;
+    if (likes.success && likes.data) {
+        mostUpvotedArticle = likes.data[0];
+    }
+    console.log(mostUpvotedArticle);
+    if (mostUpvotedArticle !== undefined) {
+        return (
+            <div className="mb-10">
+                <RouteHeading label="Admin dashboard" />
+                <div className="flex justify-between m-10 gap-10">
+                    <ChartLineLinear />
 
-  return (
-    <div>
-      <RouteHeading label="Admin dashboard" />
-      <div className="flex justify-between m-10 gap-10">
-        <ChartLineLinear />
+                    <div className="flex-row">
+                        <div className="mb-8">
+                            <Counts
+                                articleCount={articleCount}
+                                userCount={users}
+                                comments={comments}
+                            />
+                        </div>
+                        <div className="mb-8">
+                            <TopUpvotedArticle article={mostUpvotedArticle} />
+                        </div>
+                        <div>
+                            <TopViewedArticles articles={topArticles} />
+                        </div>
+                    </div>
+                </div>
+                <div className="flex m-10 gap-12 justify-between">
+                    <CountryChart chartData={chartData} />
+                    <LatestRegUsers data={latest} />
 
-        <div className="flex-row">
-          <LatestRegUsers data={latest} />
-
-          <Counts
-            articleCount={articleCount}
-            userCount={users}
-            comments={comments}
-          />
-        </div>
-      </div>
-      <div className="flex m-10 gap-12">
-        <CountryChart chartData={chartData} />
-        <TopCommenter
-          user={topComment.user}
-          commentCount={topComment.commentCount}
-        />
-        <ChartPieUserSub/>
-      </div>
-    </div>
-  );
+                    <ChartPieUserSub />
+                </div>
+            </div>
+        );
+    }
 }

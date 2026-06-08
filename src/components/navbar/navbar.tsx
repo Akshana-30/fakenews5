@@ -1,46 +1,22 @@
 "use client";
-import Link from "next/link";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "../ui/button";
-import { ChevronDown } from "lucide-react";
-import { NewsDropdown, SportPages } from "./_components/dropdown-menus";
-import {NewsPages} from "./_components/dropdown-menus"
-
+  NewsDropdown,
+  SportPages,
+  NewsPages,
+} from "./_components/dropdown-menus";
 
 export default function Navbar() {
   return (
-    <div className="flex w-full">
+    <div className="flex">
       <div className="hidden lg:flex w-full items-center gap-2 px-6 bg-[#2d2d2d]">
         <ul className="flex items-center mx-auto">
           <li>
-            <NewsDropdown label="News" links={NewsPages}/>
+            <NewsDropdown label="News" links={NewsPages} />
           </li>
           <li>
-            <NewsDropdown label="Sports" links={SportPages}/>
-          </li>
-          <li>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="text-white">
-                  Author/Editor/Admin
-                  <ChevronDown color="white" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <Link href="/article/add-article">Create article</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <NewsDropdown label="Sports" links={SportPages} />
           </li>
         </ul>
-
-       
       </div>
     </div>
   );
