@@ -18,6 +18,7 @@ import { headers } from "next/headers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ArticlePreview from "./_components/article-preview";
 import RouteHeading from "@/components/route-heading";
+import { redirect } from "next/navigation";
 
 export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
     const { articleID } = await params;
@@ -26,18 +27,31 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
     const article = await getArticle(articleID);
     console.log(article);
 
-    const session = await auth.api.getSession({ headers: await headers() });
-    const hasPermission = await auth.api.userHasPermission({
-        body: {
-            userId: session?.user.id,
-            permissions: {
-                article: ["comment", "read", "like", "dislike"],
-            },
-        },
+    let hasPermission = false;
+    const session = await auth.api.getSession({
+        headers: await headers(),
     });
-    console.log(hasPermission);
+    if (session) {
+        const checkPermission = await auth.api.userHasPermission({
+            body: {
+                userId: session?.user.id,
+                permissions: {
+                    article: ["read", "like", "dislike", "comment"],
+                },
+            },
+        });
+        if (checkPermission.success === true) {
+            hasPermission = true;
+        }
+    } else {
+        hasPermission = false;
+    }
 
-    if (userId && article.success && article.data && hasPermission.success) {
+    // if (!hasPermission) {
+    //     redirect(`/preview/${articleID}`);
+    // }
+
+    if (userId && article.success && article.data) {
         // Check if the user has viewed the article and add a view if not
         const res = await hasUserViewedArticle(article.data.id, userId);
         if (res.success && !res.data) {
@@ -91,7 +105,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                             i + 1 !== article.data.author.length ? `${a.alias}, ` : `${a.alias}`,
                         )}
                     </p>
-                    <p className="mt-2 mb-4">{article.data.content}</p>
+                    <p className="mt-2 mb-4">
+                        {hasPermission
+                            ? article.data.content
+                            : article.data.content.slice(0, 500) + " ..."}
+                    </p>
                     <div className="flex border-b-2 mt-2 pb-2 text-sm">
                         <div className="flex border-r pr-2">
                             <Views num={views} />
@@ -150,7 +168,5 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                 </Card>
             </div>
         );
-    } else if (!hasPermission.success) {
-        return <ArticlePreview article={article.data} />;
     }
 }
