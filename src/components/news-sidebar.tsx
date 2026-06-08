@@ -1,6 +1,8 @@
 import Link from "next/link";
 import WeatherWidget from "./weather-widget";
 import MarketsWidget from "./markets-widget";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 type SidebarArticle = {
   id: string;
@@ -41,10 +43,10 @@ export default function NewsSidebar({ mostRead }: Props) {
             {mostRead.map((a, i) => (
               <li
                 key={a.id}
-                className="py-2 font-sans text-[13px] text-foreground hover:text-[#c8a84b] transition-colors cursor-pointer"
+                className="py-2 font-sans text-[13px] text-foreground hover:text-primary transition-colors cursor-pointer"
               >
                 <Link href={`/article/${a.id}`}>
-                  <span className="font-bold text-[#c8a84b] mr-2">{i + 1}</span>
+                  <span className="font-bold text-primary mr-2">{i + 1}</span>
                   {a.title}
                 </Link>
               </li>
@@ -61,14 +63,14 @@ export default function NewsSidebar({ mostRead }: Props) {
         <p className="font-sans text-[12px] text-muted-foreground mb-2.5">
           Top stories delivered to your inbox every morning.
         </p>
-        <input
+        <Input
           type="email"
           placeholder="Your email address"
-          className="w-full px-2.5 py-2 border border-border font-sans text-[12px] outline-none focus:border-foreground bg-background"
+          className="font-sans text-[12px] rounded-none"
         />
-        <button className="w-full mt-2 py-2.5 bg-[#2d2d2d] text-white font-sans text-[12px] font-bold uppercase tracking-[0.06em] hover:bg-[#c8a84b] transition-colors">
+        <Button className="w-full mt-2 rounded-none bg-foreground text-background hover:bg-primary font-sans text-[12px] font-bold uppercase tracking-[0.06em]">
           Sign Up Free
-        </button>
+        </Button>
       </div>
     </aside>
   );

@@ -39,11 +39,11 @@ export default function NewsCard({ id, title, summary, location, author, categor
                 </div>
             )}
             {categoryLabel && (
-                <p className="font-sans text-[10px] font-bold uppercase tracking-[0.08em] text-[#c8a84b] mb-1">
+                <p className="font-sans text-[10px] font-bold uppercase tracking-[0.08em] text-primary mb-1">
                     {categoryLabel}
                 </p>
             )}
-            <h3 className={`font-serif font-bold ${titleSize} text-foreground group-hover:text-[#c8a84b] transition-colors mb-1`}>
+            <h3 className={`font-serif font-bold ${titleSize} text-foreground group-hover:text-primary transition-colors mb-1`}>
                 {title}
             </h3>
             {size !== "small" && size !== "text" && summary && (
@@ -55,7 +55,7 @@ export default function NewsCard({ id, title, summary, location, author, categor
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-2 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><Clock size={11} />{format(createdAt, "d MMM yyyy, HH:mm")}</span>
                     {wasUpdated && (
-                        <span className="flex items-center gap-1 text-[#c8a84b]">
+                        <span className="flex items-center gap-1 text-primary">
                             <RefreshCw size={11} />Updated {format(updatedAt, "d MMM yyyy, HH:mm")}
                         </span>
                     )}
