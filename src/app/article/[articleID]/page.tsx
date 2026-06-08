@@ -15,10 +15,9 @@ import CommentarySection from "./_components/commentary-section";
 import TopLevelCommentForm from "./_components/top-level-comment-form";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import ArticlePreview from "./_components/article-preview";
 import RouteHeading from "@/components/route-heading";
 import { redirect } from "next/navigation";
+import ArticleDoesntExist from "./_components/article-doesnt-exists";
 
 export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
     const { articleID } = await params;
@@ -105,11 +104,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                             i + 1 !== article.data.author.length ? `${a.alias}, ` : `${a.alias}`,
                         )}
                     </p>
-                    <p className="mt-2 mb-4">
-                        {hasPermission
-                            ? article.data.content
-                            : article.data.content.slice(0, 500) + " ..."}
-                    </p>
+                    <p className="mt-2 mb-4">{article.data.content}</p>
                     <div className="flex border-b-2 mt-2 pb-2 text-sm">
                         <div className="flex border-r pr-2">
                             <Views num={views} />
@@ -156,17 +151,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
             </div>
         );
     } else if (article.success === false) {
-        return (
-            <div className="p-2 mx-auto mt-10">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Couldn&apos;t find article</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        The article you were looking for doesn&apos;t exists in the database.
-                    </CardContent>
-                </Card>
-            </div>
-        );
+        return <ArticleDoesntExist />;
+    } else if (!userId || !hasPermission) {
+        redirect(`preview/${articleID}`);
     }
 }
