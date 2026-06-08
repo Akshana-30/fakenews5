@@ -66,7 +66,7 @@ export default async function RootLayout({
       </head>
       <body className="flex flex-col bg-gray-200 dark:bg-gray-900">
         <Header />
-        <div className="sticky top-0">
+        <div className="sticky top-0 z-50">
           <Navbar />
           {hasPermission && <AdminNavbar />}
         </div>
