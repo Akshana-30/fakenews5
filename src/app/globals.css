@@ -169,14 +169,29 @@
     * {
         @apply border-border outline-ring/50;
     }
- 
+
     body {
         @apply bg-background text-foreground;
     }
- 
+
     html {
         @apply font-sans;
     }
+}
+
+/* ── Dark/light mode ripple transition ────────────────────
+   Disables the browser's default cross-fade so only the
+   JS clipPath circle animation (in theme-toggle.tsx) runs. */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+    z-index: 9999;
+}
+::view-transition-old(root) {
+    z-index: 1;
 }
  
 

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
 import { format, formatDistanceToNow } from "date-fns";
 import { getArticles, getEditorsChoiceArticles, getMostPopularArticles } from "@/_actions/article-actions";
 import NewsCard from "@/components/news-card";
@@ -53,10 +54,10 @@ export default async function HomePage() {
                                     </div>
                                 )}
                             </div>
-                            <p className="font-sans text-[10px] font-bold uppercase tracking-[0.08em] text-[#c8a84b] mb-1">
+                            <p className="font-sans text-[10px] font-bold uppercase tracking-[0.08em] text-primary mb-1">
                                 {hero.category[0]?.name ?? "Editor's Choice"}
                             </p>
-                            <h1 className="font-serif text-[22px] md:text-[28px] font-bold leading-tight text-foreground group-hover:text-[#c8a84b] transition-colors mb-2">
+                            <h1 className="font-serif text-[22px] md:text-[28px] font-bold leading-tight text-foreground group-hover:text-primary transition-colors mb-2">
                                 {hero.title}
                             </h1>
                             <p className="font-sans text-[14px] text-muted-foreground">{hero.summary}</p>
@@ -84,7 +85,7 @@ export default async function HomePage() {
                 )}
             </div>
 
-            <hr className="border-border mb-6" />
+            <Separator className="mb-6" />
 
             {/* ── Latest News + Sidebar ── */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">

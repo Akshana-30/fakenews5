@@ -28,12 +28,12 @@ export default function SidebarCard({ id, title, image, category, author, create
             </div>
             <div className="flex flex-wrap gap-2 mb-1">
                 {category.map((c) => (
-                    <span key={c.name} className="font-sans text-[10px] font-bold uppercase tracking-[0.08em] text-[#c8a84b]">
+                    <span key={c.name} className="font-sans text-[10px] font-bold uppercase tracking-[0.08em] text-primary">
                         {c.name}
                     </span>
                 ))}
             </div>
-            <h3 className="font-serif text-[15px] font-bold leading-snug text-foreground group-hover:text-[#c8a84b] transition-colors mb-1">
+            <h3 className="font-serif text-[15px] font-bold leading-snug text-foreground group-hover:text-primary transition-colors mb-1">
                 {title}
             </h3>
             <p className="font-sans text-[11px] text-muted-foreground">

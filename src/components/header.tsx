@@ -1,17 +1,11 @@
-import { Young_Serif } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { LoginRegButtons } from "./navbar/_components/login-register-buttons";
-
-const fontUltra = Young_Serif({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
+import { ThemeToggle } from "./theme-toggle";
 
 export default function Header() {
   return (
-    <div className="flex justify-between bg-[#2d2d2d] border-b-5 border-b-[#c8a84b]">
+    <div className="flex justify-between bg-foreground border-b-5 border-b-primary">
         <div className="flex md:hidden"><Image src={"/logo.svg"} width={90} height={90} alt="Logo" /></div>
       <div className="hidden md:flex w-full text-center p-5  mx-auto justify-center">
         <Link href="/">
@@ -21,14 +15,15 @@ export default function Header() {
               <h1 className="font-serif text-4xl font-bold  text-white text-shadow-xs text-shadow-black md:text-5xl">
                 Fakenews5
               </h1>
-              <h2 className="text-[#c8a84b] text-sm uppercase mr-auto text-shadow-black text-shadow-xs">
+              <h2 className="text-primary text-sm uppercase mr-auto text-shadow-black text-shadow-xs">
                 Your daily dose of doubt
               </h2>
             </div>
           </div>
         </Link>
       </div>
-      <div className="flex justify-end mt-auto">
+      <div className="flex items-end gap-3 pb-3 pr-4">
+        <ThemeToggle />
         <LoginRegButtons />
       </div>
     </div>
