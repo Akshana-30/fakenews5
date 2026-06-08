@@ -35,10 +35,9 @@ const formSchema = z.object({
   password: z.string().min(8).max(128),
 });
 
-
 export default function SignInForm() {
   const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const form = useForm({
     defaultValues: {
@@ -54,7 +53,7 @@ export default function SignInForm() {
         email: value.email,
         password: value.password,
       });
-      setLoading(false)
+      setLoading(false);
       if (error) {
         if (error.code === "EMAIL NOT VERIFIED") {
           router.push("/auth/verify-email");
@@ -71,100 +70,107 @@ export default function SignInForm() {
 
   return (
     <div className="w-6xl">
-    <Card className="  w-xl mt-10 mx-auto">
-      <CardHeader>
-        <CardTitle>Sign In</CardTitle>
-        <CardDescription>
-        Fill the fields below to Login
-        </CardDescription>
-        <CardContent className="py-4">
-          <form
-            id="sign-in-form"
-            onSubmit={(ev) => {
-              ev.preventDefault();
-              form.handleSubmit(ev);
-            }}
-          >
-            <FieldGroup>
-              <form.Field name="email">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
+      <Card className="  w-xl mt-10 mx-auto">
+        <CardHeader>
+          <CardTitle>Sign In</CardTitle>
+          <CardDescription>Fill the fields below to Login</CardDescription>
+          <CardContent className="py-4">
+            <form
+              id="sign-in-form"
+              onSubmit={(ev) => {
+                ev.preventDefault();
+                form.handleSubmit(ev);
+              }}
+            >
+              <FieldGroup>
+                <form.Field name="email">
+                  {(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid;
 
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                      <Input
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={(ev) => field.handleChange(ev.target.value)}
-                        aria-invalid={isInvalid}
-                        autoComplete="email"
-                      />
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              </form.Field>
-
-              <form.Field name="password">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                      <InputGroup className="w-full bg-background">
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                         <Input
-                          className="rounded-r-none"
                           id={field.name}
                           name={field.name}
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={(ev) => field.handleChange(ev.target.value)}
-                          placeholder="Enter password"
-                          type={visible ? "text" : "password"}
-                          autoComplete="current-password"
+                          aria-invalid={isInvalid}
+                          autoComplete="email"
                         />
-                        <InputGroupAddon align="inline-end">
-                          <InputGroupButton
-                            aria-label="Toggle visibility"
-                            onClick={() => setVisible(!visible)}
-                            size="icon-xs"
-                            variant="ghost"
-                          >
-                            {visible ? <EyeOffIcon /> : <EyeIcon />}
-                          </InputGroupButton>
-                        </InputGroupAddon>
-                      </InputGroup>
-                      <Link href={'/forgot-password'} className="flex justify-end text-primary" >Forgot password</Link>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                   
-                  );
-                }} 
-              </form.Field>
-            </FieldGroup>
-          </form>
-        </CardContent>
-      </CardHeader>
-      <CardFooter>
-        <Button
-          onClick={() => {toast("Logged for new updates")}}
-          className="w-full"
-          form="sign-in-form"
-        >
-          Sign In
-        </Button>
-      </CardFooter>
-    </Card>
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    );
+                  }}
+                </form.Field>
+
+                <form.Field name="password">
+                  {(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid;
+
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                        <InputGroup className="w-full bg-background">
+                          <Input
+                          
+                            className="rounded-r-none"
+                            id={field.name}
+                            name={field.name}
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(ev) =>
+                              field.handleChange(ev.target.value)
+                            }
+                            placeholder="Enter password"
+                            type={visible ? "text" : "password"}
+                            autoComplete="current-password"
+                          />
+                          <InputGroupAddon align="inline-end">
+                            <InputGroupButton
+                              aria-label="Toggle visibility"
+                              onClick={() => setVisible(!visible)}
+                              size="icon-xs"
+                              variant="ghost"
+                            >
+                              {visible ? <EyeOffIcon /> : <EyeIcon />}
+                            </InputGroupButton>
+                          </InputGroupAddon>
+                        </InputGroup>
+                        <Link
+                          href={"/forgot-password"}
+                          className="flex justify-end text-primary"
+                        >
+                          Forgot password
+                        </Link>
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    );
+                  }}
+                </form.Field>
+              </FieldGroup>
+            </form>
+          </CardContent>
+        </CardHeader>
+        <CardFooter>
+          <Button
+            onClick={() => {
+              toast("Logged for new updates");
+            }}
+            className="w-full"
+            form="sign-in-form"
+          >
+            Sign In
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }

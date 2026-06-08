@@ -38,7 +38,7 @@ const formSchema = z
     if (confirmPassword !== password) {
       ctx.addIssue({
         code: "custom",
-        message: "The passwords did not match.",
+        message: "The passwords do not match.",
         path: ["confirmPassword"],
       });
     }
@@ -46,7 +46,7 @@ const formSchema = z
 
 export default function PasswordResetForm() {
   const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState({password:false, confirmPassword:false});
   const router = useRouter();
   const searchParams = useSearchParams();
   const tokenId = searchParams.get("token") as string;
@@ -113,17 +113,17 @@ export default function PasswordResetForm() {
                               field.handleChange(ev.target.value)
                             }
                             placeholder="Enter password"
-                            type={visible ? "text" : "password"}
+                            type={visible.password ? "text" : "password"}
                             autoComplete="current-password"
                           />
                           <InputGroupAddon align="inline-end">
                             <InputGroupButton
                               aria-label="Toggle visibility"
-                              onClick={() => setVisible(!visible)}
+                              onClick={() => setVisible((v)=>({...v, password: !v.password}))}
                               size="icon-xs"
                               variant="ghost"
                             >
-                              {visible ? <EyeOffIcon /> : <EyeIcon />}
+                              {visible.password ? <EyeOffIcon /> : <EyeIcon />}
                             </InputGroupButton>
                           </InputGroupAddon>
                         </InputGroup>
@@ -156,17 +156,17 @@ export default function PasswordResetForm() {
                               field.handleChange(ev.target.value)
                             }
                             placeholder="Enter password"
-                            type={visible ? "text" : "password"}
+                            type={visible.confirmPassword ? "text" : "password"}
                             autoComplete="current-password"
                           />
                           <InputGroupAddon align="inline-end">
                             <InputGroupButton
                               aria-label="Toggle visibility"
-                              onClick={() => setVisible(!visible)}
+                              onClick={() => setVisible((v)=>({...v, confirmPassword: !v.confirmPassword}))}
                               size="icon-xs"
                               variant="ghost"
                             >
-                              {visible ? <EyeOffIcon /> : <EyeIcon />}
+                              {visible.confirmPassword ? <EyeOffIcon /> : <EyeIcon />}
                             </InputGroupButton>
                           </InputGroupAddon>
                         </InputGroup>

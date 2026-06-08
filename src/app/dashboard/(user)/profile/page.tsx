@@ -11,8 +11,6 @@ import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 import EditProfileForm from "./_components/edit-profile-form";
 import { notFound } from "next/navigation";
-import { phoneNumber } from "better-auth/plugins";
-
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user.id;
@@ -40,7 +38,7 @@ export default async function DashboardPage() {
     
     <div className="">
       <RouteHeading label="Dashboard"/>
-      <div className="pt-4"><EditProfileForm user={userInfo} /></div>
+      <div className="pt-4" suppressHydrationWarning><EditProfileForm user={userInfo}/></div>
       
     </div>
   );
