@@ -23,6 +23,7 @@ export async function EditUser(id: string, input: EditUserInput) {
     where: { id },
     data: {
       name: data.name,
+      email: data.email,
       user_info: {
         update: {
             birthdate: new Date(data.birthdate),
