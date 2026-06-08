@@ -7,8 +7,8 @@
 
 ## Last session
 
-**Date:** 2026-06-04
-**Branch:** merged `feature/landing-page-cards` → `main`
+**Date:** 2026-06-08
+**Branch:** merged `feature/dark-mode-toggle` → `main` (PR #42)
 
 ---
 
@@ -21,8 +21,12 @@
 - ✅ Live markets widget — OMX Stockholm 30 (Nasdaq), EUR/SEK + USD/SEK (Frankfurter),
   Electricity SE3 (Elprisetjustnu.se), all with % change vs previous period
 - ✅ New components: HeroCard, NewsCard, SidebarCard, SectionHead, WeatherWidget, MarketsWidget, NewsSidebar
-- ✅ API routes: `/api/weather`, `/api/markets`
+- ✅ API routes: `/(api)/weather`, `/(api)/markets`
 - ✅ CLAUDE.md + STATUS.md added to repo
+- ✅ Dark/light mode toggle with ripple (circle reveal) animation
+- ✅ Anti-flash `<head>` script — prevents wrong theme on reload
+- ✅ Header + navbar both sticky (z-50) — never scroll behind images
+- ✅ Landing page aligned to shadcn design tokens — all hardcoded `#c8a84b` replaced with `text-primary`; raw `<input>`/`<button>` replaced with shadcn `Input`/`Button`; `<hr>` replaced with shadcn `Separator`
 
 ### Team's work (merged to main)
 
@@ -32,15 +36,14 @@
 - ✅ User dashboard: account page (#35)
 - ✅ Article table with editor's choice toggle
 - ✅ User management table
+- ✅ Nested comments + reply form (#37)
+- ✅ Admin navbar moved into root layout (#41)
+- ✅ Hydration fix (#40)
+- ✅ Reactions bug fixed — users can now react to multiple articles
 
 ---
 
 ## In progress
-
-### Team branches active on GitHub (not yet merged)
-
-- `comments` — team working on something comment-related
-- `admin-dashboard` — separate admin dashboard branch
 
 ### Known schema issue (still not fixed in main)
 
@@ -90,6 +93,7 @@
 ```
 main                        ← fully up to date with origin/main
 feature/landing-page-cards  ← merged into main ✅
+feature/dark-mode-toggle    ← merged into main ✅ (PR #42, 2026-06-08)
 fix/remove-userinfo-role    ← pushed, PR open, not merged yet
 ```
 
