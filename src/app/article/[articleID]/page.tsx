@@ -15,7 +15,6 @@ import CommentarySection from "./_components/commentary-section";
 import TopLevelCommentForm from "./_components/top-level-comment-form";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import RouteHeading from "@/components/route-heading";
 import { redirect } from "next/navigation";
 import ArticleDoesntExist from "./_components/article-doesnt-exists";
 
@@ -82,21 +81,25 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
             bookmarked = false;
         }
 
-        let heading = "";
-        if (article.data.category.length > 0) {
-            article.data.category.map((c, i) => {
-                if (i + 1 !== article.data.category.length) {
-                    heading += `${c.name}, `;
-                } else {
-                    heading += `${c.name}`;
-                }
-            });
-        }
-
         return (
             <div className="p-2">
                 <div className="w-5xl">
-                    {heading.length > 0 && <RouteHeading label={heading} />}
+                    {article.data.category.length > 0 &&
+                        article.data.category.map((c, i) => {
+                            if (i + 1 !== article.data.category.length) {
+                                return (
+                                    <Link key={i} href={`/category/${c.id}`}>
+                                        {c.name} ,
+                                    </Link>
+                                );
+                            } else {
+                                return (
+                                    <Link key={i} href={`/category/${c.id}`}>
+                                        {c.name}
+                                    </Link>
+                                );
+                            }
+                        })}{" "}
                     <h1 className="font-extrabold text-2xl text-center">{article.data.title}</h1>
                     <p className="text-lg font-semibold text-center">
                         by{" "}

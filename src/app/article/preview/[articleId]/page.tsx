@@ -3,8 +3,9 @@ import RouteHeading from "@/components/route-heading";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Views from "../../[articleID]/_components/views";
 import Likes from "./_components/likes";
-import { toast } from "sonner";
 import Bookmark from "./_components/bookmark";
+import Link from "next/link";
+import ArticleDoesntExist from "../../[articleID]/_components/article-doesnt-exists";
 
 export default async function PreviewArticlePage({
     params,
@@ -15,17 +16,6 @@ export default async function PreviewArticlePage({
     const article = await getArticle(articleId);
 
     if (article.success && article.data) {
-        let heading = "";
-        if (article.data.category.length > 0) {
-            article.data.category.map((c, i) => {
-                if (i + 1 !== article.data.category.length) {
-                    heading += `${c.name}, `;
-                } else {
-                    heading += `${c.name}`;
-                }
-            });
-        }
-
         let totalReactions = 0;
         for (const r of article.data.reactions) {
             totalReactions += r.val;
@@ -34,7 +24,22 @@ export default async function PreviewArticlePage({
         return (
             <div className="p-2">
                 <div className="w-5xl">
-                    {heading.length > 0 && <RouteHeading label={heading} />}
+                    {article.data.category.length > 0 &&
+                        article.data.category.map((c, i) => {
+                            if (i + 1 !== article.data.category.length) {
+                                return (
+                                    <Link key={i} href={`/category/${c.id}`}>
+                                        {c.name} ,
+                                    </Link>
+                                );
+                            } else {
+                                return (
+                                    <Link key={i} href={`/category/${c.id}`}>
+                                        {c.name}
+                                    </Link>
+                                );
+                            }
+                        })}
                     <h1 className="font-extrabold text-2xl text-center">{article.data.title}</h1>
                     <p className="text-lg font-semibold text-center">
                         by{" "}
@@ -66,6 +71,8 @@ export default async function PreviewArticlePage({
                 </div>
             </div>
         );
+    } else if (article.success === false) {
+        return <ArticleDoesntExist />;
     }
 
     return (
