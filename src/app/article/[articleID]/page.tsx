@@ -82,7 +82,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                         if (i + 1 !== article.data.category.length)
                             return (
                                 <Link key={i} href={`/category/${c.id}`}>
-                                    {c.name} ,
+                                    {c.name},{" "}
                                 </Link>
                             );
                         else
