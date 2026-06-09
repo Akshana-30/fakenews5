@@ -45,11 +45,11 @@ export default function SignInForm() {
         },
 
         onSubmit: async ({ value }) => {
+            setLoading(true);
             const { error } = await authClient.signIn.email({
                 email: value.email,
                 password: value.password,
             });
-            setLoading(false);
             if (error) {
                 if (error.code === "EMAIL NOT VERIFIED") {
                     router.push("/auth/verify-email");
@@ -59,6 +59,7 @@ export default function SignInForm() {
                 alert(error.message || "An unknown error occurred");
                 return;
             }
+            setLoading(false);
             router.push("/");
             router.refresh();
         },
