@@ -52,14 +52,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         }
         const views = article.data.views.length;
 
-    if (typeof userId === "string") {
-        // Use already-fetched views — avoids a second getArticle call
-        const alreadyViewed = article.data.views.some((v) => v.userId === userId);
-        if (!alreadyViewed) {
-            await addView(articleID, userId);
-        }
-        const views = article.data.views.length;
-
         // Calculate the total reactions (upvotes/downvotes) to one score
         const reactions = article.data.reactions;
         let totalReactions = 0;
@@ -128,24 +120,16 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                         {article.data.location ? article.data.location + ", " : ""}
                         {format(article.data.createdAt, "yyyy-MM-dd HH:mm")}
                     </div>
-                    {typeof userId === "string" && (
-                        <>
-                            <div className="flex border-r pr-2">
-                                <Likes
-                                    articleId={article.data.id}
-                                    userId={userId}
-                                    userReaction={userReaction?.val}
-                                    num={totalReactions}
-                                />
-                            </div>
-                            <div className="flex border-r pl-2 pr-2">
-                                <Bookmark
-                                    articleId={articleID}
-                                    userId={userId}
-                                    bookmarked={bookmarked}
-                                />
-                            </div>
-                        </>
+                </div>
+                <h1 className="font-extrabold text-2xl text-center my-2">Comments</h1>
+                <div className="border-b-2">
+                    {article.data.comments ? (
+                        <CommentarySection
+                            comments={article.data.comments}
+                            articleId={article.data.id}
+                        />
+                    ) : (
+                        ""
                     )}
                 </div>
                 {userId !== null ? (
