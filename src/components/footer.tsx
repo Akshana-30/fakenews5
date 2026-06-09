@@ -46,20 +46,10 @@ export default function Footer() {
             </p>
             <ul className="space-y-1.5 font-sans text-[12px]">
               <li>
-                <Link
-                  href="/login"
-                  className="hover:text-white transition-colors"
-                >
-                  Sign In
-                </Link>
+                <Link href="/sign-in">Sign in</Link>
               </li>
               <li>
-                <Link
-                  href="/register"
-                  className="hover:text-white transition-colors"
-                >
-                  Register
-                </Link>
+                <Link href="/register">Register</Link>
               </li>
               <li>
                 <Link
@@ -111,9 +101,9 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <Link href="/contact" className="hover:text-white transition-colors">
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

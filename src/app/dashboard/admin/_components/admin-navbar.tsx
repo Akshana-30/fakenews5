@@ -40,6 +40,9 @@ export default function AdminNavbar() {
               <DropdownMenuItem>
                 <Link href="/article/add-article">Create article</Link>
               </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href="/dashboard/admin/articles">Edit articles</Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </li>
