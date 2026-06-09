@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
+import { getUserId } from "./user-actions";
 
 type Article = {
     id: string;
@@ -137,6 +138,50 @@ export async function getArticle(articleId: string): Promise<Result<Article>> {
         else return { success: false, error: "Couldn't find article." };
     } catch (err) {
         return { success: false, error: `Couldn't fetch article from database.\n\n${err}` };
+    }
+}
+
+export async function getCategoryById(categoryId: string): Promise<Result<Category>> {
+    try {
+        const category = await prisma.category.findUnique({ where: { id: categoryId } });
+        if (category) return { success: true, data: category };
+        else return { success: false, error: `Couldn't find category with id ${categoryId}.` };
+    } catch (err) {
+        console.error(
+            `An unknown error occurred when trying to find category with id ${categoryId}.\n\n${err}`,
+        );
+        return {
+            success: false,
+            error: `An unknown error occurred when trying to find category with id ${categoryId}.\n\n${err}`,
+        };
+    }
+}
+
+export async function getArticleIdsByCategory(
+    categoryId: string,
+): Promise<Result<string[] | null>> {
+    try {
+        const category = await prisma.category.findUnique({
+            where: { id: categoryId },
+            include: { article: true },
+        });
+        const articleIds: string[] = [];
+        if (category?.article) {
+            for (const a of category.article) {
+                articleIds.push(a.id);
+            }
+            return { success: true, data: articleIds };
+        } else {
+            return { success: true, data: null };
+        }
+    } catch (err) {
+        console.error(
+            `An unknown error occured when trying to fetch articles from category ${categoryId}.\n\n${err}`,
+        );
+        return {
+            success: false,
+            error: `An unknown error occured when trying to fetch articles from category ${categoryId}.\n\n${err}`,
+        };
     }
 }
 

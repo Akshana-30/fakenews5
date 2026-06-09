@@ -7,6 +7,8 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import { admin as adminPlugin } from "better-auth/plugins";
 import { editor, admin, subscriber, ac } from "./permissions";
+import Stripe from "stripe";
+import { stripe } from "@better-auth/stripe";
 
 dotenv.config();
 
@@ -18,6 +20,10 @@ export const transporter = nodemailer.createTransport({
         user: "nikki.leuschke@ethereal.email",
         pass: "NWXrggTFV1VkSHmYhd",
     },
+});
+
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2026-05-27.dahlia", // Latest API version as of Stripe SDK v22.0.0
 });
 
 const prisma = new PrismaClient({
@@ -52,7 +58,24 @@ export const auth = betterAuth({
             );
         },
     },
-    plugins: [adminPlugin({ ac, roles: { admin, subscriber, editor } }), nextCookies()],
+    plugins: [
+        adminPlugin({ ac, roles: { admin, subscriber, editor } }),
+        stripe({
+            stripeClient,
+            stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+            subscription: {
+                enabled: true,
+                plans: async () => {
+                    const plans = await prisma.plans.findMany();
+                    return plans.map((plan) => ({
+                        name: plan.name,
+                        priceId: plan.priceId,
+                    }));
+                },
+            },
+        }),
+        nextCookies(),
+    ],
     emailVerification: {
         autoSignInAfterVerification: true,
         sendOnSignUp: true,

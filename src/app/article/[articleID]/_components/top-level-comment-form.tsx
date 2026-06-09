@@ -44,7 +44,7 @@ export default function TopLevelCommentForm({ articleId }: { articleId: string }
 
     return (
         <div>
-            <Card className="w-2xl mx-auto mb-4">
+            <Card className="md:w-2xl mx-auto mb-4">
                 <CardHeader>
                     <CardTitle className="flex">
                         <div className="mr-auto">Leave a comment ...</div>
