@@ -97,7 +97,7 @@ export default function ChangePasswordDialog({ currentEmail }: Props) {
         }
       }}
     >
-      <DialogTrigger className="text-md  font-semibold text-foreground">
+      <DialogTrigger asChild className="text-md  font-semibold text-foreground">
         <div className="flex flex-row my-auto gap-12">
           <p className="text-black/60 my-auto">Password</p>
           <Button variant="outline">Edit</Button>

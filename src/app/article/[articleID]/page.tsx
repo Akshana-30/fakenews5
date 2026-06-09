@@ -105,6 +105,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                     <div className="flex border-r pr-2">
                         <Views num={views} />
                     </div>
+
                     <div className="flex border-r pr-2">
                         <Likes
                             articleId={article.data.id}
@@ -116,6 +117,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                     <div className="flex border-r pl-2 pr-2">
                         <Bookmark articleId={articleID} userId={userId} bookmarked={bookmarked} />
                     </div>
+
                     <div className="flex ml-auto">
                         {article.data.location ? article.data.location + ", " : ""}
                         {format(article.data.createdAt, "yyyy-MM-dd HH:mm")}

@@ -44,17 +44,19 @@ export default function SignInForm() {
             onSubmit: formSchema,
         },
 
-        onSubmit: async ({ value }) => {
-            setLoading(true);
-            const { error } = await authClient.signIn.email({
-                email: value.email,
-                password: value.password,
-            });
-            if (error) {
-                if (error.code === "EMAIL NOT VERIFIED") {
-                    router.push("/auth/verify-email");
-                    return;
-                }
+
+    onSubmit: async ({ value }) => {
+      const { error } = await authClient.signIn.email({
+        email: value.email,
+        password: value.password,
+      });
+      setLoading(false);
+      if (error) {
+        if (error.code === "EMAIL NOT VERIFIED") {
+          router.push("/verify");
+          return;
+        }
+
 
                 alert(error.message || "An unknown error occurred");
                 return;
