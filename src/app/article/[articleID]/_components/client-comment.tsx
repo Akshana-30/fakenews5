@@ -66,7 +66,7 @@ export default function ClientComment({
     //const replies = Children.toArray(children);
 
     return (
-        <div className="max-w-3xl mx-auto">
+        <div className="mx-auto">
             <Card className="mb-5">
                 <CardHeader className="border-b">
                     <CardTitle>

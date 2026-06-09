@@ -23,4 +23,82 @@ type ErrorResult<T = string> = {
 
 type Result<TData, TError = string> = SuccessResult<TData> | ErrorResult<TError>;
 
-export type { SuccessResult, ErrorResult, Result };
+type Article = {
+    id: string;
+    title: string;
+    summary: string | null;
+    content: string;
+    comments: Comment[];
+    views: View[];
+    reactions: ArticleReaction[];
+    image: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    location: string | null;
+    author: Author[];
+    category: Category[];
+    editorsChoice: boolean;
+    deleted: null | Date;
+};
+
+type Comment = {
+    id: string;
+    articleId: string;
+    user_id: string;
+    content: string;
+    createdAt: Date;
+    updatedAt: Date;
+    replyTo: string | null;
+    reactions: CommentReaction[];
+};
+
+type View = {
+    id: string;
+    articleId: string;
+    userId: string;
+};
+
+type ArticleReaction = {
+    id: string;
+    article_id: string;
+    userId: string;
+    val: number;
+};
+
+type Author = {
+    id: string;
+    alias: string;
+    userId: string;
+};
+
+type Category = {
+    id: string;
+    name: string;
+};
+
+type CommentReaction = {
+    id: string;
+    commentId: string;
+    userId: string;
+    val: number;
+};
+
+type Bookmark = {
+    id: string;
+    articleId: string;
+    user_id: string;
+};
+
+export type {
+    SuccessResult,
+    ErrorResult,
+    Result,
+    Article,
+    Comment,
+    View,
+    ArticleReaction,
+    Author,
+    Category,
+    CommentReaction,
+    Bookmark,
+};
