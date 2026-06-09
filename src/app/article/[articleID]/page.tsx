@@ -1,7 +1,14 @@
-import { addView, getArticle, hasUserBookmarkedArticle } from "@/_actions/article-actions";
+import {
+    addView,
+    getArticle,
+    getUserReaction,
+    hasUserBookmarkedArticle,
+    hasUserViewedArticle,
+} from "@/_actions/article-actions";
 import Link from "next/link";
 import Likes from "./_components/likes";
 import Bookmark from "./_components/bookmark";
+import { getUserId } from "@/_actions/user-actions";
 import Views from "./_components/views";
 import { format } from "date-fns";
 import CommentarySection from "./_components/commentary-section";
@@ -15,27 +22,22 @@ import RouteHeading from "@/components/route-heading";
 export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
     const { articleID } = await params;
 
-    // Fetch article and session in parallel — one round-trip each instead of 3+
-    const hdrs = await headers();
-    const [article, session] = await Promise.all([
-        getArticle(articleID),
-        auth.api.getSession({ headers: hdrs }),
-    ]);
+    const userId = await getUserId();
+    const article = await getArticle(articleID);
+    console.log(article);
 
-    // Article not found
-    if (!article.success || !article.data) {
-        return <ArticleDoesntExist />;
-    }
-
-    // Check subscription permission (reuses already-fetched session)
     let hasPermission = false;
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
     if (session) {
         const checkPermission = await auth.api.userHasPermission({
             body: {
-                userId: session.user.id,
-                permissions: { article: ["read"] },
+                userId: session?.user.id,
+                permissions: {
+                    article: ["read", "like", "dislike", "comment"],
+                },
             },
-            headers: hdrs,
         });
         if (checkPermission.success === true) {
             hasPermission = true;
@@ -56,16 +58,31 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         if (!alreadyViewed) {
             await addView(articleID, userId);
         }
+        const views = article.data.views.length;
 
-        // Use already-fetched reactions — avoids a third getArticle call
-        const existingReaction = article.data.reactions.find((r) => r.userId === userId);
-        if (existingReaction) {
-            userReaction = { id: existingReaction.id, val: existingReaction.val };
+        // Calculate the total reactions (upvotes/downvotes) to one score
+        const reactions = article.data.reactions;
+        let totalReactions = 0;
+        for (const r of reactions) {
+            totalReactions += r.val;
         }
 
+        // Figure out if the user has reacted to the article and in that case if it
+        // was an upvote or downvote, reaction.data will be 1 for upvote, otherwise -1.
+        let userReaction;
+        const reaction = await getUserReaction(articleID, userId);
+        if (reaction.success && reaction.data) {
+            userReaction = reaction.data;
+        }
+
+        // Find out wether the user has bookmarked the article in question
+        let bookmarked;
         const bookmark = await hasUserBookmarkedArticle(articleID, userId);
-        bookmarked = bookmark.success && bookmark.data === true;
-    }
+        if (bookmark.success && bookmark.data === true) {
+            bookmarked = true;
+        } else {
+            bookmarked = false;
+        }
 
         return (
             <div className="p-2">
@@ -130,30 +147,19 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                             </div>
                         </>
                     )}
-                    <div className="flex ml-auto">
-                        {article.data.location ? article.data.location + ", " : ""}
-                        {format(article.data.createdAt, "yyyy-MM-dd HH:mm")}
-                    </div>
                 </div>
-            </div>
-            <h1 className="font-extrabold text-2xl text-center my-2">Comments</h1>
-            <div className="border-b-2">
-                {article.data.comments ? (
-                    <CommentarySection
-                        comments={article.data.comments}
-                        articleId={article.data.id}
-                    />
+                {userId !== null ? (
+                    <div className="mt-4">
+                        <TopLevelCommentForm articleId={article.data.id} />
+                    </div>
                 ) : (
-                    ""
+                    <Link href="login">Log in to write a comment.</Link>
                 )}
             </div>
-            {typeof userId === "string" ? (
-                <div className="mt-4">
-                    <TopLevelCommentForm articleId={article.data.id} />
-                </div>
-            ) : (
-                <Link href="/login">Log in to write a comment.</Link>
-            )}
-        </div>
-    );
+        );
+    } else if (article.success === false) {
+        return <ArticleDoesntExist />;
+    } else if (!userId || !hasPermission) {
+        redirect(`preview/${articleID}`);
+    }
 }
