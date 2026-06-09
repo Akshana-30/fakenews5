@@ -36,9 +36,9 @@ export default async function DashboardPage() {
 
   return (
     
-    <div className="">
+    <div suppressContentEditableWarning suppressHydrationWarning>
       <RouteHeading label="Dashboard"/>
-      <div className="pt-4" suppressHydrationWarning><EditProfileForm user={userInfo}/></div>
+      <div className="pt-4" ><EditProfileForm user={userInfo}/></div>
       
     </div>
   );

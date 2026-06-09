@@ -301,7 +301,7 @@ export default function EditProfileForm({ user }: Props) {
         </CardContent>
       </Card>
       {/* Better-auth /password/email */}
-      <Card className="max-w-4xl mt-5 mx-auto p-4">
+      <Card className="max-w-4xl mt-5 mx-auto p-4 mb-5">
         <ChangeEmailDialog currentEmail={user.email} />
         <ChangePasswordDialog currentEmail={user.email} />
       </Card>
