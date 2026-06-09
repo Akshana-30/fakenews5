@@ -115,7 +115,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                                     num={totalReactions}
                                 />
                             </div>
-                            <div className="flex border-r pl-2 pr-2">
+                            <div className="flex border-r pl-2 pr-2 ">
                                 <Bookmark
                                     articleId={articleID}
                                     userId={userId}

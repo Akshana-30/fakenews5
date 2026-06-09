@@ -41,7 +41,7 @@ export default function UserNavbar() {
         </li>
         <li>
           <Button asChild variant="ghost" className="text-white">
-              <Link href="/dashboard/settings"><Bookmark/>Saved Articles</Link>
+              <Link href="/dashboard/profile/saved-articles"><Bookmark/>Saved Articles</Link>
           </Button>
         </li>
         <li>

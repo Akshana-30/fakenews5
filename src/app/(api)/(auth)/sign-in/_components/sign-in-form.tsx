@@ -56,7 +56,7 @@ export default function SignInForm() {
       setLoading(false);
       if (error) {
         if (error.code === "EMAIL NOT VERIFIED") {
-          router.push("/auth/verify-email");
+          router.push("/verify");
           return;
         }
 
