@@ -165,6 +165,7 @@ export default function SignInForm() {
                         }}
                         className="w-full"
                         form="sign-in-form"
+                        disabled={loading}
                     >
                         {loading ? <Spinner /> : "Sign In"}
                     </Button>
