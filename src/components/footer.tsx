@@ -95,16 +95,19 @@ export default async function Footer() {
               </li>
               <li>
                 <Link
-                  href="/privacy"
+                  href="/legal/privacy"
                   className="hover:text-white transition-colors"
                 >
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <Link
+                  href="/legal/tos"
+                  className="hover:text-white transition-colors"
+                >
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
                 <Link
@@ -122,15 +125,15 @@ export default async function Footer() {
           <span>Copyright © 2026 Fakenews5. All Rights Reserved.</span>
           <span className="flex gap-3">
             <Link
-              href="/privacy"
+              href="/legal/privacy"
               className="hover:text-white transition-colors"
             >
               Privacy
             </Link>
             <span>·</span>
-            <a href="#" className="hover:text-white transition-colors">
+            <Link href="/legal/tos" className="hover:text-white transition-colors">
               Terms
-            </a>
+            </Link>
             <span>·</span>
             <Link
               href="/cookies"
