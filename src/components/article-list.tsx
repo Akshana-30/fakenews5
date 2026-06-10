@@ -2,8 +2,6 @@
 
 import { Article } from "@/lib/types";
 import { useState } from "react";
-import NewsCard from "./news-card";
-import { start } from "repl";
 import {
     Pagination,
     PaginationContent,
@@ -115,36 +113,40 @@ function ArticleItem({ article }: { article: Article }) {
                     </div>
                 )}
             </div>
-            <div className="w-full border-b flex p-1">
+            <div className="w-full border-b flex-row p-1">
                 <div>
                     <h1 className="text-lg font-semibold">
                         <Link href={`/article/${article.id}`}>{article.title}</Link>
                     </h1>
                     <p>{article.summary ? article.summary : article.content.slice(0, 500)}</p>
-                    {authors.length > 0 ? (
-                        <div className="mb-auto">
-                            <p className="flex border mb-auto">
-                                <Pencil size={17} />
-                                {authors}
-                            </p>
-                        </div>
-                    ) : (
-                        ""
-                    )}
                 </div>
 
-                <div className="text-sm ml-auto mt-auto">
-                    {article.location ? (
+                <div className="flex text-sm justify-between mt-12">
+                    <div className="mt-auto">
+                        {authors.length > 0 ? (
+                            <div className="">
+                                <p className="flex">
+                                    <Pencil size={17} className="ml-1" />
+                                    {authors}
+                                </p>
+                            </div>
+                        ) : (
+                            ""
+                        )}
+                    </div>
+                    <div>
+                        {article.location ? (
+                            <p className="flex">
+                                <MapPin size={17} className="mr-1" /> {article.location}
+                            </p>
+                        ) : (
+                            ""
+                        )}
                         <p className="flex">
-                            <MapPin size={17} className="mr-1" /> {article.location}
+                            <Clock size={17} className="mr-1" />
+                            {formatDistanceToNow(articleDate, { addSuffix: true })}
                         </p>
-                    ) : (
-                        ""
-                    )}
-                    <p className="flex">
-                        <Clock size={17} className="mr-1" />
-                        {formatDistanceToNow(articleDate, { addSuffix: true })}
-                    </p>
+                    </div>
                 </div>
             </div>
         </div>

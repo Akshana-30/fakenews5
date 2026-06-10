@@ -32,7 +32,7 @@ export default async function CategoryPage({
         );
     } else {
         return (
-            <Card>
+            <Card className="md:w-xl h-25 p-2 mx-auto mt-10">
                 <CardHeader>
                     <CardTitle>Couldn&apos;t find category</CardTitle>
                 </CardHeader>
