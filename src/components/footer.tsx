@@ -13,7 +13,9 @@ import { auth } from "@/lib/auth";
 export default async function Footer() {
   const session = await auth.api.getSession({ headers: await headers() });
   const registerHref = session ? "/" : "/register";
-  const myPageHref = session ? "/dashboard" : "/sign-in";
+  const myPageHref = !session ? "/sign-in"
+    : session.user.role === "admin" ? "/dashboard/admin"
+    : "/dashboard";
 
   return (
     <footer className="bg-[#111111] text-[#aaa] pt-9 pb-5">
