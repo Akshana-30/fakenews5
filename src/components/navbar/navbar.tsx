@@ -2,10 +2,12 @@
 import { NewsDropdown } from "./_components/dropdown-menus";
 import { Category } from "@/lib/types";
 
-export default function Navbar({ categories }: { categories: Category[] }) {
+export default function Navbar({ categories }: { categories: Category[] | null }) {
     const links = [];
-    for (const c of categories) {
-        links.push({ title: c.name, href: `/category/${c.id}` });
+    if (categories) {
+        for (const c of categories) {
+            links.push({ title: c.name, href: `/category/${c.id}` });
+        }
     }
     return (
         <div className="flex">

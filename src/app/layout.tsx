@@ -76,7 +76,7 @@ export default async function RootLayout({
             <body className="flex flex-col bg-gray-200 dark:bg-gray-900">
                 <div className="sticky top-0 z-50">
                     <Header />
-                    <Navbar categories={cats} />
+                    <Navbar categories={cats.success && cats.data ? cats.data : null} />
                     {hasPermission && <AdminNavbar />}
                 </div>
 
@@ -89,7 +89,7 @@ export default async function RootLayout({
                             } as React.CSSProperties
                         }
                     >
-                        <AppSidebar categories={cats} />
+                        <AppSidebar categories={cats.success && cats.data ? cats.data : null} />
 
                         <main className="flex max-w-6xl lg:min-w-5xl">
                             <SidebarTrigger size="lg" className="lg:hidden" />

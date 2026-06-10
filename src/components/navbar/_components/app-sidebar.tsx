@@ -11,13 +11,14 @@ import {
 } from "@/components/ui/sidebar";
 import { NewsDropdownSM } from "./dropdown-menus";
 import { SidebarLink } from "./sidebar-link";
-import { getCategories } from "@/_actions/category-actions";
 import { Category } from "@/lib/types";
 
-export default function AppSidebar({ categories }: { categories: Category[] }) {
+export default function AppSidebar({ categories }: { categories: Category[] | null }) {
     const links = [];
-    for (const c of categories) {
-        links.push({ title: c.name, href: `/category/${c.id}` });
+    if (categories) {
+        for (const c of categories) {
+            links.push({ title: c.name, href: `/category/${c.id}` });
+        }
     }
     return (
         <Sidebar variant="sidebar" collapsible="offcanvas">
