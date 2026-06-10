@@ -1,7 +1,6 @@
 "use client";
 
 import { addReaction, changeReaction, removeUserReaction } from "@/_actions/comment-actions";
-import { CommentReaction } from "@/generated/prisma/client";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -41,7 +40,7 @@ export default function CommentaryReactions({
     }
 
     return (
-        <div className="flex mr-auto">
+        <div className="flex mr-auto mt-1">
             <ThumbsUp
                 className="cursor-pointer"
                 size={17}
