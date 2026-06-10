@@ -107,7 +107,10 @@ export default async function Footer() {
                 </a>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-white transition-colors">
+                <Link
+                  href="/contact"
+                  className="hover:text-white transition-colors"
+                >
                   Contact
                 </Link>
               </li>
@@ -129,7 +132,10 @@ export default async function Footer() {
               Terms
             </a>
             <span>·</span>
-            <Link href="/cookies" className="hover:text-white transition-colors">
+            <Link
+              href="/cookies"
+              className="hover:text-white transition-colors"
+            >
               Cookies
             </Link>
           </span>
