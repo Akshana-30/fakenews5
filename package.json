@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "MallocNanoZone=0 next dev",
+    "dev": "cross-env MallocNanoZone=0 next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -57,6 +57,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "prisma": "^7.8.0",
