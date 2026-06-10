@@ -7,8 +7,13 @@
 // }
 
 import Link from "next/link";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
-export default function Footer() {
+export default async function Footer() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  const registerHref = session ? "/" : "/register";
+
   return (
     <footer className="bg-[#111111] text-[#aaa] pt-9 pb-5">
       <div className="max-w-305 mx-auto px-5">
@@ -49,7 +54,7 @@ export default function Footer() {
                 <Link href="/sign-in">Sign in</Link>
               </li>
               <li>
-                <Link href="/register">Register</Link>
+                <Link href={registerHref}>Register</Link>
               </li>
               <li>
                 <Link
