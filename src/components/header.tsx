@@ -5,7 +5,7 @@ import { ThemeToggle } from "./theme-toggle";
 
 export default function Header() {
   return (
-    <div className="flex justify-between bg-foreground border-b-5 border-b-primary">
+    <div className="flex justify-between  bg-[#2d2d2d] border-b-5 border-b-primary">
         <div className="flex md:hidden"><Image src={"/logo.svg"} width={90} height={90} alt="Logo" priority /></div>
       <div className="hidden md:flex w-full text-center p-5  mx-auto justify-center">
         <Link href="/">
