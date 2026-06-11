@@ -66,7 +66,7 @@ export const auth = betterAuth({
             subscription: {
                 enabled: true,
                 plans: async () => {
-                    const plans = await prisma.plans.findMany();
+                    const plans = await prisma.plan.findMany();
                     return plans.map((plan) => ({
                         name: plan.name,
                         priceId: plan.priceId,

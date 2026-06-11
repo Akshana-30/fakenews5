@@ -16,7 +16,7 @@ export function NewsDropdown({ label, links }: { label: string; links: NavLink[]
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="text-white">
+                <Button variant="ghost" className="text-white cursor-pointer">
                     {label}
                     <ChevronDown color="white" />
                 </Button>

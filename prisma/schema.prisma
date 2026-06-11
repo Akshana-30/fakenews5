@@ -195,10 +195,17 @@ model Address {
     @@map("address")
 }
 
-model Plans {
-    id      String @id @default(ulid())
-    name    String
-    priceId String
+model Plan {
+    id            String  @id @default(ulid())
+    name          String  @unique
+    description   String?
+    image         String?
+    price         Int     @default(0)
+    priceId       String
+    annualPrice   Int?    @default(0)
+    annualPriceId String?
+
+    @@map("plan")
 }
 
 model Subscription {
