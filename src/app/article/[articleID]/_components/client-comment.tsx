@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import CommentaryReactions from "./commentary-reactions";
 import { format } from "date-fns";
 import { useState, type ReactNode } from "react";
@@ -17,6 +17,7 @@ type CommentData = {
     replyTo: string | null;
     reactions: CommentReaction[];
 };
+
 type CommentReaction = {
     id: string;
     commentId: string;
