@@ -4,18 +4,20 @@ import {
   SportPages,
   NewsPages,
 } from "./_components/dropdown-menus";
+import { SearchBar } from "./_components/search-bar";
 
 export default function Navbar() {
   return (
     <div className="flex">
       <div className="hidden lg:flex w-full items-center gap-2 px-6 bg-[#2d2d2d]">
-        <ul className="flex items-center mx-auto">
+        <ul className="flex justify-start w-5xl mx-auto">
           <li>
             <NewsDropdown label="News" links={NewsPages} />
           </li>
           <li>
             <NewsDropdown label="Sports" links={SportPages} />
           </li>
+          <li className="ml-auto my-auto"><SearchBar/></li>
         </ul>
       </div>
     </div>
