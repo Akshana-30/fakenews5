@@ -104,9 +104,9 @@ function ArticleItem({ article }: { article: Article }) {
 
     return (
         <div className="flex my-4">
-            <div className="w-40 h-40 border mr-4">
+            <div className="relative w-40 h-40 border mr-4">
                 {article.image ? (
-                    <Image src={article.image} alt={article.title} />
+                    <Image src={article.image} alt={article.title} fill sizes="160px" className="object-cover" />
                 ) : (
                     <div className="flex w-full h-full items-center justify-center">
                         <span className="text-sm uppercase opacity-50">No image</span>
