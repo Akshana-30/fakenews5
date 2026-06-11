@@ -32,7 +32,7 @@ export default function CommentarySection({
     ));
 
     return (
-        <CommentarySectionClient totalCount={topLevel.length}>
+        <CommentarySectionClient totalCount={topLevel.length} commentsPerPage={5}>
             {renderedComments}
         </CommentarySectionClient>
     );

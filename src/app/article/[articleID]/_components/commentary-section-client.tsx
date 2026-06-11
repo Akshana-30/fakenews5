@@ -10,19 +10,19 @@ import {
 } from "@/components/ui/pagination";
 import { useState, type ReactNode } from "react";
 
-const PAGE_SIZE = 5;
-
 export default function CommentarySectionClient({
     totalCount,
     children,
+    commentsPerPage,
 }: {
     totalCount: number;
     children: ReactNode[];
+    commentsPerPage: number;
 }) {
     const [page, setPage] = useState(1);
-    const totalPages = Math.ceil(children.length / PAGE_SIZE);
-    const start = (page - 1) * PAGE_SIZE;
-    const visible = children.slice(start, start + PAGE_SIZE);
+    const totalPages = Math.ceil(children.length / commentsPerPage);
+    const start = (page - 1) * commentsPerPage;
+    const visible = children.slice(start, start + commentsPerPage);
 
     return (
         <div>

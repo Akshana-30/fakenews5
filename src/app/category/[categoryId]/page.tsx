@@ -2,6 +2,7 @@ import { getArticle, getArticleIdsByCategory, getCategoryById } from "@/_actions
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Article } from "@/lib/types";
 import ArticleList from "@/components/article-list";
+import { compareAsc, compareDesc } from "date-fns";
 
 export default async function CategoryPage({
     params,
@@ -21,6 +22,7 @@ export default async function CategoryPage({
                     articles.push(article.data);
                 }
             }
+            articles.sort((a, b) => compareDesc(a.createdAt, b.createdAt));
         }
         return (
             <div className="w-full p-4">
