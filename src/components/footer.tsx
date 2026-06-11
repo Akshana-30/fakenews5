@@ -91,9 +91,12 @@ export default async function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <Link
+                  href="/advertise"
+                  className="hover:text-white transition-colors"
+                >
                   Advertise
-                </a>
+                </Link>
               </li>
               <li>
                 <Link
