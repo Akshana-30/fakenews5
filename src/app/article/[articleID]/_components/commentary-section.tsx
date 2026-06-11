@@ -1,3 +1,6 @@
+import CommentItem from "./comment-item";
+import CommentarySectionClient from "./commentary-section-client";
+
 type Comment = {
     id: string;
     articleId: string;
@@ -8,7 +11,6 @@ type Comment = {
     replyTo: string | null;
     reactions: CommentReaction[];
 };
-
 type CommentReaction = {
     id: string;
     commentId: string;
@@ -16,9 +18,6 @@ type CommentReaction = {
     val: number;
 };
 
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Role } from "@/generated/prisma/enums";
-import CommentItem from "./comment-item";
 export default function CommentarySection({
     articleId,
     comments,
@@ -26,18 +25,15 @@ export default function CommentarySection({
     articleId: string;
     comments: Comment[];
 }) {
-    const topLevelComments = [];
-    for (const c of comments) {
-        if (!c.replyTo) {
-            topLevelComments.push(c);
-        }
-    }
+    const topLevel = comments.filter((c) => !c.replyTo);
+
+    const renderedComments = topLevel.map((c, i) => (
+        <CommentItem key={c.id} num={i} data={c} articleId={articleId} level={0} />
+    ));
 
     return (
-        <div>
-            {topLevelComments.map((c, i) => {
-                return <CommentItem key={i} num={i} data={c} articleId={articleId} level={0} />;
-            })}
-        </div>
+        <CommentarySectionClient totalCount={topLevel.length} commentsPerPage={5}>
+            {renderedComments}
+        </CommentarySectionClient>
     );
 }

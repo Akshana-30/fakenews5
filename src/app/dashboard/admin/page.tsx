@@ -10,7 +10,6 @@ import {
     articleCounts,
     userCounts,
     commentCount,
-    topCommenter,
     topViewedArticle,
 } from "./_actions/chart-actions";
 import {
@@ -52,7 +51,6 @@ export default async function AdminDashboardPage() {
     if (likes.success && likes.data) {
         mostUpvotedArticle = likes.data[0];
     }
-    console.log(mostUpvotedArticle);
     if (mostUpvotedArticle !== undefined) {
         return (
             <div className="mb-10">

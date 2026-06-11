@@ -1,4 +1,5 @@
 "use client";
+import SubButton from "../Subscribe-button";
 import { NewsDropdown } from "./_components/dropdown-menus";
 import { Category } from "@/lib/types";
 
@@ -15,6 +16,9 @@ export default function Navbar({ categories }: { categories: Category[] | null }
                 <ul className="flex items-center mx-auto">
                     <li>
                         <NewsDropdown label="News" links={links} />
+                    </li>
+                    <li>
+                        <SubButton />
                     </li>
                 </ul>
             </div>
