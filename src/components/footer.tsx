@@ -7,10 +7,18 @@
 // }
 
 import Link from "next/link";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
-export default function Footer() {
+export default async function Footer() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  const registerHref = session ? "/" : "/register";
+  const myPageHref = !session ? "/sign-in"
+    : session.user.role === "admin" ? "/dashboard/admin"
+    : "/dashboard";
+
   return (
-    <footer className="bg-[#111111] text-[#aaa] mt-10 pt-9 pb-5">
+    <footer className="bg-[#111111] text-[#aaa] pt-9 pb-5">
       <div className="max-w-305 mx-auto px-5">
         <div className="grid grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-8 mb-7">
           <div className="col-span-2 md:col-span-1">
@@ -49,7 +57,7 @@ export default function Footer() {
                 <Link href="/sign-in">Sign in</Link>
               </li>
               <li>
-                <Link href="/register">Register</Link>
+                <Link href={registerHref}>Register</Link>
               </li>
               <li>
                 <Link
@@ -61,7 +69,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/my-page"
+                  href={myPageHref}
                   className="hover:text-white transition-colors"
                 >
                   My Page
@@ -89,19 +97,25 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/privacy"
+                  href="/legal/privacy"
                   className="hover:text-white transition-colors"
                 >
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <Link
+                  href="/legal/tos"
+                  className="hover:text-white transition-colors"
+                >
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-white transition-colors">
+                <Link
+                  href="/contact"
+                  className="hover:text-white transition-colors"
+                >
                   Contact
                 </Link>
               </li>
@@ -113,19 +127,22 @@ export default function Footer() {
           <span>Copyright © 2026 Fakenews5. All Rights Reserved.</span>
           <span className="flex gap-3">
             <Link
-              href="/privacy"
+              href="/legal/privacy"
               className="hover:text-white transition-colors"
             >
               Privacy
             </Link>
             <span>·</span>
-            <a href="#" className="hover:text-white transition-colors">
+            <Link href="/legal/tos" className="hover:text-white transition-colors">
               Terms
-            </a>
+            </Link>
             <span>·</span>
-            <a href="#" className="hover:text-white transition-colors">
+            <Link
+              href="/cookies"
+              className="hover:text-white transition-colors"
+            >
               Cookies
-            </a>
+            </Link>
           </span>
         </div>
       </div>

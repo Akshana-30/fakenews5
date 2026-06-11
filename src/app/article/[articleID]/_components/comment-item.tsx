@@ -34,8 +34,11 @@ export default async function CommentItem({
     const currentUserId = await getUserId();
 
     let userReaction: number | undefined;
-    const reaction = await getUserReaction(data.id, data.user_id);
-    if (reaction.success && reaction.data) {
+    let reaction;
+    if (currentUserId) {
+        reaction = await getUserReaction(data.id, currentUserId);
+    }
+    if (reaction && reaction.success && reaction.data) {
         userReaction = reaction.data;
     }
 

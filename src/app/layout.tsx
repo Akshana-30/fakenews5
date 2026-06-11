@@ -10,6 +10,7 @@ import { Toaster } from "sonner";
 import AdminNavbar from "./dashboard/admin/_components/admin-navbar";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { getCategories } from "@/_actions/category-actions";
 
 const fontSans = Anuphan({
     subsets: ["latin"],
@@ -54,6 +55,9 @@ export default async function RootLayout({
             hasPermission = true;
         }
     }
+
+    const cats = await getCategories();
+
     return (
         <html
             lang="en"
@@ -72,7 +76,7 @@ export default async function RootLayout({
             <body className="flex flex-col bg-gray-200 dark:bg-gray-900">
                 <div className="sticky top-0 z-50">
                     <Header />
-                    <Navbar />
+                    <Navbar categories={cats.success && cats.data ? cats.data : null} />
                     {hasPermission && <AdminNavbar />}
                 </div>
 
@@ -85,7 +89,7 @@ export default async function RootLayout({
                             } as React.CSSProperties
                         }
                     >
-                        <AppSidebar />
+                        <AppSidebar categories={cats.success && cats.data ? cats.data : null} />
 
                         <main className="flex max-w-6xl lg:min-w-5xl">
                             <SidebarTrigger size="lg" className="lg:hidden" />

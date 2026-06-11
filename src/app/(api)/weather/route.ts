@@ -38,7 +38,7 @@ export async function GET() {
       `?latitude=${LAT}&longitude=${LON}` +
       `&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m` +
       `&daily=temperature_2m_max,temperature_2m_min` +
-      `&wind_speed_unit=kmh&temperature_unit=celsius` +
+      `&wind_speed_unit=ms&temperature_unit=celsius` +
       `&timezone=Europe%2FStockholm&forecast_days=1`;
 
     const res = await fetch(url, { next: { revalidate: 600 } });
@@ -55,7 +55,7 @@ export async function GET() {
       feelsLike: `${Math.round(c.apparent_temperature)}°C`,
       desc: WMO_DESC[code] ?? "Unknown",
       code,
-      wind: `${Math.round(c.wind_speed_10m)} km/h`,
+      wind: `${Math.round(c.wind_speed_10m)} m/s`,
       humidity: `${c.relative_humidity_2m}%`,
       low: `${Math.round(d.temperature_2m_min[0])}°C`,
       high: `${Math.round(d.temperature_2m_max[0])}°C`,

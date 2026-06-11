@@ -1,7 +1,8 @@
 import { getArticle, getArticleIdsByCategory, getCategoryById } from "@/_actions/article-actions";
-import NewsCard from "@/components/news-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Article } from "@/lib/types";
+import ArticleList from "@/components/article-list";
+import { compareAsc, compareDesc } from "date-fns";
 
 export default async function CategoryPage({
     params,
@@ -21,31 +22,19 @@ export default async function CategoryPage({
                     articles.push(article.data);
                 }
             }
+            articles.sort((a, b) => compareDesc(a.createdAt, b.createdAt));
         }
         return (
-            <div className="p-4">
-                <h1>{category.data.name}</h1>
-                {articles.map((a, i) => {
-                    return (
-                        <NewsCard
-                            key={i}
-                            id={a.id}
-                            title={a.title}
-                            summary={a.summary}
-                            location={a.location}
-                            author={a.author}
-                            category={a.category}
-                            image={a.image}
-                            createdAt={a.createdAt}
-                            updatedAt={a.updatedAt}
-                        />
-                    );
-                })}
+            <div className="w-full p-4">
+                <h1 className="font-extrabold text-2xl text-center">{category.data.name}</h1>
+                <div className="flex">
+                    <ArticleList articles={articles} articlesPerPage={6} />
+                </div>
             </div>
         );
     } else {
         return (
-            <Card>
+            <Card className="md:w-xl h-25 p-2 mx-auto mt-10">
                 <CardHeader>
                     <CardTitle>Couldn&apos;t find category</CardTitle>
                 </CardHeader>
