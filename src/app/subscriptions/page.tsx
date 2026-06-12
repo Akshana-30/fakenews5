@@ -30,5 +30,11 @@ export default async function SubscriptionsPage() {
                 </div>
             </div>
         );
+    } else {
+        return (
+            <div className="p-2">
+                <p>There are no subscription plans in the database.</p>
+            </div>
+        );
     }
 }
