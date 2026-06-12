@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "plan" ADD COLUMN     "price" INTEGER NOT NULL DEFAULT 0;

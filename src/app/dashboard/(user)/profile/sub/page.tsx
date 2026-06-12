@@ -1,12 +1,8 @@
 import { getPlanByName } from "@/_actions/subscription-actions";
 import RouteHeading from "@/components/route-heading";
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import { auth } from "@/lib/auth";
-import { format, formatDistanceToNow, sub } from "date-fns";
 import { headers } from "next/headers";
 import Link from "next/link";
-import Stripe from "stripe";
 import SubscriptionInfo from "./_components/subscription-info";
 import SubscriptionHistory from "./_components/subscription-history";
 
@@ -18,13 +14,16 @@ export default async function SubscriptionPage() {
     if (subscriptions.length > 0) {
         latestSubscription = subscriptions[0];
         const plan = await getPlanByName(latestSubscription.plan);
+        console.log(plan);
         if (plan.success && plan.data) price = plan.data.price / 100;
     }
     let history;
     if (subscriptions.length > 1) {
         history = subscriptions.slice(1);
     }
-    console.log(subscriptions);
+    // console.log(subscriptions);
+    // console.log(subscriptions.length);
+    // console.log(latestSubscription, price);
     // const activeSubscription = subscription.find(
     //     (sub) => sub.status === "active" || sub.status === "trialing",
     // );
@@ -44,7 +43,7 @@ export default async function SubscriptionPage() {
             </>
         );
     } else {
-        if (latestSubscription && price)
+        if (latestSubscription && price) {
             return (
                 <>
                     <RouteHeading label="Subscription" />
@@ -58,5 +57,6 @@ export default async function SubscriptionPage() {
                     {history ? <SubscriptionHistory subscriptions={history} /> : ""}
                 </>
             );
+        }
     }
 }

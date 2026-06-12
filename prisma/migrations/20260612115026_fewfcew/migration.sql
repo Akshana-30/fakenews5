@@ -11,6 +11,7 @@ CREATE TABLE "user" (
     "banned" BOOLEAN DEFAULT false,
     "banReason" TEXT,
     "banExpires" TIMESTAMP(3),
+    "stripeCustomerId" TEXT,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
@@ -169,6 +170,57 @@ CREATE TABLE "address" (
 );
 
 -- CreateTable
+CREATE TABLE "plan" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "image" TEXT,
+    "price" INTEGER NOT NULL DEFAULT 0,
+    "priceId" TEXT NOT NULL,
+    "annualPrice" INTEGER DEFAULT 0,
+    "annualPriceId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "plan_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "subscription" (
+    "id" TEXT NOT NULL,
+    "plan" TEXT NOT NULL,
+    "referenceId" TEXT NOT NULL,
+    "stripeCustomerId" TEXT,
+    "stripeSubscriptionId" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'incomplete',
+    "periodStart" TIMESTAMP(3),
+    "periodEnd" TIMESTAMP(3),
+    "trialStart" TIMESTAMP(3),
+    "trialEnd" TIMESTAMP(3),
+    "cancelAtPeriodEnd" BOOLEAN DEFAULT false,
+    "cancelAt" TIMESTAMP(3),
+    "canceledAt" TIMESTAMP(3),
+    "endedAt" TIMESTAMP(3),
+    "seats" INTEGER,
+    "billingInterval" TEXT,
+    "stripeScheduleId" TEXT,
+
+    CONSTRAINT "subscription_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "contact_message" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "subject" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "contact_message_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_ArticleToCategory" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
@@ -213,6 +265,9 @@ CREATE UNIQUE INDEX "author_user_id_key" ON "author"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_info_user_id_key" ON "user_info"("user_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "plan_name_key" ON "plan"("name");
 
 -- CreateIndex
 CREATE INDEX "_ArticleToCategory_B_index" ON "_ArticleToCategory"("B");

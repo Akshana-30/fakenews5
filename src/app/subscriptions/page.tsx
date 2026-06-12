@@ -1,10 +1,7 @@
 import { getPlans } from "@/_actions/subscription-actions";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import Image from "next/image";
-import SubButton from "./_components/sub-button";
+import SubCard from "./_components/sub-card";
 
 export default async function SubscriptionsPage() {
     const plans = await getPlans();
@@ -25,31 +22,7 @@ export default async function SubscriptionsPage() {
                         {plans.data.map((p, i) => {
                             return (
                                 <li key={p.id}>
-                                    <Card className="flex w-lg mx-auto">
-                                        <CardHeader>
-                                            <CardTitle>{p.name}</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="flex">
-                                            <div className="border mr-4">
-                                                {p.image ? (
-                                                    <Image src={p.image} alt={p.name} />
-                                                ) : (
-                                                    <div className="flex w-full h-full items-center justify-center">
-                                                        <span className="uppercase opacity-50 text-xs">
-                                                            No image
-                                                        </span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <p>{p.description}</p>
-                                        </CardContent>
-                                        <CardFooter className="justify-center">
-                                            <SubButton
-                                                plan={p.name}
-                                                disabled={user ? false : true}
-                                            />
-                                        </CardFooter>
-                                    </Card>
+                                    <SubCard plan={p} loggedIn={user ? true : false} />
                                 </li>
                             );
                         })}

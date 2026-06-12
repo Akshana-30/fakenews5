@@ -84,12 +84,27 @@ type ArticleSummary = {
     category: Category[];
 };
 
-export async function getArticles(): Promise<Result<ArticleSummary[]>> {
+export async function getArticlesForWebsite(): Promise<Result<ArticleSummary[]>> {
+    try {
+        const articles = await prisma.article.findMany({
+            include: { author: true, category: true },
+            orderBy: { createdAt: "desc" },
+            where: { deleted: null },
+        });
+        console.log(articles);
+        return { success: true, data: articles };
+    } catch (err) {
+        return { success: false, error: `Couldn't fetch articles.\n\n${err}` };
+    }
+}
+
+export async function getAllArticles(): Promise<Result<ArticleSummary[]>> {
     try {
         const articles = await prisma.article.findMany({
             include: { author: true, category: true },
             orderBy: { createdAt: "desc" },
         });
+        console.log(articles);
         return { success: true, data: articles };
     } catch (err) {
         return { success: false, error: `Couldn't fetch articles.\n\n${err}` };
@@ -138,6 +153,50 @@ export async function getArticle(articleId: string): Promise<Result<Article>> {
         else return { success: false, error: "Couldn't find article." };
     } catch (err) {
         return { success: false, error: `Couldn't fetch article from database.\n\n${err}` };
+    }
+}
+
+type OnlyArticle = Omit<Article, "author" | "category" | "comments" | "reactions" | "views">;
+
+export async function deleteArticle(articleId: string): Promise<Result<OnlyArticle>> {
+    try {
+        const article = await getArticle(articleId);
+        if (article.success == false) {
+            return { success: false, error: `Couldn't find the article in the database.` };
+        } else {
+            const deleted = await prisma.article.update({
+                data: { deleted: new Date() },
+                where: { id: articleId },
+            });
+            console.log(deleted);
+            if (deleted) return { success: true, data: deleted };
+            else return { success: false, error: `Coudn't delete article from the database.` };
+        }
+    } catch (err) {
+        const msg = `An error occurred when trying to delete article with id ${articleId} from the database.\n\n${err}`;
+        console.error(msg);
+        return { success: false, error: msg };
+    }
+}
+
+export async function restoreArticle(articleId: string): Promise<Result<OnlyArticle>> {
+    try {
+        const article = await getArticle(articleId);
+        if (article.success == false) {
+            return { success: false, error: `Couldn't find the article in the database.` };
+        } else {
+            const restored = await prisma.article.update({
+                data: { deleted: null },
+                where: { id: articleId },
+            });
+            console.log(restored);
+            if (restored) return { success: true, data: restored };
+            else return { success: false, error: `Coudn't restore article.` };
+        }
+    } catch (err) {
+        const msg = `An error occurred when trying to restore article with id ${articleId}.\n\n${err}`;
+        console.error(msg);
+        return { success: false, error: msg };
     }
 }
 

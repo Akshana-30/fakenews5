@@ -70,6 +70,8 @@ export const auth = betterAuth({
                     return plans.map((plan) => ({
                         name: plan.name,
                         priceId: plan.priceId,
+                        annualDiscountPriceId:
+                            plan.annualPriceId !== null ? plan.annualPriceId : undefined,
                     }));
                 },
             },

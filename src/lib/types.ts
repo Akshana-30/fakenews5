@@ -94,7 +94,10 @@ type Plan = {
     name: string;
     description: string | null;
     image: string | null;
+    price: number;
     priceId: string;
+    annualPrice: number | null;
+    annualPriceId: string | null;
 };
 
 export type {
