@@ -91,7 +91,6 @@ export async function getArticlesForWebsite(): Promise<Result<ArticleSummary[]>>
             orderBy: { createdAt: "desc" },
             where: { deleted: null },
         });
-        console.log(articles);
         return { success: true, data: articles };
     } catch (err) {
         return { success: false, error: `Couldn't fetch articles.\n\n${err}` };
@@ -104,7 +103,6 @@ export async function getAllArticles(): Promise<Result<ArticleSummary[]>> {
             include: { author: true, category: true },
             orderBy: { createdAt: "desc" },
         });
-        console.log(articles);
         return { success: true, data: articles };
     } catch (err) {
         return { success: false, error: `Couldn't fetch articles.\n\n${err}` };
@@ -168,7 +166,6 @@ export async function deleteArticle(articleId: string): Promise<Result<OnlyArtic
                 data: { deleted: new Date() },
                 where: { id: articleId },
             });
-            console.log(deleted);
             if (deleted) return { success: true, data: deleted };
             else return { success: false, error: `Coudn't delete article from the database.` };
         }
