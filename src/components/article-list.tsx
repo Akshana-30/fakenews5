@@ -14,6 +14,8 @@ import Image from "next/image";
 import { Clock, MapPin, Pencil } from "lucide-react";
 import { compareAsc, formatDistanceToNow } from "date-fns";
 import Link from "next/link";
+import { Card } from "./ui/card";
+import { Separator } from "./ui/separator";
 
 export default function ArticleList({
     articles,
@@ -103,10 +105,12 @@ function ArticleItem({ article }: { article: Article }) {
     }
 
     return (
-        <div className="flex my-4">
-            <div className="w-40 h-40 border mr-4">
+        <div>
+            <Card>
+                        <Link href={`/article/${article.id}`}>    <div className="flex mx-5">
+            <div className="relative w-40 h-40 border mr-4">
                 {article.image ? (
-                    <Image src={article.image} alt={article.title} />
+                    <Image src={article.image} alt={article.title} fill sizes="160px" className="object-cover " />
                 ) : (
                     <div className="flex w-full h-full items-center justify-center">
                         <span className="text-sm uppercase opacity-50">No image</span>
@@ -116,7 +120,7 @@ function ArticleItem({ article }: { article: Article }) {
             <div className="w-full border-b flex-row p-1">
                 <div>
                     <h1 className="text-lg font-semibold">
-                        <Link href={`/article/${article.id}`}>{article.title}</Link>
+                        {article.title}
                     </h1>
                     <p>{article.summary ? article.summary : article.content.slice(0, 500)}</p>
                 </div>
@@ -149,6 +153,18 @@ function ArticleItem({ article }: { article: Article }) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div></Link>
+
+                
+            </Card>
+            
+            
+            
+            
+            
+            
+            
+</div>
+        
     );
 }

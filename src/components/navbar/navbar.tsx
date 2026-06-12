@@ -1,9 +1,11 @@
+
 "use client";
 import Link from "next/link";
 import Button from "../button";
 import SubButton from "../Subscribe-button";
 import { NewsDropdown } from "./_components/dropdown-menus";
 import { Category } from "@/lib/types";
+import { SearchBar } from "./_components/search-bar";
 
 export default function Navbar({ categories }: { categories: Category[] | null }) {
     const links = [];
@@ -15,7 +17,7 @@ export default function Navbar({ categories }: { categories: Category[] | null }
     return (
         <div className="flex">
             <div className="hidden lg:flex w-full items-center gap-2 px-6 bg-[#2d2d2d]">
-                <ul className="flex items-center mx-auto">
+                <ul className="flex justify-start w-5xl mx-auto">
                     <li>
                         <NewsDropdown label="News" links={links} />
                     </li>
@@ -27,8 +29,10 @@ export default function Navbar({ categories }: { categories: Category[] | null }
                         </Link>
                         <SubButton />
                     </li>
+                    <li className="ml-auto my-auto"><SearchBar/></li>
                 </ul>
             </div>
         </div>
     );
 }
+
