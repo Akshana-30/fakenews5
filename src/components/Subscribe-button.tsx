@@ -1,25 +1,14 @@
-"USE CLIENT"
+"use client";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "./ui/button";
 
-
-export default function SubButton(){
-
-    // GET DATABASE NAMES AND ID
-
+export default function SubButton() {
     const handleClick = async () => {
         await authClient.subscription.upgrade({
-        plan: "Basic", // USE DATABASE NAME
-        successUrl: "http://localhost:3000",
+            plan: "Basic", // USE DATABASE NAME
+            successUrl: "http://localhost:3000",
+        });
+    };
 
-    })
-    }
-
-    return ( 
-        <Button
-        onClick={() => handleClick()}
-        >
-            Subscribe
-        </Button>
-    )
+    return <Button onClick={() => handleClick()}>Subscribe</Button>;
 }
