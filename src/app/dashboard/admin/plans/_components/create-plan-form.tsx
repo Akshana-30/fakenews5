@@ -4,6 +4,7 @@ import Button from "@/components/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
@@ -260,7 +261,7 @@ export default function CreatePlanForm() {
                     Reset
                 </Button>
                 <Button form="create-plan-form" type="submit" variant={"default"}>
-                    Create
+                    {loading ? <Spinner /> : "Create"}
                 </Button>
             </CardFooter>
         </Card>

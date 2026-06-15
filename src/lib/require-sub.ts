@@ -38,3 +38,10 @@ export async function requiureSubscription(plan: PlanName) {
         ? ({ authorized: true, subscription: match } as const)
         : ({ authorized: false, subscription: null } as const);
 }
+
+export async function getActiveSubscriptionsPriceId() {
+    const subs = await auth.api.listActiveSubscriptions({ headers: await headers() });
+    const match = subs.find((sub) => ACTIVE_STATUSES.includes(sub.status));
+    if (match) return match.priceId;
+    else return undefined;
+}

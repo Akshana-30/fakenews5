@@ -1,11 +1,21 @@
-import { getPlans } from "@/_actions/subscription-actions";
+import { getPlans, getStripeSubscriptionIdForUser } from "@/_actions/subscription-actions";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import SubCard from "./_components/sub-card";
+import { getActiveSubscriptionsPriceId } from "@/lib/require-sub";
 
 export default async function SubscriptionsPage() {
     const plans = await getPlans();
-    const user = await auth.api.getSession({ headers: await headers() });
+    const session = await auth.api.getSession({ headers: await headers() });
+    let subscriptionIdForUser: string | undefined;
+    let subPriceId: string | undefined;
+    if (session?.user.id) {
+        const res = await getStripeSubscriptionIdForUser(session?.user.id);
+        if (res.success && res.data) {
+            subscriptionIdForUser = res.data;
+        }
+        subPriceId = await getActiveSubscriptionsPriceId();
+    }
 
     if (plans.success && plans.data && plans.data.length >= 1) {
         return (
@@ -22,7 +32,12 @@ export default async function SubscriptionsPage() {
                         {plans.data.map((p, i) => {
                             return (
                                 <li key={p.id}>
-                                    <SubCard plan={p} loggedIn={user ? true : false} />
+                                    <SubCard
+                                        plan={p}
+                                        loggedIn={session ? true : false}
+                                        userSubId={subscriptionIdForUser}
+                                        userSubPriceId={subPriceId}
+                                    />
                                 </li>
                             );
                         })}

@@ -99,3 +99,24 @@ export async function deletePlan(id: string): Promise<Result<Plan>> {
         return { success: false, error: msg };
     }
 }
+
+export async function getStripeSubscriptionIdForUser(
+    userId: string,
+): Promise<Result<string | undefined>> {
+    try {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (user?.stripeCustomerId) {
+            const sub = await prisma.subscription.findFirst({
+                where: { stripeCustomerId: user?.stripeCustomerId },
+            });
+            if (sub?.stripeSubscriptionId) return { success: true, data: sub.stripeSubscriptionId };
+            else return { success: true, data: undefined };
+        } else {
+            return { success: true, data: undefined };
+        }
+    } catch (err) {
+        const msg = `Couldn't get subscription id for user ${userId}.`;
+        console.error(msg);
+        return { success: false, error: msg };
+    }
+}
