@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 
 
 
+// TODO: Make it so that Author alias field doesn't show if the user is a normal user/subscriber and you should not be able to denote yourself as admin
 export default async function UserTablePage() {
   const session = await auth.api.getSession({
     headers: await headers(),

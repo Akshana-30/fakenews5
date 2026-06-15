@@ -36,7 +36,6 @@ export default function SubButton({
                 annual: true,
                 subscriptionId: userSubId,
             });
-            console.log(res);
         }
         setLoading(false);
     };
