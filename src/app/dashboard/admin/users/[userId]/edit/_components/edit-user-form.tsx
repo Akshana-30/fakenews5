@@ -312,28 +312,36 @@ export default function EditUserForm({ data }: Props) {
                 }}
               </form.Field>
 
-              <form.Field name="authorAlias">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <Field data-invalid={isInvalid} className="flex-1">
-                      <FieldLabel htmlFor={field.name}>Author alias</FieldLabel>
-                      <Input
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value ?? ""}
-                        onBlur={field.handleBlur}
-                        onChange={(ev) => field.handleChange(ev.target.value)}
-                        aria-invalid={isInvalid}
-                      />
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              </form.Field>
+<form.Field name="authorAlias">
+  {(field) => {
+    const isInvalid =
+      field.state.meta.isTouched && !field.state.meta.isValid;
+
+    return (
+      <form.Subscribe selector={(state) => state.values.role}>
+        {(role) => {
+          const isDisabled = role === "user";
+
+          return (
+            <Field data-invalid={isInvalid} className="flex-1">
+              <FieldLabel htmlFor={field.name}>Author alias</FieldLabel>
+              <Input
+                id={field.name}
+                name={field.name}
+                value={field.state.value ?? ""}
+                onBlur={field.handleBlur}
+                onChange={(ev) => field.handleChange(ev.target.value)}
+                aria-invalid={isInvalid}
+                disabled={isDisabled}
+              />
+              {isInvalid && <FieldError errors={field.state.meta.errors} />}
+            </Field>
+          );
+        }}
+      </form.Subscribe>
+    );
+  }}
+</form.Field>
             </div>
 
             <form.Field name="userInfoId">

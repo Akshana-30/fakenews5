@@ -28,6 +28,10 @@ type FormValues = z.infer<typeof formSchema>;
 export default async function UserAction(id: string, input: FormValues) {
   const data = formSchema.parse(input);
 
+  const existingAuthor = await prisma.author.findUnique({ where: { userId: id } });
+  const aliasChanged = existingAuthor?.alias !== data.authorAlias;
+  const shouldUpdateAlias = data.role !== "user" && data.authorAlias && aliasChanged;
+
   const editUser = await prisma.user.update({
     where: { id },
     data: {
@@ -60,12 +64,9 @@ export default async function UserAction(id: string, input: FormValues) {
           create: {
             phoneNumber: data.phone,
             birthdate: new Date(data.birthdate),
-
             address: {
               connectOrCreate: {
-                where: {
-                  id: data.userInfoId,
-                },
+                where: { id: data.userInfoId },
                 create: {
                   city: data.city,
                   country: data.country,
@@ -77,14 +78,19 @@ export default async function UserAction(id: string, input: FormValues) {
           },
         },
       },
-      author: {
-        upsert: {
-          update: { alias: data.authorAlias },
-          create: { alias: data.authorAlias },
-        },
-      },
+      ...(shouldUpdateAlias
+        ? {
+            author: {
+              upsert: {
+                update: { alias: data.authorAlias },
+                create: { alias: data.authorAlias },
+              },
+            },
+          }
+        : {}),
     },
   });
+
   revalidatePath("/dashboard/admin/users");
   return editUser.id;
 }

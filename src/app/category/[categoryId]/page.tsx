@@ -2,7 +2,7 @@ import { getArticle, getArticleIdsByCategory, getCategoryById } from "@/_actions
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Article } from "@/lib/types";
 import ArticleList from "@/components/article-list";
-import { compareAsc, compareDesc } from "date-fns";
+import { compareDesc } from "date-fns";
 import RouteHeading from "@/components/route-heading";
 
 export default async function CategoryPage({
