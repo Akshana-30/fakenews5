@@ -17,12 +17,8 @@ export const admin = ac.newRole({
   ...adminAc.statements,
 });
 
-export const author = ac.newRole({
-  article: ["create", "comment", "like", "dislike", "read"],
-});
-
 export const editor = ac.newRole({
   article: ["create", "update", "delete", "comment", "like", "dislike", "read"],
 });
 
-export const roles = ["user", "subscriber", "author", "admin", "editor"] as const;
+export const roles = ["user", "subscriber", "admin", "editor"] as const;

@@ -30,26 +30,36 @@ export default async function addArticle(values: AddArticleValues): Promise<Resu
     }
 
     try {
-        // The writer must have a registered Author profile to publish.
-        const writerAuthor = await prisma.author.findUnique({
+        // Connect any typed aliases that already exist as authors
+        const existingAuthors = await prisma.author.findMany({
+            where: {
+                alias: { in: data.author },
+            },
+            select: { id: true, alias: true },
+        });
+
+        const authorIds = existingAuthors.map(({ id }) => ({ id }));
+
+        // The writer is always credited. If they have no Author record yet,
+        // create one on the fly — named by their typed alias if it's new,
+        // otherwise by their account name.
+        let writerAuthor = await prisma.author.findUnique({
             where: { userId: session.user.id },
         });
 
         if (!writerAuthor) {
-            return {
-                success: false,
-                error: "You need an Author profile to publish articles. Ask an admin to register you as an author.",
-            };
+            const matchedAliases = existingAuthors.map((a) => a.alias);
+            const newAlias =
+                data.author.find((alias) => !matchedAliases.includes(alias)) ??
+                session.user.name;
+
+            writerAuthor = await prisma.author.create({
+                data: {
+                    alias: newAlias,
+                    userId: session.user.id,
+                },
+            });
         }
-
-        // Connect any co-authors typed in the form that already exist as registered authors.
-        // Aliases with no matching Author record are silently skipped — no auto-create.
-        const coAuthors = await prisma.author.findMany({
-            where: { alias: { in: data.author } },
-            select: { id: true },
-        });
-
-        const authorIds = coAuthors.map(({ id }) => ({ id }));
 
         if (!authorIds.some(({ id }) => id === writerAuthor.id)) {
             authorIds.push({ id: writerAuthor.id });
