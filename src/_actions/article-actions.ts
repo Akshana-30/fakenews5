@@ -112,7 +112,7 @@ export async function getAllArticles(): Promise<Result<ArticleSummary[]>> {
 export async function getEditorsChoiceArticles(): Promise<Result<ArticleSummary[]>> {
     try {
         const articles = await prisma.article.findMany({
-            where: { editorsChoice: true },
+            where: { editorsChoice: true, deleted: null },
             include: { author: true, category: true },
             orderBy: { createdAt: "desc" },
         });
@@ -127,6 +127,7 @@ export async function getMostPopularArticles(limit = 3): Promise<Result<ArticleS
         const articles = await prisma.article.findMany({
             include: { author: true, category: true },
             orderBy: { views: { _count: "desc" } },
+            where: { deleted: null },
             take: limit,
         });
         return { success: true, data: articles };
@@ -186,7 +187,6 @@ export async function restoreArticle(articleId: string): Promise<Result<OnlyArti
                 data: { deleted: null },
                 where: { id: articleId },
             });
-            console.log(restored);
             if (restored) return { success: true, data: restored };
             else return { success: false, error: `Coudn't restore article.` };
         }
@@ -199,7 +199,9 @@ export async function restoreArticle(articleId: string): Promise<Result<OnlyArti
 
 export async function getCategoryById(categoryId: string): Promise<Result<Category>> {
     try {
-        const category = await prisma.category.findUnique({ where: { id: categoryId } });
+        const category = await prisma.category.findUnique({
+            where: { id: categoryId },
+        });
         if (category) return { success: true, data: category };
         else return { success: false, error: `Couldn't find category with id ${categoryId}.` };
     } catch (err) {
@@ -218,7 +220,7 @@ export async function getArticleIdsByCategory(
 ): Promise<Result<string[] | null>> {
     try {
         const category = await prisma.category.findUnique({
-            where: { id: categoryId },
+            where: { id: categoryId, deleted: null },
             include: { article: true },
         });
         const articleIds: string[] = [];
@@ -485,7 +487,10 @@ export type ArticleWithScore = {
 
 export async function topUpvotedArticle(): Promise<Result<ArticleWithScore[]>> {
     try {
-        const articles = await prisma.article.findMany({ include: { reactions: true } });
+        const articles = await prisma.article.findMany({
+            include: { reactions: true },
+            where: { deleted: null },
+        });
         const articleWithScore = [];
         function compare(a: ArticleWithScore, b: ArticleWithScore) {
             if (a.totalScore < b.totalScore) {
