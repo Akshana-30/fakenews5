@@ -3,7 +3,17 @@ import { Plan } from "@/lib/types";
 import Image from "next/image";
 import SubButton from "./sub-button";
 
-export default function SubCard({ plan, loggedIn }: { plan: Plan; loggedIn: boolean }) {
+export default function SubCard({
+    plan,
+    loggedIn,
+    userSubId,
+    userSubPriceId,
+}: {
+    plan: Plan;
+    loggedIn: boolean;
+    userSubId: string | undefined;
+    userSubPriceId: string | undefined;
+}) {
     return (
         <div className="flex justify-center mb-5">
             <div className={plan.annualPrice == null ? "flex mx-auto" : "flex mx-auto gap-5"}>
@@ -26,7 +36,13 @@ export default function SubCard({ plan, loggedIn }: { plan: Plan; loggedIn: bool
                         <p>{plan.description}</p>
                     </CardContent>
                     <CardFooter className="justify-center">
-                        <SubButton plan={plan.name} annual={false} disabled={!loggedIn} />
+                        <SubButton
+                            plan={plan.name}
+                            annual={false}
+                            disabled={!loggedIn || userSubPriceId === plan.priceId}
+                            userSubId={userSubId}
+                            label={userSubPriceId === plan.priceId ? "Subscribed" : "Subscribe"}
+                        ></SubButton>
                     </CardFooter>
                 </Card>
                 {plan.annualPriceId && plan.annualPrice ? (
@@ -56,8 +72,18 @@ export default function SubCard({ plan, loggedIn }: { plan: Plan; loggedIn: bool
                                 </span>
                             </p>
                         </CardContent>
-                        <CardFooter className="justify-center">
-                            <SubButton plan={plan.name} annual={true} disabled={!loggedIn} />
+                        <CardFooter className="justify-center mt-auto">
+                            <SubButton
+                                plan={plan.name}
+                                annual={true}
+                                disabled={!loggedIn || userSubPriceId === plan.annualPriceId}
+                                userSubId={userSubId}
+                                label={
+                                    userSubPriceId === plan.annualPriceId
+                                        ? "Subscribed"
+                                        : "Subscribe"
+                                }
+                            ></SubButton>
                         </CardFooter>
                     </Card>
                 ) : (
