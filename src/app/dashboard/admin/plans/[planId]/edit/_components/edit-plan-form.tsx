@@ -14,6 +14,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,6 +36,7 @@ const formSchema = z.object({
     .max(128),
   annualPrice: z.number(),
   annualPriceId: z.string(),
+  adFree: z.boolean(),
 });
 
 export default function EditPlanForm({ plan }: { plan: Plan }) {
@@ -49,6 +51,7 @@ export default function EditPlanForm({ plan }: { plan: Plan }) {
       priceId: plan.priceId,
       annualPrice: Number(plan.annualPrice),
       annualPriceId: plan.annualPriceId ?? "",
+      adFree: plan.adFree ?? false,
     },
     validators: {
       onSubmit: formSchema,
@@ -64,6 +67,7 @@ export default function EditPlanForm({ plan }: { plan: Plan }) {
         priceId: value.priceId,
         annualPrice: Number(value.annualPrice),
         annualPriceId: value.annualPriceId,
+        adFree: value.adFree,
       });
       if (res.success && res.data) {
         toast.success(
@@ -254,7 +258,7 @@ export default function EditPlanForm({ plan }: { plan: Plan }) {
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>
-                      (Stripe) price ID
+                      (Stripe) annual price ID
                     </FieldLabel>
                     <Input
                       id={field.name}
@@ -270,6 +274,27 @@ export default function EditPlanForm({ plan }: { plan: Plan }) {
                   </Field>
                 );
               }}
+            </form.Field>
+
+            <form.Field name="adFree">
+              {(field) => (
+                <Field>
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <Checkbox
+                      id={field.name}
+                      checked={field.state.value}
+                      onBlur={field.handleBlur}
+                      onCheckedChange={(checked) =>
+                        field.handleChange(checked === true)
+                      }
+                    />
+                    <span className="text-sm font-medium">Ad-free plan</span>
+                  </label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Subscribers on this plan will not see advertisements.
+                  </p>
+                </Field>
+              )}
             </form.Field>
           </FieldGroup>
         </form>

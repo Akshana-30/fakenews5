@@ -21,6 +21,13 @@ export default function Navbar({ categories }: { categories: Category[] | null }
                         <NewsDropdown label="News" links={links} />
                     </li>
                     <li>
+                        <Link href="/marketplace">
+                            <Button variant="ghost" className="text-white cursor-pointer">
+                                Marketplace
+                            </Button>
+                        </Link>
+                    </li>
+                    <li>
                         <Link href="/subscriptions">
                             <Button variant="ghost" className="text-white cursor-pointer">
                                 Subscriptions

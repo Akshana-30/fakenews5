@@ -12,6 +12,8 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { getCategories } from "@/_actions/category-actions";
 import EditorNavbar from "./dashboard/admin/_components/editor-navbar";
+import AdBanner from "@/components/ad-banner";
+import { userIsAdFree } from "@/lib/ads";
 
 const fontSans = Anuphan({
     subsets: ["latin"],
@@ -62,6 +64,7 @@ export default async function RootLayout({
     }
 
     const cats = await getCategories();
+    const adFree = await userIsAdFree();
 
     return (
         <html
@@ -86,6 +89,8 @@ export default async function RootLayout({
                     {editor && <EditorNavbar />}
                 </div>
 
+                {!adFree && <AdBanner />}
+
                 <div className="flex min-h-screen lg:min-w-5xl max-w-6xl shadow-2xl border-x border-gray-500/50 flex-1 mx-auto bg-white">
                     <SidebarProvider
                         defaultOpen={false}
@@ -104,6 +109,7 @@ export default async function RootLayout({
                         <Toaster />
                     </SidebarProvider>
                 </div>
+                {!adFree && <AdBanner />}
                 <Footer />
             </body>
         </html>

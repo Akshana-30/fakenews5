@@ -39,6 +39,7 @@ type Props = {
 };
 
 const EMPTY_FIELDS = {
+    listingType:  "sell" as const,
     subcategory:  "",
     title:        "",
     description:  "",
@@ -132,7 +133,7 @@ export default function AdForm({ categorySlug, subcategories, titlePlaceholder }
                 photoUrls = data.urls as string[];
             }
 
-            const result = await submitAd({ ...fields, category: categorySlug, photos: photoUrls });
+            const result = await submitAd({ ...fields, listingType: fields.listingType, category: categorySlug, photos: photoUrls });
 
             if ("checkoutUrl" in result && result.checkoutUrl) {
                 window.location.href = result.checkoutUrl;
@@ -164,6 +165,38 @@ export default function AdForm({ categorySlug, subcategories, titlePlaceholder }
     /* ── Form ── */
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
+
+            {/* Listing type */}
+            <div className="space-y-1">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    I want to…
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                    {[
+                        { value: "sell", label: "Sell / Give away" },
+                        { value: "wanted", label: "Buy / Looking for" },
+                    ].map(opt => (
+                        <label
+                            key={opt.value}
+                            className={`rounded-xl border p-3 cursor-pointer text-center transition-colors text-sm font-semibold ${
+                                fields.listingType === opt.value
+                                    ? "border-primary bg-primary/5 text-primary"
+                                    : "bg-popover hover:border-muted-foreground"
+                            }`}
+                        >
+                            <input
+                                type="radio"
+                                name="listingType"
+                                value={opt.value}
+                                checked={fields.listingType === opt.value}
+                                onChange={set("listingType")}
+                                className="sr-only"
+                            />
+                            {opt.label}
+                        </label>
+                    ))}
+                </div>
+            </div>
 
             {/* Subcategory */}
             <div className="space-y-1">
@@ -219,7 +252,7 @@ export default function AdForm({ categorySlug, subcategories, titlePlaceholder }
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                     <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        Price (kr)
+                        {fields.listingType === "wanted" ? "Budget (kr)" : "Price (kr)"}
                     </label>
                     <Input
                         type="number"
@@ -248,21 +281,23 @@ export default function AdForm({ categorySlug, subcategories, titlePlaceholder }
 
             {/* Condition + Location */}
             <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                    <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        Condition
-                    </label>
-                    <select
-                        value={fields.condition}
-                        onChange={set("condition")}
-                        className="w-full border rounded-md px-3 py-2 text-sm bg-background"
-                    >
-                        {CONDITIONS.map(c => (
-                            <option key={c.value} value={c.value}>{c.label}</option>
-                        ))}
-                    </select>
-                </div>
-                <div className="space-y-1">
+                {fields.listingType === "sell" && (
+                    <div className="space-y-1">
+                        <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Condition
+                        </label>
+                        <select
+                            value={fields.condition}
+                            onChange={set("condition")}
+                            className="w-full border rounded-md px-3 py-2 text-sm bg-background"
+                        >
+                            {CONDITIONS.map(c => (
+                                <option key={c.value} value={c.value}>{c.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+                <div className={`space-y-1 ${fields.listingType === "wanted" ? "col-span-2" : ""}`}>
                     <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         Location <span className="text-destructive">*</span>
                     </label>
