@@ -10,6 +10,7 @@ import {
 import { ChevronDown } from "lucide-react";
 
 export default function AdminNavbar() {
+
     return (
         <div className="flex w-full gap-2 px-6 sticky top-0 bg-muted-foreground">
             <ul className="flex items-center mx-auto">
@@ -28,6 +29,11 @@ export default function AdminNavbar() {
                         <Link href="/dashboard/admin/users">User table</Link>
                     </Button>
                 </li>
+         <li>
+          <Button asChild variant="ghost" className="text-white">
+            <Link href="/dashboard/admin/saved-articles">Saved articles</Link>
+          </Button>
+        </li>
                 <li>
                     <Button asChild variant="ghost" className="text-white">
                         <Link href="/dashboard/admin/plans">Plans</Link>

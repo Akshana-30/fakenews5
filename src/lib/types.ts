@@ -29,6 +29,7 @@ type Article = {
     summary: string | null;
     content: string;
     comments: Comment[];
+    bookmark: Bookmark[];
     views: View[];
     reactions: ArticleReaction[];
     image: string | null;
