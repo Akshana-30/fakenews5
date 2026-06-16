@@ -25,7 +25,7 @@ export default async function DashboardPage() {
             select: { city: true, country: true, street: true, zip: true },
           },
         },
-      },
+      },author: true,
       accounts: { select: { password: true } },
     },
   });

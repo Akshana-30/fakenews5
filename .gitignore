@@ -47,3 +47,6 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# User-uploaded ad photos (local storage)
+public/uploads/

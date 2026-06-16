@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldError,
@@ -22,6 +22,15 @@ import z from "zod";
 import { EditUser } from "../_actions/user-action";
 import ChangeEmailDialog from "./change-email-form";
 import ChangePasswordDialog from "./change-password-form";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDownIcon } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
 
 type Props = {
   user: {
@@ -39,6 +48,11 @@ type Props = {
         zip: string;
       };
     } | null;
+    author: {
+      id: string;
+      userId: string;
+      alias: string;
+    } | null;
   };
 };
 
@@ -53,6 +67,7 @@ const formSchema = z.object({
   phoneNumber: z.string(),
   birthdate: z.iso.date(),
   image: z.string(),
+  authorAlias: z.string().max(20, "Maximum 20 characters"),
 });
 
 export default function EditProfileForm({ user }: Props) {
@@ -61,6 +76,7 @@ export default function EditProfileForm({ user }: Props) {
   const [date, setDate] = React.useState<Date | undefined>(
     new Date(user.user_info?.birthdate ?? ""),
   );
+  const router = useRouter()
   // const[visible, setVisible] =React.useState(false)
   const form = useForm({
     defaultValues: {
@@ -74,236 +90,343 @@ export default function EditProfileForm({ user }: Props) {
       phoneNumber: user.user_info?.phoneNumber ?? "",
       birthdate: user.user_info?.birthdate.toISOString().split("T")[0] ?? "",
       image: user.image ?? "",
+      authorAlias: user.author?.alias ?? "",
     },
     validators: { onSubmit: formSchema },
     onSubmit: async ({ value }) => {
       setLoading(true);
       await EditUser(user.id, value);
+      toast.success("Your account information was successfully updated.", {
+        position: "bottom-right",
+      });
+      setLoading(false);
+      router.refresh()
     },
   });
 
   return (
     <>
       {/* Regular info */}
+
       <Card className="max-w-4xl p-4 mx-auto">
-        <CardTitle>User settings</CardTitle>
-
         <CardContent>
-          <form
-            onSubmit={(ev) => {
-              form.handleSubmit(ev);
-              ev.preventDefault();
-            }}
-          >
-            <FieldGroup>
-              <form.Field name="name">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                      <Input
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={(ev) => field.handleChange(ev.target.value)}
-                        aria-invalid={isInvalid}
-                      />
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              </form.Field>
+          <Collapsible className="rounded-md data-[state=open]:bg-muted">
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="group w-full">
+                User settings
+                <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
+              <Card className="mx-auto w-full">
+                <CardContent>
+                  <form
+                    onSubmit={(ev) => {
+                      form.handleSubmit(ev);
+                      ev.preventDefault();
+                    }}
+                  >
+                    <FieldGroup>
+                      <form.Field name="name">
+                        {(field) => {
+                          const isInvalid =
+                            field.state.meta.isTouched &&
+                            !field.state.meta.isValid;
+                          return (
+                            <Field data-invalid={isInvalid}>
+                              <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                              <Input
+                                id={field.name}
+                                name={field.name}
+                                value={field.state.value}
+                                onBlur={field.handleBlur}
+                                onChange={(ev) =>
+                                  field.handleChange(ev.target.value)
+                                }
+                                aria-invalid={isInvalid}
+                              />
+                              {isInvalid && (
+                                <FieldError errors={field.state.meta.errors} />
+                              )}
+                            </Field>
+                          );
+                        }}
+                      </form.Field>
 
-              <form.Field name="phoneNumber">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Phone number</FieldLabel>
-                      <Input
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={(ev) => field.handleChange(ev.target.value)}
-                        aria-invalid={isInvalid}
-                      />
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              </form.Field>
+                      <form.Field name="phoneNumber">
+                        {(field) => {
+                          const isInvalid =
+                            field.state.meta.isTouched &&
+                            !field.state.meta.isValid;
+                          return (
+                            <Field data-invalid={isInvalid}>
+                              <FieldLabel htmlFor={field.name}>
+                                Phone number
+                              </FieldLabel>
+                              <Input
+                                id={field.name}
+                                name={field.name}
+                                value={field.state.value}
+                                onBlur={field.handleBlur}
+                                onChange={(ev) =>
+                                  field.handleChange(ev.target.value)
+                                }
+                                aria-invalid={isInvalid}
+                              />
+                              {isInvalid && (
+                                <FieldError errors={field.state.meta.errors} />
+                              )}
+                            </Field>
+                          );
+                        }}
+                      </form.Field>
 
-              <form.Field name="birthdate">
-                {(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Birthdate</FieldLabel>
-                      <Popover open={open} onOpenChange={setOpen}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            id="date"
-                            className="justify-start font-normal"
-                          >
-                            {date
-                              ? date.toLocaleDateString("sv-SE")
-                              : "Select date"}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto overflow-hidden p-0"
-                          align="start"
+                      <form.Field name="birthdate">
+                        {(field) => {
+                          const isInvalid =
+                            field.state.meta.isTouched &&
+                            !field.state.meta.isValid;
+                          return (
+                            <Field data-invalid={isInvalid}>
+                              <FieldLabel htmlFor={field.name}>
+                                Birthdate
+                              </FieldLabel>
+                              <Popover open={open} onOpenChange={setOpen}>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    id="date"
+                                    className="justify-start font-normal"
+                                  >
+                                    {date
+                                      ? date.toLocaleDateString("sv-SE")
+                                      : "Select date"}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  className="w-auto overflow-hidden p-0"
+                                  align="start"
+                                >
+                                  <Calendar
+                                    mode="single"
+                                    selected={date}
+                                    defaultMonth={date}
+                                    captionLayout="dropdown"
+                                    onSelect={(date) => {
+                                      setDate(date);
+                                      if (date) {
+                                        field.handleChange(
+                                          date.toLocaleDateString("sv-SE"),
+                                        );
+                                      }
+                                      setOpen(false);
+                                    }}
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                              {isInvalid && (
+                                <FieldError errors={field.state.meta.errors} />
+                              )}
+                            </Field>
+                          );
+                        }}
+                      </form.Field>
+                      <h1>Address</h1>
+                      <div className="grid grid-cols-2 gap-4">
+                        <form.Field name="street">
+                          {(field) => {
+                            const isInvalid =
+                              field.state.meta.isTouched &&
+                              !field.state.meta.isValid;
+                            return (
+                              <Field data-invalid={isInvalid}>
+                                <FieldLabel htmlFor={field.name}>
+                                  Street
+                                </FieldLabel>
+                                <Input
+                                  id={field.name}
+                                  name={field.name}
+                                  value={field.state.value}
+                                  onBlur={field.handleBlur}
+                                  onChange={(ev) =>
+                                    field.handleChange(ev.target.value)
+                                  }
+                                  aria-invalid={isInvalid}
+                                />
+                                {isInvalid && (
+                                  <FieldError
+                                    errors={field.state.meta.errors}
+                                  />
+                                )}
+                              </Field>
+                            );
+                          }}
+                        </form.Field>
+                        <form.Field name="city">
+                          {(field) => {
+                            const isInvalid =
+                              field.state.meta.isTouched &&
+                              !field.state.meta.isValid;
+                            return (
+                              <Field data-invalid={isInvalid}>
+                                <FieldLabel htmlFor={field.name}>
+                                  City
+                                </FieldLabel>
+                                <Input
+                                  id={field.name}
+                                  name={field.name}
+                                  value={field.state.value}
+                                  onBlur={field.handleBlur}
+                                  onChange={(ev) =>
+                                    field.handleChange(ev.target.value)
+                                  }
+                                  aria-invalid={isInvalid}
+                                />
+                                {isInvalid && (
+                                  <FieldError
+                                    errors={field.state.meta.errors}
+                                  />
+                                )}
+                              </Field>
+                            );
+                          }}
+                        </form.Field>
+                        <form.Field name="country">
+                          {(field) => {
+                            const isInvalid =
+                              field.state.meta.isTouched &&
+                              !field.state.meta.isValid;
+                            return (
+                              <Field data-invalid={isInvalid}>
+                                <FieldLabel htmlFor={field.name}>
+                                  Country
+                                </FieldLabel>
+                                <Input
+                                  id={field.name}
+                                  name={field.name}
+                                  value={field.state.value}
+                                  onBlur={field.handleBlur}
+                                  onChange={(ev) =>
+                                    field.handleChange(ev.target.value)
+                                  }
+                                  aria-invalid={isInvalid}
+                                />
+                                {isInvalid && (
+                                  <FieldError
+                                    errors={field.state.meta.errors}
+                                  />
+                                )}
+                              </Field>
+                            );
+                          }}
+                        </form.Field>
+                        <form.Field name="zip">
+                          {(field) => {
+                            const isInvalid =
+                              field.state.meta.isTouched &&
+                              !field.state.meta.isValid;
+                            return (
+                              <Field data-invalid={isInvalid}>
+                                <FieldLabel htmlFor={field.name}>
+                                  Zip
+                                </FieldLabel>
+                                <Input
+                                  id={field.name}
+                                  name={field.name}
+                                  value={field.state.value}
+                                  onBlur={field.handleBlur}
+                                  onChange={(ev) =>
+                                    field.handleChange(ev.target.value)
+                                  }
+                                  aria-invalid={isInvalid}
+                                />
+                                {isInvalid && (
+                                  <FieldError
+                                    errors={field.state.meta.errors}
+                                  />
+                                )}
+                              </Field>
+                            );
+                          }}
+                        </form.Field>
+                      </div>
+
+                      <form.Field name="authorAlias">
+                        {(field) => {
+                          const isInvalid =
+                            field.state.meta.isTouched &&
+                            !field.state.meta.isValid;
+                          const isDisabled = user.author === null;
+
+                          return (
+                            <Field data-invalid={isInvalid} className="flex-1">
+                              <FieldLabel htmlFor={field.name}>
+                                Author alias
+                              </FieldLabel>
+                              <Input
+                                id={field.name}
+                                name={field.name}
+                                value={field.state.value ?? ""}
+                                onBlur={field.handleBlur}
+                                onChange={(ev) =>
+                                  field.handleChange(ev.target.value)
+                                }
+                                aria-invalid={isInvalid}
+                                disabled={isDisabled}
+                              />
+                              {isInvalid && (
+                                <FieldError errors={field.state.meta.errors} />
+                              )}
+                            </Field>
+                          );
+                        }}
+                      </form.Field>
+
+                      <Field orientation="horizontal">
+                        <Button
+                          type="reset"
+                          className="bg-background text-black border border-slate-300 cursor-pointer"
+                          onClick={() => {
+                            form.reset();
+                            setDate(new Date(user.user_info?.birthdate ?? ""));
+                          }}
                         >
-                          <Calendar
-                            mode="single"
-                            selected={date}
-                            defaultMonth={date}
-                            captionLayout="dropdown"
-                            onSelect={(date) => {
-                              setDate(date);
-                              if (date) {
-                                field.handleChange(
-                                  date.toLocaleDateString("sv-SE"),
-                                );
-                              }
-                              setOpen(false);
-                            }}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              </form.Field>
-              <h1>Address</h1>
-              <div className="grid grid-cols-2 gap-4">
-                <form.Field name="street">
-                  {(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid;
-                    return (
-                      <Field data-invalid={isInvalid}>
-                        <FieldLabel htmlFor={field.name}>Street</FieldLabel>
-                        <Input
-                          id={field.name}
-                          name={field.name}
-                          value={field.state.value}
-                          onBlur={field.handleBlur}
-                          onChange={(ev) => field.handleChange(ev.target.value)}
-                          aria-invalid={isInvalid}
-                        />
-                        {isInvalid && (
-                          <FieldError errors={field.state.meta.errors} />
-                        )}
+                          Reset
+                        </Button>
+                        <Button
+                          className="cursor-pointer"
+                          type="submit"
+                          disabled={loading}
+                        >
+                          {loading ? "Saving..." : "Submit"}
+                        </Button>
                       </Field>
-                    );
-                  }}
-                </form.Field>
-                <form.Field name="city">
-                  {(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid;
-                    return (
-                      <Field data-invalid={isInvalid}>
-                        <FieldLabel htmlFor={field.name}>City</FieldLabel>
-                        <Input
-                          id={field.name}
-                          name={field.name}
-                          value={field.state.value}
-                          onBlur={field.handleBlur}
-                          onChange={(ev) => field.handleChange(ev.target.value)}
-                          aria-invalid={isInvalid}
-                        />
-                        {isInvalid && (
-                          <FieldError errors={field.state.meta.errors} />
-                        )}
-                      </Field>
-                    );
-                  }}
-                </form.Field>
-                <form.Field name="country">
-                  {(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid;
-                    return (
-                      <Field data-invalid={isInvalid}>
-                        <FieldLabel htmlFor={field.name}>Country</FieldLabel>
-                        <Input
-                          id={field.name}
-                          name={field.name}
-                          value={field.state.value}
-                          onBlur={field.handleBlur}
-                          onChange={(ev) => field.handleChange(ev.target.value)}
-                          aria-invalid={isInvalid}
-                        />
-                        {isInvalid && (
-                          <FieldError errors={field.state.meta.errors} />
-                        )}
-                      </Field>
-                    );
-                  }}
-                </form.Field>
-                <form.Field name="zip">
-                  {(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid;
-                    return (
-                      <Field data-invalid={isInvalid}>
-                        <FieldLabel htmlFor={field.name}>Zip</FieldLabel>
-                        <Input
-                          id={field.name}
-                          name={field.name}
-                          value={field.state.value}
-                          onBlur={field.handleBlur}
-                          onChange={(ev) => field.handleChange(ev.target.value)}
-                          aria-invalid={isInvalid}
-                        />
-                        {isInvalid && (
-                          <FieldError errors={field.state.meta.errors} />
-                        )}
-                      </Field>
-                    );
-                  }}
-                </form.Field>
-              </div>
-              <Field orientation="horizontal">
-                <Button
-                
-                  type="reset"
-                  className="bg-background text-black border border-slate-300 cursor-pointer"
-                  onClick={() => {
-                    form.reset();
-                    setDate(new Date(user.user_info?.birthdate ?? ""));
-                  }}
-                >
-                  Reset
-                </Button>
-                <Button className="cursor-pointer" type="submit" disabled={loading}>
-                  {loading ? "Saving..." : "Submit"}
-                </Button>
-              </Field>
-            </FieldGroup>
-          </form>
+                    </FieldGroup>
+                  </form>
+                </CardContent>
+              </Card>
+            </CollapsibleContent>
+          </Collapsible>
         </CardContent>
       </Card>
+
       {/* Better-auth /password/email */}
+
       <Card className="max-w-4xl mt-5 mx-auto p-4 mb-5">
-        <ChangeEmailDialog currentEmail={user.email} />
-        <ChangePasswordDialog currentEmail={user.email} />
+        <CardContent>
+          <Collapsible className="rounded-md data-[state=open]:bg-muted">
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="group w-full">
+                Email and Password
+                <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
+              <ChangeEmailDialog currentEmail={user.email} />
+              <ChangePasswordDialog currentEmail={user.email} />
+            </CollapsibleContent>
+          </Collapsible>
+        </CardContent>
       </Card>
     </>
   );

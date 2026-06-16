@@ -90,6 +90,17 @@ type Bookmark = {
     user_id: string;
 };
 
+type Plan = {
+    id: string;
+    name: string;
+    description: string | null;
+    image: string | null;
+    price: number;
+    priceId: string;
+    annualPrice: number | null;
+    annualPriceId: string | null;
+};
+
 export type {
     SuccessResult,
     ErrorResult,
@@ -102,4 +113,5 @@ export type {
     Category,
     CommentReaction,
     Bookmark,
+    Plan,
 };
