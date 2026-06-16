@@ -1,3 +1,4 @@
+import { BookmarkButton } from "@/components/bookmark-button";
 import RouteHeading from "@/components/route-heading";
 import {
   Card,
@@ -6,13 +7,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 import { Label } from "@/components/ui/label";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
@@ -20,6 +21,9 @@ import { TrendingUp } from "lucide-react";
 import { headers } from "next/headers";
 import { PieChart } from "recharts/types/chart/PieChart";
 import { Pie } from "recharts/types/polar/Pie";
+import Image from "next/image";
+import Link from "next/link";
+import ArticleList from "@/components/article-list";
 
 export default async function SavedArticles() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -31,17 +35,29 @@ export default async function SavedArticles() {
         select: {
           bookmark: {
             select: {
+              user: { select: { comments: true } },
               user_id: true,
               articleId: true,
               article: {
                 select: {
                   id: true,
                   title: true,
-                  category: true,
                   summary: true,
-                  location: true,
+                  content: true,
+                  bookmark: {
+                    include: { user: { select: { comments: true } } },
+                  },
                   image: true,
-                  author:true,
+                  location: true,
+                  createdAt: true,
+                  updatedAt: true,
+                  category: { select: { id: true, name: true } },
+                  author: { select: { id: true, alias: true, userId: true } },
+                  comments: { include: { reactions: true } },
+                  views: true,
+                  reactions: true,
+                  editorsChoice: true,
+                  deleted: true,
                 },
               },
             },
@@ -50,8 +66,11 @@ export default async function SavedArticles() {
       },
     },
   });
+
+  const articles =
+    savedArticles[0].user_info?.bookmark.map((a) => a.article) ?? [];
   return (
-    <div>
+    <div className="mb-5">
       {/* <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Pie Chart - Donut with Text</CardTitle>
@@ -117,11 +136,10 @@ export default async function SavedArticles() {
       </CardFooter>
     </Card> */}
       <RouteHeading label="Saved Articles" />
-      {savedArticles.map((article)=> (
-      <Card key={article.id} className="m-5"> </Card>  
-      ))}
-    
 
+      <div className="mt-5">
+        <ArticleList articles={articles} articlesPerPage={5} />
+      </div>
     </div>
   );
 }

@@ -28,6 +28,11 @@ export default function AdminNavbar() {
             <Link href="/dashboard/admin/users">User table</Link>
           </Button>
         </li>
+         <li>
+          <Button asChild variant="ghost" className="text-white">
+            <Link href="/dashboard/admin/saved-articles">Saved articles</Link>
+          </Button>
+        </li>
         <li>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -2,10 +2,8 @@
 
 import {
     bookmarkArticle,
-    hasUserBookmarkedArticle,
     unBookmarkArticle,
 } from "@/_actions/article-actions";
-import Button from "@/components/button";
 import { BookmarkIcon, BookmarkCheckIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
