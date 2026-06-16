@@ -98,6 +98,7 @@ type Plan = {
     priceId: string;
     annualPrice: number | null;
     annualPriceId: string | null;
+    adFree: boolean;
 };
 
 export type {

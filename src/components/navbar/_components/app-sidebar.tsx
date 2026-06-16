@@ -34,6 +34,9 @@ export default function AppSidebar({ categories }: { categories: Category[] | nu
                 <SidebarGroup>
                     <SidebarMenu>
                         <NewsDropdownSM label="News" links={links} />
+                        <SidebarMenuItem>
+                            <SidebarLink href="/marketplace">Marketplace</SidebarLink>
+                        </SidebarMenuItem>
                     </SidebarMenu>
                 </SidebarGroup>
             </SidebarContent>

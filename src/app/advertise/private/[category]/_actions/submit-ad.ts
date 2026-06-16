@@ -2,6 +2,7 @@
 
 import z from "zod";
 import Stripe from "stripe";
+import prisma from "@/lib/prisma";
 
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2026-05-27.dahlia",
@@ -13,6 +14,7 @@ const TIER_PRICES: Record<string, { amount: number; label: string }> = {
 };
 
 const schema = z.object({
+    listingType:  z.enum(["sell", "wanted"]).default("sell"),
     category:     z.string(),
     subcategory:  z.string().min(1, "Please select a subcategory"),
     title:        z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -40,10 +42,31 @@ export async function submitAd(values: AdValues): Promise<Result> {
         return { success: false, error: result.error.issues[0]?.message ?? "Invalid input" };
     }
 
-    const { tier, title, category, contactEmail } = result.data;
+    const { listingType, tier, title, category, subcategory, description, price,
+            priceType, condition, location, contactName, contactEmail,
+            contactPhone, photos } = result.data;
 
-    // Placeholder — wire up DB storage here when ready.
-    console.log("[submitAd]", result.data);
+    const ad = await prisma.ad.create({
+        data: {
+            listingType,
+            category,
+            subcategory,
+            title,
+            description,
+            price: price ? parseInt(price) : null,
+            priceType,
+            condition,
+            location,
+            contactName,
+            contactEmail,
+            contactPhone,
+            tier,
+            photos,
+            status: "pending",
+        },
+    });
+
+    console.log("[submitAd] saved ad", ad.id);
 
     if (tier !== "basic") {
         const { amount, label } = TIER_PRICES[tier];
@@ -67,6 +90,7 @@ export async function submitAd(values: AdValues): Promise<Result> {
             ],
             customer_email: contactEmail,
             metadata: {
+                adId:       ad.id,
                 adTitle:    title.slice(0, 200),
                 adCategory: category,
                 adTier:     tier,

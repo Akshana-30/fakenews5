@@ -4,6 +4,7 @@ import Button from "@/components/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +23,7 @@ const formSchema = z.object({
     priceId: z.string().min(10, "You must specify a price ID from Stripe.").max(128),
     annualPrice: z.number(),
     annualPriceId: z.string(),
+    adFree: z.boolean(),
 });
 
 export default function CreatePlanForm() {
@@ -36,6 +38,7 @@ export default function CreatePlanForm() {
             priceId: "",
             annualPrice: 0,
             annualPriceId: "",
+            adFree: false,
         },
         validators: {
             onSubmit: formSchema,
@@ -50,6 +53,7 @@ export default function CreatePlanForm() {
                 priceId: value.priceId,
                 annualPrice: value.annualPrice,
                 annualPriceId: value.annualPriceId,
+                adFree: value.adFree,
             });
             if (res.success && res.data) {
                 toast.success(
@@ -263,6 +267,27 @@ export default function CreatePlanForm() {
                                     </Field>
                                 );
                             }}
+                        </form.Field>
+
+                        <form.Field name="adFree">
+                            {(field) => (
+                                <Field>
+                                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                                        <Checkbox
+                                            id={field.name}
+                                            checked={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onCheckedChange={(checked) =>
+                                                field.handleChange(checked === true)
+                                            }
+                                        />
+                                        <span className="text-sm font-medium">Ad-free plan</span>
+                                    </label>
+                                    <p className="text-xs text-muted-foreground mt-0.5">
+                                        Subscribers on this plan will not see advertisements.
+                                    </p>
+                                </Field>
+                            )}
                         </form.Field>
                     </FieldGroup>
                 </form>

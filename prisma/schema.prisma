@@ -204,6 +204,7 @@ model Plan {
     priceId       String
     annualPrice   Int?    @default(0)
     annualPriceId String?
+    adFree        Boolean @default(false)
 
     @@map("plan")
 }
@@ -239,4 +240,26 @@ model ContactMessage {
     createdAt DateTime @default(now())
 
     @@map("contact_message")
+}
+
+model Ad {
+    id           String   @id @default(ulid())
+    createdAt    DateTime @default(now())
+    listingType  String   @default("sell")
+    category     String
+    subcategory  String
+    title        String
+    description  String
+    price        Int?
+    priceType    String   @default("fixed")
+    condition    String   @default("good")
+    location     String
+    contactName  String
+    contactEmail String
+    contactPhone String   @default("")
+    tier         String   @default("basic")
+    photos       String[]
+    status       String   @default("pending")
+
+    @@map("ad")
 }
