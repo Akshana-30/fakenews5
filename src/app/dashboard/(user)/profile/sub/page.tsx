@@ -15,13 +15,14 @@ export default async function SubscriptionPage() {
     if (subscriptions.length > 0) {
         latestSubscription = subscriptions[0];
         const plan = await getPlanByName(latestSubscription.plan);
-        console.log(plan);
         if (plan.success && plan.data) price = plan.data.price;
     }
     let history;
     if (subscriptions.length > 1) {
         history = subscriptions.slice(1);
     }
+    console.log(subscriptions);
+    console.log(latestSubscription);
     // console.log(subscriptions);
     // console.log(subscriptions.length);
     // console.log(latestSubscription, price);
