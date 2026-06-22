@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Anuphan, Lora, Roboto_Mono, Gelasio } from "next/font/google";
+import { Anuphan, Roboto_Mono, Gelasio } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar/navbar";
 import Header from "@/components/header";
