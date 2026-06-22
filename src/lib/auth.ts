@@ -82,6 +82,7 @@ export const auth = betterAuth({
                     plan,
                 }) => {
                     const text = `Thank your for signing up to our ${plan.name} plan. Go to http://localhost:3000/dashboard/profile/sub to manage your subscription.`;
+                    console.log(text);
                     if (subscription.stripeCustomerId) {
                         const user = await getUserFromStripeId(subscription.stripeCustomerId);
                         if (user.success && user.data) {
@@ -106,6 +107,7 @@ export const auth = betterAuth({
                     cancellationDetails,
                 }) => {
                     const text = `We're sorry to se you go! Your subscription has been cancelled. Go to http://localhost:3000/dashboard/profile/sub to restore and/or manage your subscriptions.`;
+                    console.log(text);
                     if (subscription.stripeCustomerId) {
                         const user = await getUserFromStripeId(subscription.stripeCustomerId);
                         if (user.success && user.data) {
@@ -125,6 +127,7 @@ export const auth = betterAuth({
                 },
                 onSubscriptionUpdate: async ({ event, subscription, stripeSubscription }) => {
                     const text = `Your subscription has been updated to ${subscription.plan}. You will be billed ${subscription.billingInterval == "year" ? "yearly" : "monthly"}.`;
+                    console.log(text);
                     if (subscription.stripeCustomerId) {
                         const user = await getUserFromStripeId(subscription.stripeCustomerId);
                         if (user.success && user.data) {
