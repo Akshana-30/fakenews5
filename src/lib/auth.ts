@@ -9,6 +9,7 @@ import { admin as adminPlugin } from "better-auth/plugins";
 import { editor, admin, subscriber, ac } from "./permissions";
 import Stripe from "stripe";
 import { stripe } from "@better-auth/stripe";
+import { getUserFromStripeId } from "@/_actions/user-actions";
 
 dotenv.config();
 
@@ -73,6 +74,76 @@ export const auth = betterAuth({
                         annualDiscountPriceId:
                             plan.annualPriceId !== null ? plan.annualPriceId : undefined,
                     }));
+                },
+                onSubscriptionComplete: async ({
+                    event,
+                    subscription,
+                    stripeSubscription,
+                    plan,
+                }) => {
+                    const text = `Thank your for signing up to our ${plan.name} plan. Go to http://localhost:3000/dashboard/profile/sub to manage your subscription.`;
+                    console.log(text);
+                    if (subscription.stripeCustomerId) {
+                        const user = await getUserFromStripeId(subscription.stripeCustomerId);
+                        if (user.success && user.data) {
+                            await transporter.sendMail(
+                                {
+                                    from: '"Fakenews" <noreply@fakenews.com>',
+                                    to: user.data.email,
+                                    subject: "Welcome to fakenews",
+                                    text: text,
+                                },
+                                function (error, info) {
+                                    console.error(`Unable to send email.\n\n${error}\n${info}`);
+                                },
+                            );
+                        }
+                    }
+                },
+                onSubscriptionCancel: async ({
+                    event,
+                    subscription,
+                    stripeSubscription,
+                    cancellationDetails,
+                }) => {
+                    const text = `We're sorry to se you go! Your subscription has been cancelled. Go to http://localhost:3000/dashboard/profile/sub to restore and/or manage your subscriptions.`;
+                    console.log(text);
+                    if (subscription.stripeCustomerId) {
+                        const user = await getUserFromStripeId(subscription.stripeCustomerId);
+                        if (user.success && user.data) {
+                            await transporter.sendMail(
+                                {
+                                    from: '"Fakenews" <noreply@fakenews.com>',
+                                    to: user.data.email,
+                                    subject: "Cancellation of subscription",
+                                    text: text,
+                                },
+                                function (error, info) {
+                                    console.error(`Unable to send email.\n\n${error}\n${info}`);
+                                },
+                            );
+                        }
+                    }
+                },
+                onSubscriptionUpdate: async ({ event, subscription, stripeSubscription }) => {
+                    const text = `Your subscription has been updated to ${subscription.plan}. You will be billed ${subscription.billingInterval == "year" ? "yearly" : "monthly"}.`;
+                    console.log(text);
+                    if (subscription.stripeCustomerId) {
+                        const user = await getUserFromStripeId(subscription.stripeCustomerId);
+                        if (user.success && user.data) {
+                            await transporter.sendMail(
+                                {
+                                    from: '"Fakenews" <noreply@fakenews.com>',
+                                    to: user.data.email,
+                                    subject: "Update of your subscription",
+                                    text: text,
+                                },
+                                function (error, info) {
+                                    console.error(`Unable to send email.\n\n${error}\n${info}`);
+                                },
+                            );
+                        }
+                    }
                 },
             },
         }),

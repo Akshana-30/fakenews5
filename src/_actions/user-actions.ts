@@ -88,3 +88,15 @@ export async function getAllUserDataFromId(userId: string) {
         return { success: false, error: `Couldn't find user with id ${userId}.` };
     }
 }
+
+export async function getUserFromStripeId(stripeId: string): Promise<Result<User>> {
+    try {
+        const user = await prisma.user.findFirst({ where: { stripeCustomerId: stripeId } });
+        if (user) return { success: true, data: user };
+        else return { success: false, error: `Couldn't find user from stripe ID ${stripeId}.` };
+    } catch (err) {
+        const msg = `An unknown error occurred when trying to find the user from stripe ID ${stripeId}.\n\n${err}`;
+        console.error(msg);
+        return { success: false, error: msg };
+    }
+}
