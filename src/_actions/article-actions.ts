@@ -220,7 +220,7 @@ export async function getArticleIdsByCategory(
 ): Promise<Result<string[] | null>> {
     try {
         const category = await prisma.category.findUnique({
-            where: { id: categoryId, deleted: null },
+            where: { id: categoryId },
             include: { article: true },
         });
         const articleIds: string[] = [];
