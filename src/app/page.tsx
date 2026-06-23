@@ -11,6 +11,9 @@ import NewsCard from "@/components/news-card";
 import SectionHead from "@/components/section-head";
 import SidebarCard from "@/components/sidebar-card";
 import NewsSidebar from "@/components/news-sidebar";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { getSubscriptionPlanFromUserId } from "@/_actions/subscription-actions";
 
 export default async function HomePage() {
     const [allResult, editorsResult, popularResult] = await Promise.all([
@@ -32,6 +35,12 @@ export default async function HomePage() {
     const rightColumn = [...editorsPicks.slice(1), ...latestNews]
         .filter((a) => a.id !== hero?.id)
         .slice(0, 3);
+
+    const user = await auth.api.getSession({ headers: await headers() });
+    if (user) {
+        const plan = await getSubscriptionPlanFromUserId(user.user.id);
+        console.log(plan);
+    }
 
     return (
         <div className="w-full px-5 pb-10">

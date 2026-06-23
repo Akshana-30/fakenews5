@@ -26,7 +26,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
 
     const userId = await getUserId();
     const article = await getArticle(articleID);
-    console.log(article);
+    // console.log(article);
 
     let hasPermission = false;
     const session = await auth.api.getSession({

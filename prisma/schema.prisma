@@ -262,3 +262,9 @@ model Ad {
 
     @@map("ad")
 }
+
+model Image {
+    id   String @id @default(uuid())
+    name String
+    url  String
+}
