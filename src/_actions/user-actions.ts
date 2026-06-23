@@ -4,6 +4,7 @@ import { User, UserInfo } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
+import { Role } from "better-auth/plugins";
 import { headers } from "next/headers";
 import { z } from "zod";
 

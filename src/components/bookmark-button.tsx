@@ -10,7 +10,7 @@ type BookmarkButtonProps = React.ComponentProps<typeof Button> & {
     articleId: string;
 };
 
-const BOOKMARK_ROLES = ["subscriber", "admin", "editor"] as const;
+const BOOKMARK_ROLES = ["admin", "editor", "basic", "pro"] as const;
 
 export function BookmarkButton({ articleId, ...props }: BookmarkButtonProps) {
     const [isEnabled, setIsEnabled] = useState(false);
@@ -20,7 +20,7 @@ export function BookmarkButton({ articleId, ...props }: BookmarkButtonProps) {
     const userId = session?.user.id;
 
     const canBookmark = BOOKMARK_ROLES.includes(
-        session?.user.role as (typeof BOOKMARK_ROLES)[number]
+        session?.user.role as (typeof BOOKMARK_ROLES)[number],
     );
 
     useEffect(() => {
@@ -54,7 +54,7 @@ export function BookmarkButton({ articleId, ...props }: BookmarkButtonProps) {
             suppressHydrationWarning
             {...props}
         >
-            {isEnabled ? <BookmarkCheckIcon/> : <BookmarkIcon/>}
+            {isEnabled ? <BookmarkCheckIcon /> : <BookmarkIcon />}
         </Button>
     );
 }
