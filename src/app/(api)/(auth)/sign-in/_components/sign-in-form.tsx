@@ -140,7 +140,7 @@ export default function SignInForm() {
                                                             size="icon-xs"
                                                             variant="ghost"
                                                         >
-                                                            {visible ? <EyeOffIcon /> : <EyeIcon />}
+                                                            {visible ? <EyeIcon /> : <EyeOffIcon />}
                                                         </InputGroupButton>
                                                     </InputGroupAddon>
                                                 </InputGroup>

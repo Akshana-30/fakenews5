@@ -18,9 +18,9 @@ import { cn } from "@/lib/utils";
 // assets
 import { ChevronDown, CheckIcon, Globe } from "lucide-react";
 import { CircleFlag } from "react-circle-flags";
+import { countries } from "country-data-list";
 
 // data
-import { countries } from "country-data-list";
 
 // Country interface
 export interface Country {
