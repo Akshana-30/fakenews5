@@ -2,7 +2,6 @@
 
 import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
-import { getUserId } from "./user-actions";
 
 type Article = {
     id: string;
@@ -10,6 +9,7 @@ type Article = {
     summary: string | null;
     content: string;
     comments: Comment[];
+    bookmark: Bookmark[];
     views: View[];
     reactions: ArticleReaction[];
     image: string | null;
@@ -146,6 +146,7 @@ export async function getArticle(articleId: string): Promise<Result<Article>> {
                 comments: { include: { reactions: true } },
                 reactions: true,
                 views: true,
+                bookmark: true,
             },
         });
         if (article) return { success: true, data: article };
@@ -155,7 +156,10 @@ export async function getArticle(articleId: string): Promise<Result<Article>> {
     }
 }
 
-type OnlyArticle = Omit<Article, "author" | "category" | "comments" | "reactions" | "views">;
+type OnlyArticle = Omit<
+    Article,
+    "author" | "category" | "comments" | "reactions" | "views" | "bookmark"
+>;
 
 export async function deleteArticle(articleId: string): Promise<Result<OnlyArticle>> {
     try {
@@ -220,7 +224,7 @@ export async function getArticleIdsByCategory(
 ): Promise<Result<string[] | null>> {
     try {
         const category = await prisma.category.findUnique({
-            where: { id: categoryId, deleted: null },
+            where: { id: categoryId },
             include: { article: true },
         });
         const articleIds: string[] = [];

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 export default function Bookmark() {
     function error() {
-        toast.error("You need to be a paying subscriber in order to bookmark articles.", {
+        toast.error("You need to be a registered user in order to bookmark articles.", {
             position: "top-center",
         });
     }

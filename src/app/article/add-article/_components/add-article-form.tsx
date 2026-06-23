@@ -16,7 +16,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import addArticle from "../_actions/add-article-action";
@@ -40,6 +39,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Editor } from "@/components/tiptap";
+
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
@@ -54,6 +55,7 @@ const formSchema = z.object({
   author: z.array(z.string()),
 });
 
+
 type UserSuggestion = {
   id: string;
   name: string;
@@ -62,12 +64,9 @@ type UserSuggestion = {
 
 export default function AddArticleForm() {
   const [categoryInput, setCategoryInput] = useState("");
-  const [authorOpen, setAuthorOpen] = useState(false);
-  const [authorSearch, setAuthorSearch] = useState("");
-  const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
+  const [authorInput, setAuthorInput] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
   const form = useForm({
     defaultValues: {
       title: "",
@@ -84,6 +83,8 @@ export default function AddArticleForm() {
     onSubmit: async ({ value }) => {
       setLoading(true);
       const result = await addArticle(value);
+      console.log(result);
+      console.log("aaa", result.success);
       if (result.success === false && result.error) {
         toast.error(result.error, { position: "top-center" });
         setLoading(false);
@@ -96,28 +97,6 @@ export default function AddArticleForm() {
       }
     },
   });
-
-  const handleAuthorSearch = async (value: string) => {
-    setAuthorSearch(value);
-
-    if (value.trim().length === 0) {
-      setSuggestions([]);
-      return;
-    }
-
-    const { data } = await authClient.admin.listUsers({
-      query: {
-        searchValue: value,
-        searchField: "name",
-      },
-    });
-
-    const filtered = (data?.users ?? []).filter(
-      (user) => user.role === "editor" || user.role === "admin",
-    );
-
-    setSuggestions(filtered);
-  };
 
   return (
     <Card className="w-2xl mx-auto">
@@ -157,30 +136,6 @@ export default function AddArticleForm() {
               }}
             </form.Field>
 
-            <form.Field name="content">
-              {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Content</FieldLabel>
-                    <Textarea
-                      className="border-r border-b"
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(ev) => field.handleChange(ev.target.value)}
-                      aria-invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            </form.Field>
-
             <form.Field name="summary">
               {(field) => {
                 const isInvalid =
@@ -204,6 +159,76 @@ export default function AddArticleForm() {
                 );
               }}
             </form.Field>
+
+            <form.Field name="content">
+              {(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Content</FieldLabel>
+                    <Editor
+                      initialMarkdown={field.state.value}
+                      onChange={(markdown) => {
+                        field.handleChange(markdown);
+                        field.handleBlur();
+                      }}
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            </form.Field>
+            {/* 
+                        <form.Field name="content">
+                            {(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched && !field.state.meta.isValid;
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>Content</FieldLabel>
+                                        <Textarea
+                                            className="border-r border-b"
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(ev) => field.handleChange(ev.target.value)}
+                                            aria-invalid={isInvalid}
+                                        />
+                                        {isInvalid && (
+                                            <FieldError errors={field.state.meta.errors} />
+                                        )}
+                                    </Field>
+                                );
+                            }}
+                        </form.Field> */}
+
+            {/* <form.Field name="summary">
+              {(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Summary</FieldLabel>
+                    <Input
+                      className="border-r border-b"
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(ev) => field.handleChange(ev.target.value)}
+                      aria-invalid={isInvalid}
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            </form.Field> */}
 
             <form.Field name="image">
               {(field) => {
@@ -247,10 +272,11 @@ export default function AddArticleForm() {
                   return (
                     <Field data-invalid={isInvalid} className="border p-2">
                       <FieldLabel>Category</FieldLabel>
+
                       <div className="px-4 py-2">
                         {field.state.value.map((name, index) => (
                           <span
-                            className="px-2 py-1 rounded mr-1 mt-1 text-xs"
+                            className=" px-2 py-1 rounded mr-1 mt-1 text-xs"
                             key={index}
                           >
                             {`${name} `}
@@ -264,13 +290,14 @@ export default function AddArticleForm() {
                           </span>
                         ))}
                       </div>
+
                       <div className="relative flex items-center">
                         <Input
-                          className="border pr-16"
+                          className="border pr-16 "
                           value={categoryInput}
                           onChange={(ev) => setCategoryInput(ev.target.value)}
                           onKeyDown={(ev) => ev.key === "Enter" && handleAdd()}
-                          placeholder="Economy, Sports..."
+                          placeholder="..Economy, Sports"
                         />
                         <Button
                           size="xs"
@@ -281,6 +308,7 @@ export default function AddArticleForm() {
                           Add
                         </Button>
                       </div>
+
                       {isInvalid && (
                         <FieldError errors={field.state.meta.errors} />
                       )}
@@ -289,9 +317,9 @@ export default function AddArticleForm() {
                 }}
               </form.Field>
             </div>
-
             <div className="flex gap-6">
-              <form.Field name="author" mode="array">
+              <div className="">
+ <form.Field name="author" mode="array">
                 {(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid;
@@ -403,6 +431,7 @@ export default function AddArticleForm() {
                   );
                 }}
               </form.Field>
+              </div>
 
               <form.Field name="location">
                 {(field) => {
@@ -428,6 +457,20 @@ export default function AddArticleForm() {
                 }}
               </form.Field>
             </div>
+
+            {/* <Field orientation="horizontal">
+              <Button className="cursor-pointer" type="submit">
+                Submit
+              </Button>
+              <Button
+                className="cursor-pointer"
+                type="reset"
+                variant="outline"
+                onClick={() => form.reset()}
+              >
+                Reset
+              </Button>
+            </Field> */}
           </FieldGroup>
         </form>
       </CardContent>

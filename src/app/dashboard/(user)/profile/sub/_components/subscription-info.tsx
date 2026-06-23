@@ -27,7 +27,9 @@ export default function SubscriptionInfo({
                         </TableRow>
                         <TableRow>
                             <TableCell className="font-semibold">Status</TableCell>
-                            <TableCell className="capitalize">{subscription.status}</TableCell>
+                            <TableCell className="capitalize">
+                                {subscription.cancelAt ? "Cancelled" : subscription.status}
+                            </TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell className="font-semibold">Cost</TableCell>
@@ -71,5 +73,7 @@ export default function SubscriptionInfo({
                 </Table>
             </>
         );
+    } else {
+        return <p>No subscription found.</p>;
     }
 }

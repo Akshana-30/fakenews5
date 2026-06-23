@@ -5,6 +5,9 @@ import Likes from "./_components/likes";
 import Bookmark from "./_components/bookmark";
 import Link from "next/link";
 import ArticleDoesntExist from "../../[articleID]/_components/article-doesnt-exists";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkIns from "remark-ins";
 
 export default async function PreviewArticlePage({
     params,
@@ -44,7 +47,11 @@ export default async function PreviewArticlePage({
                         i + 1 !== article.data.author.length ? `${a.alias}, ` : `${a.alias}`,
                     )}
                 </p>
-                <p className="mt-2 mb-4">{article.data.content.slice(0, 500) + " ..."}</p>
+                <article className="mt-2 mb-4 max-w-none prose border p-4">
+                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkIns]}>
+                        {article.data.content.slice(0, 500) + " ..."}
+                    </ReactMarkdown>
+                </article>{" "}
                 <div className="flex border-b-2 mt-2 pb-2 text-sm">
                     <div className="flex border-r pr-2">
                         <Views num={article.data.views.length} />

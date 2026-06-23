@@ -130,10 +130,11 @@ export default function WeatherApp() {
           {forecast.location?.name ?? "Your location"}
         </h1>
         <div>
-          <span className="flex justify-between mb-1.5">
-            {Math.round(now.temp)} °C {WeatherIcon(now.symbol)} {now.summary}
+          <span className="flex justify-center gap-2 mb-1.5">
+            {Math.round(now.temp)} °C {WeatherIcon(now.symbol)}
           </span>
-          <p>
+          <p className="text-center">{now.summary}</p>
+          <p className="text-center">
             Wind {now.windSpeed} m/s. Humidity {now.humidity}%
           </p>
         </div>
@@ -146,15 +147,15 @@ export default function WeatherApp() {
             <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />
           </Button>
         </CollapsibleTrigger>
-        <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
+        <CollapsibleContent className="flex flex-col items-start p-2.5 pt-0 text-sm">
           <ul>
             {forecast.timeseries.slice(0, 12).map((t) => {
               return (
                 <li key={t.validTime} className="flex items-center gap-2">
                   <span>{format(t.validTime, "HH:mm")}</span>
-                  {WeatherIconSM(t.symbol)}
-                  <span>{Math.round(t.temp)} °C</span>
-                  <span>{t.summary}</span>
+                  <span>{WeatherIconSM(t.symbol)}</span>
+                  <span>{Math.round(t.temp)}°C</span>
+                  <span className="truncate max-w-30">{t.summary}</span>
                 </li>
               );
             })}

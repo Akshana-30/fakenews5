@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 export default function Likes({ num }: { num: number }) {
     async function error() {
-        toast.error("You need to be a paying subscriber in order to react to articles.", {
+        toast.error("You need to be a registered user in order to react to articles.", {
             position: "top-center",
         });
     }

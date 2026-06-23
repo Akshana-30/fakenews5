@@ -1,5 +1,4 @@
 {
-
     "name": "fakenews4",
     "version": "0.1.0",
     "private": true,
@@ -16,6 +15,10 @@
         "@prisma/client": "^7.8.0",
         "@tanstack/react-form": "^1.32.1",
         "@tanstack/react-table": "^8.21.3",
+        "@tiptap/extensions": "^3.27.1",
+        "@tiptap/markdown": "^3.27.1",
+        "@tiptap/react": "^3.27.1",
+        "@tiptap/starter-kit": "^3.27.1",
         "@types/nodemailer": "^8.0.0",
         "better-auth": "^1.6.15",
         "better-auth-admin": "^0.1.7",
@@ -39,8 +42,11 @@
         "react-circle-flags": "^0.0.29",
         "react-day-picker": "^10.0.1",
         "react-dom": "19.2.4",
+        "react-markdown": "^10.1.0",
         "react-resizable-panels": "^4.11.2",
         "recharts": "3.8.0",
+        "remark-gfm": "^4.0.1",
+        "remark-ins": "^1.2.5",
         "resend": "^6.12.4",
         "resend-cli": "^2.2.1",
         "shadcn": "4.2.0-canary.0",
@@ -53,6 +59,7 @@
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4",
+        "@tailwindcss/typography": "^0.5.20",
         "@types/node": "^20",
         "@types/pg": "^8.20.0",
         "@types/react": "^19",
@@ -65,5 +72,4 @@
         "tailwindcss": "^4",
         "typescript": "^5"
     }
-
 }
