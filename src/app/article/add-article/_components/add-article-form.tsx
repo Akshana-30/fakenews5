@@ -64,7 +64,9 @@ type UserSuggestion = {
 
 export default function AddArticleForm() {
   const [categoryInput, setCategoryInput] = useState("");
-  const [authorInput, setAuthorInput] = useState("");
+  const [authorOpen, setAuthorOpen] = useState(false);
+  const [authorSearch, setAuthorSearch] = useState("");
+  const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const form = useForm({
@@ -97,6 +99,29 @@ export default function AddArticleForm() {
       }
     },
   });
+
+const handleAuthorSearch = async (value: string) => {
+    setAuthorSearch(value);
+ 
+    if (value.trim().length === 0) {
+      setSuggestions([]);
+      return;
+    }
+ 
+    const { data } = await authClient.admin.listUsers({
+      query: {
+        searchValue: value,
+        searchField: "name",
+      },
+    });
+ 
+    const filtered = (data?.users ?? []).filter(
+      (user) => user.role === "editor" || user.role === "admin",
+    );
+ 
+    setSuggestions(filtered);
+  };
+
 
   return (
     <Card className="w-2xl mx-auto">
