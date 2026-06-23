@@ -5,18 +5,16 @@ import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 const formSchema = z.object({
-  title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
-  summary: z
-    .string()
-    .min(1, "Summary is required")
-    .max(200, "Between 1-200 characters"),
-  content: z.string().min(1, "Content text is required"),
-  image: z.string(),
-  category: z.array(z.string()),
-  location: z.string(),
-  author: z.array(z.string()),
+    title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
+    summary: z.string().min(1, "Summary is required").max(200, "Between 1-200 characters"),
+    content: z.string().min(1, "Content text is required"),
+    image: z.string(),
+    category: z.array(z.string()),
+    location: z.string(),
+    author: z.array(z.string()),
 });
 
 type AddArticleValues = z.infer<typeof formSchema>;
@@ -28,6 +26,14 @@ export default async function addArticle(values: AddArticleValues): Promise<Resu
     if (!session) {
         return { success: false, error: "You must be signed in to publish an article." };
     }
+
+    const { success } = await auth.api.userHasPermission({
+        body: {
+            userId: session.user.id,
+            permissions: { article: ["create"] },
+        },
+    });
+    if (!success) redirect("/");
 
     try {
         // Connect any typed aliases that already exist as authors
@@ -50,8 +56,7 @@ export default async function addArticle(values: AddArticleValues): Promise<Resu
         if (!writerAuthor) {
             const matchedAliases = existingAuthors.map((a) => a.alias);
             const newAlias =
-                data.author.find((alias) => !matchedAliases.includes(alias)) ??
-                session.user.name;
+                data.author.find((alias) => !matchedAliases.includes(alias)) ?? session.user.name;
 
             writerAuthor = await prisma.author.create({
                 data: {

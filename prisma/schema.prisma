@@ -85,7 +85,7 @@ model Article {
     title         String
     summary       String?
     content       String
-    views         ArticleView[]
+    views         Int               @default(0)
     reactions     ArticleReaction[]
     image         String?
     createdAt     DateTime          @default(now()) @map("created_at")
@@ -132,13 +132,6 @@ model Bookmark {
     articleId String
 
     @@map("bookmark")
-}
-
-model ArticleView {
-    id        String  @id @default(ulid())
-    userId    String
-    articleId String
-    article   Article @relation(fields: [articleId], references: [id])
 }
 
 model Category {
@@ -263,6 +256,10 @@ model Ad {
     @@map("ad")
 }
 
+model Image {
+    id   String @id @default(uuid())
+    name String
+    url  String
 model Advertisement {
     id        String    @id @default(ulid())
     createdAt DateTime  @default(now())

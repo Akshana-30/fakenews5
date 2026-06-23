@@ -30,7 +30,7 @@ type Article = {
     content: string;
     comments: Comment[];
     bookmark: Bookmark[];
-    views: View[];
+    views: number;
     reactions: ArticleReaction[];
     image: string | null;
     createdAt: Date;

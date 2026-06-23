@@ -10,7 +10,7 @@ type Article = {
     content: string;
     comments: Comment[];
     bookmark: Bookmark[];
-    views: View[];
+    views: number;
     reactions: ArticleReaction[];
     image: string | null;
     createdAt: Date;
@@ -126,7 +126,7 @@ export async function getMostPopularArticles(limit = 3): Promise<Result<ArticleS
     try {
         const articles = await prisma.article.findMany({
             include: { author: true, category: true },
-            orderBy: { views: { _count: "desc" } },
+            orderBy: { views: "desc" },
             where: { deleted: null },
             take: limit,
         });
@@ -145,7 +145,6 @@ export async function getArticle(articleId: string): Promise<Result<Article>> {
                 category: true,
                 comments: { include: { reactions: true } },
                 reactions: true,
-                views: true,
                 bookmark: true,
             },
         });
@@ -436,13 +435,20 @@ export async function hasUserBookmarkedArticle(
     }
 }
 
-export async function addView(articleId: string, userId: string): Promise<Result<View>> {
+export async function addView(articleId: string): Promise<Result<number>> {
     try {
-        const res = await prisma.articleView.create({ data: { articleId: articleId, userId } });
-        if (res) {
-            return { success: true, data: res };
+        const article = await prisma.article.findUnique({ where: { id: articleId } });
+        if (!article) {
+            const msg = `Couldn't find article with id ${articleId}.`;
+            console.error(msg);
+            return { success: false, error: msg };
         } else {
-            return { success: false, error: `Couldn't add view to article ${articleId}.` };
+            const views = article.views;
+            const res = await prisma.article.update({
+                where: { id: articleId },
+                data: { views: views + 1 },
+            });
+            return { success: true, data: views + 1 };
         }
     } catch (err) {
         console.error(`Couldn't add view to article ${articleId}.`);
@@ -450,28 +456,28 @@ export async function addView(articleId: string, userId: string): Promise<Result
     }
 }
 
-export async function hasUserViewedArticle(
-    articleId: string,
-    userId: string,
-): Promise<Result<boolean>> {
-    try {
-        const article = await getArticle(articleId);
-        if (article.success && article.data) {
-            for (const v of article.data.views) {
-                if (v.userId === userId) {
-                    return { success: true, data: true };
-                }
-            }
-            return { success: true, data: false };
-        } else {
-            console.error(`Couldn't access views to article ${articleId}.\n\n`);
-            return { success: false, error: `Couldn't access views to article ${articleId}.\n\n` };
-        }
-    } catch (err) {
-        console.error(`Couldn't access views to article ${articleId}.\n\n`);
-        return { success: false, error: `Couldn't access views to article ${articleId}.\n\n` };
-    }
-}
+// export async function hasUserViewedArticle(
+//     articleId: string,
+//     userId: string,
+// ): Promise<Result<boolean>> {
+//     try {
+//         const article = await getArticle(articleId);
+//         if (article.success && article.data) {
+//             for (const v of article.data.views) {
+//                 if (v.userId === userId) {
+//                     return { success: true, data: true };
+//                 }
+//             }
+//             return { success: true, data: false };
+//         } else {
+//             console.error(`Couldn't access views to article ${articleId}.\n\n`);
+//             return { success: false, error: `Couldn't access views to article ${articleId}.\n\n` };
+//         }
+//     } catch (err) {
+//         console.error(`Couldn't access views to article ${articleId}.\n\n`);
+//         return { success: false, error: `Couldn't access views to article ${articleId}.\n\n` };
+//     }
+// }
 
 export type ArticleWithScore = {
     a: {
@@ -522,5 +528,29 @@ export async function topUpvotedArticle(): Promise<Result<ArticleWithScore[]>> {
             success: false,
             error: `An unknown error occured when trying to fetch articles from the database.\n\n${err}`,
         };
+    }
+}
+
+type OnlyOnlyArticle = {
+    id: string;
+    title: string | null;
+    views: number;
+};
+export async function getTopViewedArticle(limit: number): Promise<Result<OnlyOnlyArticle[]>> {
+    try {
+        const res = await prisma.article.findMany({
+            select: {
+                title: true,
+                views: true,
+                id: true,
+            },
+            orderBy: { views: "desc" },
+            take: limit,
+        });
+        return { success: true, data: res };
+    } catch (err) {
+        const msg = `An unknown error occurred when trying to fetch articles.\n\n${err}`;
+        console.log(err);
+        return { success: false, error: msg };
     }
 }

@@ -21,13 +21,24 @@ export default async function EditArticlePage({
             permissions: { article: ["update"] },
         },
     });
-    if (!hasPermission.success) redirect("/");
 
     const article = await prisma.article.findUnique({
         where: { id: articleID },
         include: { category: true, author: true },
     });
 
+    let isOwner = false;
+    if (article?.author) {
+        for (const a of article?.author) {
+            // console.log(a);
+            // console.log(session.user.id, a.userId);
+            if (session.user.id === a.userId) {
+                isOwner = true;
+            }
+        }
+    }
+
+    if (!hasPermission.success || !isOwner) redirect("/dashboard/admin/articles");
     if (!article) notFound();
 
     const defaultValues = {

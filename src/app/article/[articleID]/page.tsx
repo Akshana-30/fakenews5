@@ -3,7 +3,6 @@ import {
     getArticle,
     getUserReaction,
     hasUserBookmarkedArticle,
-    hasUserViewedArticle,
 } from "@/_actions/article-actions";
 import Link from "next/link";
 import Likes from "./_components/likes";
@@ -28,7 +27,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
 
     const userId = await getUserId();
     const article = await getArticle(articleID);
-    console.log(article);
+    // console.log(article);
 
     let hasPermission = false;
     const session = await auth.api.getSession({
@@ -48,13 +47,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         }
     }
 
-    if (userId && article.success && article.data) {
+    if (userId && hasPermission && article.success && article.data) {
+        await addView(articleID);
         // Check if the user has viewed the article and add a view if not
-        const res = await hasUserViewedArticle(article.data.id, userId);
-        if (res.success && !res.data) {
-            await addView(articleID, userId);
-        }
-        const views = article.data.views.length;
+        const views = article.data.views;
+        // console.log(views);
 
         // Calculate the total reactions (upvotes/downvotes) to one score
         const reactions = article.data.reactions;
@@ -114,7 +111,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
 
                 <article className="mt-2 mb-4 max-w-none prose border p-4">
                     <ReactMarkdown remarkPlugins={[remarkGfm, remarkIns]}>
-                        {article.data.content}
+                        {hasPermission ? article.data.content : article.data.content.slice(0, 500)}
                     </ReactMarkdown>
                 </article>
                 <InArticleAd />
@@ -170,7 +167,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         );
     } else if (article.success === false) {
         return <ArticleDoesntExist />;
-    } else if (!userId || !hasPermission) {
+    } else if (!hasPermission) {
+        redirect(`preview/${articleID}`);
+    } else {
         redirect(`preview/${articleID}`);
     }
 }

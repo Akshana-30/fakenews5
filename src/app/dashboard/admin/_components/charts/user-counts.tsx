@@ -44,10 +44,7 @@ export function LatestRegUsers(data: Props) {
                     key={u.id}
                     className="border rounded-full bg-chart-2 py-2 px-2 m-4 text-center"
                 >
-                    <Link
-                        className="text-sm"
-                        href={`/dashboard/admin/users/${u.id}`}
-                    >
+                    <Link className="text-sm" href={`/dashboard/admin/users/${u.id}`}>
                         {u.name}
                     </Link>
                     <p className="text-xs">
@@ -105,19 +102,21 @@ export function TopCommenter({ user, commentCount }: Propsu) {
     );
 }
 
-export function TopViewedArticles({ articles }: TopViewedProps) {
+type OnlyOnlyArticle = {
+    id: string;
+    title: string | null;
+    views: number;
+};
+export function TopViewedArticles({ articles }: { articles: OnlyOnlyArticle[] }) {
     return (
         <div className="border rounded-2xl bg-card px-4 max-h-40">
             <h1 className="font-heading text-base font-medium">Most viewed article</h1>
             {articles.map((a) => (
                 <div
-                    key={a.articleId}
+                    key={a.id}
                     className="border rounded-full bg-chart-2 py-2 px-2 m-4 text-center"
                 >
-                    <Link
-                        className="text-sm"
-                        href={`/article/${a.articleId}`}
-                    >
+                    <Link className="text-sm" href={`/article/${a.id}`}>
                         {a.title}
                     </Link>
                     <p className="text-xs">{a.views} views</p>

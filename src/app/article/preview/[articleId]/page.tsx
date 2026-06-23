@@ -1,4 +1,4 @@
-import { getArticle } from "@/_actions/article-actions";
+import { addView, getArticle } from "@/_actions/article-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Views from "../../[articleID]/_components/views";
 import Likes from "./_components/likes";
@@ -18,6 +18,7 @@ export default async function PreviewArticlePage({
     const article = await getArticle(articleId);
 
     if (article.success && article.data) {
+        await addView(articleId);
         let totalReactions = 0;
         for (const r of article.data.reactions) {
             totalReactions += r.val;
@@ -54,7 +55,7 @@ export default async function PreviewArticlePage({
                 </article>{" "}
                 <div className="flex border-b-2 mt-2 pb-2 text-sm">
                     <div className="flex border-r pr-2">
-                        <Views num={article.data.views.length} />
+                        <Views num={article.data.views} />
                     </div>
                     <div className="flex border-r pr-2">
                         <Likes num={totalReactions} />
