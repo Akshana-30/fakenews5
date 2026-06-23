@@ -11,7 +11,25 @@ import addArticle from "../_actions/add-article-action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
+import { authClient } from "@/lib/auth-client";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Editor } from "@/components/tiptap";
+
 
 const formSchema = z.object({
     title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
@@ -22,6 +40,13 @@ const formSchema = z.object({
     location: z.string(),
     author: z.array(z.string()),
 });
+
+
+type UserSuggestion = {
+  id: string;
+  name: string;
+  role?: string ;
+};
 
 export default function AddArticleForm() {
     const [categoryInput, setCategoryInput] = useState("");

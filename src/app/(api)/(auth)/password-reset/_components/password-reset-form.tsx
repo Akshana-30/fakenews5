@@ -72,8 +72,6 @@ export default function PasswordResetForm() {
       }
       router.push("/");
       router.refresh();
-      // alert(error.message || "An unknown error occurred");
-      // return;
     },
   });
 
@@ -123,7 +121,7 @@ export default function PasswordResetForm() {
                               size="icon-xs"
                               variant="ghost"
                             >
-                              {visible.password ? <EyeOffIcon /> : <EyeIcon />}
+                              {visible.password ?<EyeIcon /> : <EyeOffIcon /> }
                             </InputGroupButton>
                           </InputGroupAddon>
                         </InputGroup>
@@ -166,7 +164,7 @@ export default function PasswordResetForm() {
                               size="icon-xs"
                               variant="ghost"
                             >
-                              {visible.confirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+                              {visible.confirmPassword ?<EyeIcon /> : <EyeOffIcon />  }
                             </InputGroupButton>
                           </InputGroupAddon>
                         </InputGroup>
