@@ -204,7 +204,6 @@ model Plan {
     priceId       String
     annualPrice   Int?    @default(0)
     annualPriceId String?
-    adFree        Boolean @default(false)
 
     @@map("plan")
 }

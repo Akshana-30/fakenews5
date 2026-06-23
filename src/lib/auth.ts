@@ -6,7 +6,7 @@ import { nextCookies } from "better-auth/next-js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import { admin as adminPlugin } from "better-auth/plugins";
-import { editor, admin, subscriber, ac } from "./permissions";
+import { editor, admin, ac } from "./permissions";
 import Stripe from "stripe";
 import { stripe } from "@better-auth/stripe";
 import { getUserFromStripeId } from "@/_actions/user-actions";
@@ -60,7 +60,7 @@ export const auth = betterAuth({
         },
     },
     plugins: [
-        adminPlugin({ ac, roles: { admin, subscriber, editor } }),
+        adminPlugin({ ac, roles: { admin, editor } }),
         stripe({
             stripeClient,
             stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,

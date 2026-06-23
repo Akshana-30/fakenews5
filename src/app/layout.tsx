@@ -45,7 +45,7 @@ export default async function RootLayout({
     });
 
     let hasPermission = false;
-    let editor = false
+    let editor = false;
 
     if (session != null) {
         const res = await auth.api.userHasPermission({
@@ -55,12 +55,12 @@ export default async function RootLayout({
             },
             headers: await headers(),
         });
-        if (res?.success && session.user.role === "admin") {
+        if (res?.success) {
             hasPermission = true;
         }
     }
-    if(session?.user.role === "editor"){
-        editor = true
+    if (session?.user.role === "editor") {
+        editor = true;
     }
 
     const cats = await getCategories();
