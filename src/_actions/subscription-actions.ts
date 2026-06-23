@@ -150,11 +150,16 @@ export async function getSubscriptionPlanFromUserId(
 ): Promise<Result<SubscriptionWithNull | null>> {
     try {
         const user = await prisma.user.findUnique({ where: { id: userId } });
-        const sub = await prisma.subscription.findFirst({
-            where: { stripeCustomerId: user?.stripeCustomerId },
-        });
-        if (sub) return { success: true, data: sub };
-        else return { success: true, data: null };
+        if (user) {
+            const sub = await prisma.subscription.findFirst({
+                where: { stripeCustomerId: user?.stripeCustomerId },
+            });
+            if (sub) return { success: true, data: sub };
+            else return { success: true, data: null };
+        } else {
+            const msg = `Couldn't find the user with id ${userId}.`;
+            return { success: false, error: msg };
+        }
     } catch (err) {
         const msg = `An unknown error occurred when trying to find the subscription for user with id ${userId}.\n\n${err}`;
         console.error(msg);
