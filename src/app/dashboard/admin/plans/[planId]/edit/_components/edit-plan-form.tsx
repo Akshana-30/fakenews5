@@ -1,19 +1,8 @@
 "use client";
 import { updatePlan } from "@/_actions/subscription-actions";
 import Button from "@/components/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
@@ -24,289 +13,333 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
+import Image from "next/image";
 
 const formSchema = z.object({
-  name: z.string().min(1, "Name is required.").max(64),
-  description: z.string(),
-  image: z.string(),
-  price: z.number(),
-  priceId: z
-    .string()
-    .min(10, "You must specify a price ID from Stripe.")
-    .max(128),
-  annualPrice: z.number(),
-  annualPriceId: z.string(),
-  adFree: z.boolean(),
+    name: z.string().min(1, "Name is required.").max(64),
+    description: z.string(),
+    image: z.string(),
+    price: z.number(),
+    priceId: z.string().min(10, "You must specify a price ID from Stripe.").max(128),
+    annualPrice: z.number(),
+    annualPriceId: z.string(),
 });
 
 export default function EditPlanForm({ plan }: { plan: Plan }) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const form = useForm({
-    defaultValues: {
-      name: plan.name,
-      description: plan.description ?? "",
-      image: plan.image ?? "",
-      price: plan.price,
-      priceId: plan.priceId,
-      annualPrice: Number(plan.annualPrice),
-      annualPriceId: plan.annualPriceId ?? "",
-      adFree: plan.adFree ?? false,
-    },
-    validators: {
-      onSubmit: formSchema,
-    },
-    onSubmit: async ({ value }) => {
-      setLoading(true);
-      const res = await updatePlan({
-        id: plan.id,
-        name: value.name,
-        description: value.description,
-        image: value.image,
-        price: Number(value.price),
-        priceId: value.priceId,
-        annualPrice: Number(value.annualPrice),
-        annualPriceId: value.annualPriceId,
-        adFree: value.adFree,
-      });
-      if (res.success && res.data) {
-        toast.success(
-          `Updated subscription plan successfully "${res.data.name} added to the database.`,
-          { position: "top-center" },
-        );
-        router.refresh();
-      } else if (res.success == false && res.error) {
-        toast.error(`Couldn't create a new subscription.\n\n${res.error}`, {
-          position: "top-center",
-        });
-      }
-      setLoading(false);
-    },
-  });
-
-  return (
-    <Card className="md:w-2xl">
-      <CardHeader>
-        <CardTitle>Edit plan {plan.name}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="create-plan-form"
-          onSubmit={(ev) => {
-            ev.preventDefault();
-            form.handleSubmit();
-          }}
-        >
-          <FieldGroup>
-            <form.Field name="name">
-              {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(ev) => field.handleChange(ev.target.value)}
-                      aria-invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
+    const [imageUploading, setImageUploading] = useState(false);
+    const form = useForm({
+        defaultValues: {
+            name: plan.name,
+            description: plan.description ?? "",
+            image: plan.image ?? "",
+            price: plan.price,
+            priceId: plan.priceId,
+            annualPrice: Number(plan.annualPrice),
+            annualPriceId: plan.annualPriceId ?? "",
+        },
+        validators: {
+            onSubmit: formSchema,
+        },
+        onSubmit: async ({ value }) => {
+            setLoading(true);
+            const res = await updatePlan({
+                id: plan.id,
+                name: value.name,
+                description: value.description,
+                image: value.image,
+                price: Number(value.price),
+                priceId: value.priceId,
+                annualPrice: Number(value.annualPrice),
+                annualPriceId: value.annualPriceId,
+            });
+            if (res.success && res.data) {
+                toast.success(
+                    `Updated subscription plan successfully "${res.data.name} added to the database.`,
+                    { position: "top-center" },
                 );
-              }}
-            </form.Field>
+                router.refresh();
+            } else if (res.success == false && res.error) {
+                toast.error(`Couldn't create a new subscription.\n\n${res.error}`, {
+                    position: "top-center",
+                });
+            }
+            setLoading(false);
+        },
+    });
 
-            <form.Field name="description">
-              {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
+    return (
+        <Card className="md:w-2xl">
+            <CardHeader>
+                <CardTitle>Edit plan {plan.name}</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <form
+                    id="create-plan-form"
+                    onSubmit={(ev) => {
+                        ev.preventDefault();
+                        form.handleSubmit();
+                    }}
+                >
+                    <FieldGroup>
+                        <form.Field name="name">
+                            {(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched && !field.state.meta.isValid;
 
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                    <Textarea
-                      id={field.name}
-                      value={field.state.value ?? ""}
-                      name={field.name}
-                      onBlur={field.handleBlur}
-                      onChange={(ev) => field.handleChange(ev.target.value)}
-                      aria-invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            </form.Field>
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                                        <Input
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(ev) => field.handleChange(ev.target.value)}
+                                            aria-invalid={isInvalid}
+                                        />
+                                        {isInvalid && (
+                                            <FieldError errors={field.state.meta.errors} />
+                                        )}
+                                    </Field>
+                                );
+                            }}
+                        </form.Field>
 
-            <form.Field name="image">
-              {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
+                        <form.Field name="description">
+                            {(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched && !field.state.meta.isValid;
 
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Image</FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value ?? ""}
-                      onBlur={field.handleBlur}
-                      onChange={(ev) => field.handleChange(ev.target.value)}
-                      aria-invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            </form.Field>
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>Description</FieldLabel>
+                                        <Textarea
+                                            id={field.name}
+                                            value={field.state.value ?? ""}
+                                            name={field.name}
+                                            onBlur={field.handleBlur}
+                                            onChange={(ev) => field.handleChange(ev.target.value)}
+                                            aria-invalid={isInvalid}
+                                        />
+                                        {isInvalid && (
+                                            <FieldError errors={field.state.meta.errors} />
+                                        )}
+                                    </Field>
+                                );
+                            }}
+                        </form.Field>
 
-            <form.Field name="price">
-              {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
+                        <form.Field name="image">
+                            {(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched && !field.state.meta.isValid;
 
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Price</FieldLabel>
-                    <Input
-                      type="number"
-                      id={field.name}
-                      name={field.name}
-                      value={Number(field.state.value)}
-                      onBlur={field.handleBlur}
-                      onChange={(ev) =>
-                        field.handleChange(Number(ev.target.value))
-                      }
-                      aria-invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            </form.Field>
+                                const handleFileChange = async (
+                                    ev: React.ChangeEvent<HTMLInputElement>,
+                                ) => {
+                                    const file = ev.target.files?.[0];
+                                    if (!file) return;
 
-            <form.Field name="priceId">
-              {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
+                                    setImageUploading(true);
 
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      (Stripe) price ID
-                    </FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value ?? ""}
-                      onBlur={field.handleBlur}
-                      onChange={(ev) => field.handleChange(ev.target.value)}
-                      aria-invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            </form.Field>
+                                    const fd = new FormData();
+                                    fd.append("file", file);
 
-            <form.Field name="annualPrice">
-              {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
+                                    const result = await uploadImage(fd);
 
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Annual price</FieldLabel>
-                    <Input
-                      type="number"
-                      id={field.name}
-                      name={field.name}
-                      value={Number(field.state.value)}
-                      onBlur={field.handleBlur}
-                      onChange={(ev) =>
-                        field.handleChange(Number(ev.target.value))
-                      }
-                      aria-invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            </form.Field>
+                                    if ("error" in result) {
+                                        toast.error(result.error, {
+                                            position: "top-center",
+                                        });
+                                        field.handleChange("");
+                                    } else {
+                                        field.handleChange(result.url);
+                                    }
 
-            <form.Field name="annualPriceId">
-              {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
+                                    field.handleBlur();
+                                    setImageUploading(false);
+                                };
 
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      (Stripe) annual price ID
-                    </FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value ?? ""}
-                      onBlur={field.handleBlur}
-                      onChange={(ev) => field.handleChange(ev.target.value)}
-                      aria-invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            </form.Field>
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>Image</FieldLabel>
+                                        <Input
+                                            type="file"
+                                            accept="image/*"
+                                            className="border-r border-b"
+                                            id={field.name}
+                                            name={field.name}
+                                            onChange={handleFileChange}
+                                            disabled={imageUploading}
+                                            aria-invalid={isInvalid}
+                                        />
 
-            <form.Field name="adFree">
-              {(field) => (
-                <Field>
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <Checkbox
-                      id={field.name}
-                      checked={field.state.value}
-                      onBlur={field.handleBlur}
-                      onCheckedChange={(checked) =>
-                        field.handleChange(checked === true)
-                      }
-                    />
-                    <span className="text-sm font-medium">Ad-free plan</span>
-                  </label>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Subscribers on this plan will not see advertisements.
-                  </p>
-                </Field>
-              )}
-            </form.Field>
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter className="flex justify-center gap-4">
-        <Button form="create-plan-form" type="reset" variant={"outline"}>
-          Reset
-        </Button>
-        <Button form="create-plan-form" type="submit" variant={"default"}>
-          {loading ? <Spinner /> : "Save"}
-        </Button>
-      </CardFooter>
-    </Card>
-  );
+                                        {imageUploading && (
+                                            <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                                                <Spinner className="size-4" />
+                                                Uploading ...
+                                            </div>
+                                        )}
+
+                                        {field.state.value && !imageUploading && (
+                                            <div className="flex items-center justify-center w-xl">
+                                                <Image
+                                                    src={field.state.value}
+                                                    alt="Image for plan"
+                                                    width={100}
+                                                    height={100}
+                                                    className="mt-2 h-28 w-auto rounded object-cover border"
+                                                />
+                                            </div>
+                                        )}
+
+                                        {isInvalid && (
+                                            <FieldError errors={field.state.meta.errors} />
+                                        )}
+                                    </Field>
+                                );
+                            }}
+                        </form.Field>
+
+                        <form.Field name="price">
+                            {(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched && !field.state.meta.isValid;
+
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>Price</FieldLabel>
+                                        <Input
+                                            type="number"
+                                            id={field.name}
+                                            name={field.name}
+                                            value={Number(field.state.value)}
+                                            onBlur={field.handleBlur}
+                                            onChange={(ev) =>
+                                                field.handleChange(Number(ev.target.value))
+                                            }
+                                            aria-invalid={isInvalid}
+                                        />
+                                        {isInvalid && (
+                                            <FieldError errors={field.state.meta.errors} />
+                                        )}
+                                    </Field>
+                                );
+                            }}
+                        </form.Field>
+
+                        <form.Field name="priceId">
+                            {(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched && !field.state.meta.isValid;
+
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            (Stripe) price ID
+                                        </FieldLabel>
+                                        <Input
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value ?? ""}
+                                            onBlur={field.handleBlur}
+                                            onChange={(ev) => field.handleChange(ev.target.value)}
+                                            aria-invalid={isInvalid}
+                                        />
+                                        {isInvalid && (
+                                            <FieldError errors={field.state.meta.errors} />
+                                        )}
+                                    </Field>
+                                );
+                            }}
+                        </form.Field>
+
+                        <form.Field name="annualPrice">
+                            {(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched && !field.state.meta.isValid;
+
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>Annual price</FieldLabel>
+                                        <Input
+                                            type="number"
+                                            id={field.name}
+                                            name={field.name}
+                                            value={Number(field.state.value)}
+                                            onBlur={field.handleBlur}
+                                            onChange={(ev) =>
+                                                field.handleChange(Number(ev.target.value))
+                                            }
+                                            aria-invalid={isInvalid}
+                                        />
+                                        {isInvalid && (
+                                            <FieldError errors={field.state.meta.errors} />
+                                        )}
+                                    </Field>
+                                );
+                            }}
+                        </form.Field>
+
+                        <form.Field name="annualPriceId">
+                            {(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched && !field.state.meta.isValid;
+
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>
+                                            (Stripe) annual price ID
+                                        </FieldLabel>
+                                        <Input
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value ?? ""}
+                                            onBlur={field.handleBlur}
+                                            onChange={(ev) => field.handleChange(ev.target.value)}
+                                            aria-invalid={isInvalid}
+                                        />
+                                        {isInvalid && (
+                                            <FieldError errors={field.state.meta.errors} />
+                                        )}
+                                    </Field>
+                                );
+                            }}
+                        </form.Field>
+
+                        <form.Field name="adFree">
+                            {(field) => (
+                                <Field>
+                                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                                        <Checkbox
+                                            id={field.name}
+                                            checked={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onCheckedChange={(checked) =>
+                                                field.handleChange(checked === true)
+                                            }
+                                        />
+                                        <span className="text-sm font-medium">Ad-free plan</span>
+                                    </label>
+                                    <p className="text-xs text-muted-foreground mt-0.5">
+                                        Subscribers on this plan will not see advertisements.
+                                    </p>
+                                </Field>
+                            )}
+                        </form.Field>
+                    </FieldGroup>
+                </form>
+            </CardContent>
+            <CardFooter className="flex justify-center gap-4">
+                <Button form="create-plan-form" type="reset" variant={"outline"}>
+                    Reset
+                </Button>
+                <Button form="create-plan-form" type="submit" variant={"default"}>
+                    {loading ? <Spinner /> : "Save"}
+                </Button>
+            </CardFooter>
+        </Card>
+    );
 }

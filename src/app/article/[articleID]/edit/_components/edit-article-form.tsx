@@ -5,7 +5,6 @@ import z from "zod";
 import { useForm } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -194,7 +193,7 @@ export default function EditArticleForm({ articleId, defaultValues }: EditArticl
                                         {imageUploading && (
                                             <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                                                 <Spinner className="size-4" />
-                                                Uploading image...
+                                                Uploading ...
                                             </div>
                                         )}
 
