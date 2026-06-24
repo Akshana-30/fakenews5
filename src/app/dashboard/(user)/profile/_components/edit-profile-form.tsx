@@ -112,7 +112,7 @@ export default function EditProfileForm({ user }: Props) {
       {/* Regular info */}
 
       <Collapsible className=" rounded-md data-[state=open]:bg-muted">
-        <CollapsibleTrigger className=" bg-amber-100 h-20" asChild>
+        <CollapsibleTrigger className=" h-20" asChild>
           <Button variant="ghost" className="group w-full">
             User settings
             <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />
@@ -397,7 +397,7 @@ export default function EditProfileForm({ user }: Props) {
 
       {/* Better-auth /password/email */}
       <Collapsible className=" rounded-md data-[state=open]:bg-muted">
-        <CollapsibleTrigger className="h-20" asChild>
+        <CollapsibleTrigger className="mb-0 h-20" asChild>
           <Button variant="ghost" className="group w-full">
             Email and Password
             <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />

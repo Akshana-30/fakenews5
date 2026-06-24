@@ -10,7 +10,7 @@ type BookmarkButtonProps = React.ComponentProps<typeof Button> & {
     articleId: string;
 };
 
-const BOOKMARK_ROLES = ["subscriber", "admin", "editor"] as const;
+const BOOKMARK_ROLES = ["user", "admin", "editor"] as const;
 
 export function BookmarkButton({ articleId, ...props }: BookmarkButtonProps) {
     const [isEnabled, setIsEnabled] = useState(false);

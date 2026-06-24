@@ -17,7 +17,7 @@ export function SearchBar() {
 
   return (
     <form onSubmit={handleSearch}>
-      <InputGroup className=" h-6 bg-white/70 dark:text-white text-black rounded-2xl">
+      <InputGroup className=" h-6 dark:bg-white/80 bg-white/70 dark:text-black text-black rounded-2xl">
         <InputGroupInput
           placeholder="Article, author or category"
           value={query}
