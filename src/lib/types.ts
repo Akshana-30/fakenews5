@@ -99,6 +99,7 @@ type Plan = {
     priceId: string;
     annualPrice: number | null;
     annualPriceId: string | null;
+    annualImage: string | null;
 };
 
 export type {

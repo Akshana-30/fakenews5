@@ -25,7 +25,7 @@ const formSchema = z.object({
     priceId: z.string().min(10, "You must specify a price ID from Stripe.").max(128),
     annualPrice: z.number(),
     annualPriceId: z.string(),
-    adFree: z.boolean(),
+    annualImage: z.string(),
 });
 
 export default function CreatePlanForm() {
@@ -41,7 +41,7 @@ export default function CreatePlanForm() {
             priceId: "",
             annualPrice: 0,
             annualPriceId: "",
-            adFree: false,
+            annualImage: "",
         },
         validators: {
             onSubmit: formSchema,
@@ -56,6 +56,7 @@ export default function CreatePlanForm() {
                 priceId: value.priceId,
                 annualPrice: value.annualPrice,
                 annualPriceId: value.annualPriceId,
+                annualImage: value.annualImage,
             });
             if (res.success && res.data) {
                 toast.success(
@@ -351,6 +352,83 @@ export default function CreatePlanForm() {
                                                         }
                                                         aria-invalid={isInvalid}
                                                     />
+                                                    {isInvalid && (
+                                                        <FieldError
+                                                            errors={field.state.meta.errors}
+                                                        />
+                                                    )}
+                                                </Field>
+                                            );
+                                        }}
+                                    </form.Field>
+
+                                    <form.Field name="annualImage">
+                                        {(field) => {
+                                            const isInvalid =
+                                                field.state.meta.isTouched &&
+                                                !field.state.meta.isValid;
+
+                                            const handleFileChange = async (
+                                                ev: React.ChangeEvent<HTMLInputElement>,
+                                            ) => {
+                                                const file = ev.target.files?.[0];
+                                                if (!file) return;
+
+                                                setImageUploading(true);
+
+                                                const fd = new FormData();
+                                                fd.append("file", file);
+
+                                                const result = await uploadImage(fd);
+
+                                                if ("error" in result) {
+                                                    toast.error(result.error, {
+                                                        position: "top-center",
+                                                    });
+                                                    field.handleChange("");
+                                                } else {
+                                                    field.handleChange(result.url);
+                                                }
+
+                                                field.handleBlur();
+                                                setImageUploading(false);
+                                            };
+
+                                            return (
+                                                <Field data-invalid={isInvalid}>
+                                                    <FieldLabel htmlFor={field.name}>
+                                                        Image for annual
+                                                    </FieldLabel>
+                                                    <Input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="border-r border-b"
+                                                        id={field.name}
+                                                        name={field.name}
+                                                        onChange={handleFileChange}
+                                                        disabled={imageUploading}
+                                                        aria-invalid={isInvalid}
+                                                    />
+
+                                                    {imageUploading && (
+                                                        <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                                                            <Spinner className="size-4" />
+                                                            Uploading ...
+                                                        </div>
+                                                    )}
+
+                                                    {field.state.value && !imageUploading && (
+                                                        <div className="flex items-center justify-center w-xl">
+                                                            <Image
+                                                                src={field.state.value}
+                                                                alt="Image for plan"
+                                                                width={100}
+                                                                height={100}
+                                                                className="mt-2 h-28 w-auto rounded object-cover border"
+                                                            />
+                                                        </div>
+                                                    )}
+
                                                     {isInvalid && (
                                                         <FieldError
                                                             errors={field.state.meta.errors}
