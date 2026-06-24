@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "plan" ALTER COLUMN "createdAt" DROP DEFAULT,
-ALTER COLUMN "updatedAt" DROP DEFAULT;

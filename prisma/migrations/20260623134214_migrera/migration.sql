@@ -68,6 +68,7 @@ CREATE TABLE "article" (
     "title" TEXT NOT NULL,
     "summary" TEXT,
     "content" TEXT NOT NULL,
+    "views" INTEGER NOT NULL DEFAULT 0,
     "image" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -109,15 +110,6 @@ CREATE TABLE "bookmark" (
     "articleId" TEXT NOT NULL,
 
     CONSTRAINT "bookmark_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "ArticleView" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "articleId" TEXT NOT NULL,
-
-    CONSTRAINT "ArticleView_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -179,8 +171,6 @@ CREATE TABLE "plan" (
     "priceId" TEXT NOT NULL,
     "annualPrice" INTEGER DEFAULT 0,
     "annualPriceId" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "plan_pkey" PRIMARY KEY ("id")
 );
@@ -218,6 +208,53 @@ CREATE TABLE "contact_message" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "contact_message_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ad" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "listingType" TEXT NOT NULL DEFAULT 'sell',
+    "category" TEXT NOT NULL,
+    "subcategory" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "price" INTEGER,
+    "priceType" TEXT NOT NULL DEFAULT 'fixed',
+    "condition" TEXT NOT NULL DEFAULT 'good',
+    "location" TEXT NOT NULL,
+    "contactName" TEXT NOT NULL,
+    "contactEmail" TEXT NOT NULL,
+    "contactPhone" TEXT NOT NULL DEFAULT '',
+    "tier" TEXT NOT NULL DEFAULT 'basic',
+    "photos" TEXT[],
+    "status" TEXT NOT NULL DEFAULT 'pending',
+
+    CONSTRAINT "ad_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Image" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+
+    CONSTRAINT "Image_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "advertisement" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "label" TEXT NOT NULL,
+    "format" TEXT NOT NULL,
+    "imageUrl" TEXT NOT NULL,
+    "linkUrl" TEXT NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT false,
+    "startsAt" TIMESTAMP(3),
+    "endsAt" TIMESTAMP(3),
+
+    CONSTRAINT "advertisement_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -298,9 +335,6 @@ ALTER TABLE "bookmark" ADD CONSTRAINT "bookmark_user_id_fkey" FOREIGN KEY ("user
 
 -- AddForeignKey
 ALTER TABLE "bookmark" ADD CONSTRAINT "bookmark_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "article"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ArticleView" ADD CONSTRAINT "ArticleView_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "article"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "author" ADD CONSTRAINT "author_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
