@@ -57,6 +57,7 @@ export async function createPlan(plan: PlanWithoutId): Promise<Result<Plan>> {
                 priceId: plan.priceId,
                 annualPrice: plan.annualPrice,
                 annualPriceId: plan.annualPriceId,
+                annualImage: plan.annualImage,
             },
         });
         if (res) return { success: true, data: res };

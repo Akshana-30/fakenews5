@@ -20,7 +20,7 @@ export default async function AddArticlePage() {
         body: {
             userId: userId,
             permissions: {
-                article: ["create", "update", "delete"],
+                article: ["create"],
             },
         },
     });
@@ -29,7 +29,7 @@ export default async function AddArticlePage() {
     }
     return (
         <div className="w-full">
-            <RouteHeading label="Add article"/>
+            <RouteHeading label="Add article" />
 
             <div className="flex pt-10">
                 <AddArticleForm />

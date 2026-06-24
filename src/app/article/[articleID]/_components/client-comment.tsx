@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { useState, type ReactNode } from "react";
 import ReplyForm from "./reply-form";
 import { Children } from "react";
+import DeleteCommentButton from "../manage-comments/_components/delete-comment-button";
 
 type CommentData = {
     id: string;
@@ -56,6 +57,7 @@ export default function ClientComment({
     articleId,
     level,
     parentComment,
+    canDelete = false,
     children,
 }: {
     num: number;
@@ -66,6 +68,7 @@ export default function ClientComment({
     articleId: string;
     level: number;
     parentComment: string | null;
+    canDelete: boolean;
     children?: ReactNode;
 }) {
     const [showReplyForm, setShowReplyForm] = useState(false);
@@ -90,12 +93,15 @@ export default function ClientComment({
                                 {format(comment.createdAt, "yyyy-MM-dd HH:mm")}
                             </span>
                         </div>
+
                         <Button
                             className="cursor-pointer"
                             onClick={() => setShowReplyForm((f) => !f)}
                         >
                             {showReplyForm ? "Cancel" : "Reply"}
                         </Button>
+
+                        {canDelete ? <DeleteCommentButton commentId={comment.id} /> : ""}
                     </div>
                 </CardHeader>
                 <CardContent>

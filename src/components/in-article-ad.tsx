@@ -11,7 +11,9 @@ export default async function InArticleAd() {
                     Advertisement
                 </p>
                 <div className="w-full max-w-[728px] h-[90px] bg-muted border border-dashed border-border flex items-center justify-center">
-                    <span className="text-xs text-muted-foreground italic">No active in-article ad</span>
+                    <span className="text-xs text-muted-foreground italic">
+                        No active in-article ad
+                    </span>
                 </div>
             </div>
         );

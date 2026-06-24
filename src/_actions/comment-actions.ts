@@ -2,7 +2,6 @@
 
 import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
-import { success } from "zod";
 import { getUserId } from "./user-actions";
 
 type Comment = {
@@ -193,5 +192,32 @@ export async function getReplies(commentId: string) {
         return { success: true, data: replies };
     } catch (err) {
         console.error(`Couldn't fetch replies to comment ${commentId}.\n\n${err}`);
+    }
+}
+
+export async function deleteComment(commentId: string): Promise<Result<boolean>> {
+    try {
+        const comment = await getComment(commentId);
+        if (comment.success && comment.data) {
+            const updated = comment.data.updatedAt;
+            const res = await prisma.comment.update({
+                data: { content: "This comment has been removed by admin.", updatedAt: updated },
+                where: { id: commentId },
+            });
+            if (res) return { success: true, data: true };
+            else
+                return {
+                    success: false,
+                    error: `Couldn't find comment with id ${commentId}.`,
+                };
+        } else {
+            const msg = `Couldn't fetch comment with id ${commentId}.`;
+            console.error(msg);
+            return { success: false, error: msg };
+        }
+    } catch (err) {
+        const msg = `An unknown error occurred when trying to delete comment with id ${commentId}.\n\n${err}`;
+        console.error(msg);
+        return { success: false, error: msg };
     }
 }

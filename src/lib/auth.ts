@@ -6,7 +6,7 @@ import { nextCookies } from "better-auth/next-js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import { admin as adminPlugin } from "better-auth/plugins";
-import { editor, admin, ac } from "./permissions";
+import { editor, admin, ac, user, basic, pro } from "./permissions";
 import Stripe from "stripe";
 import { stripe } from "@better-auth/stripe";
 import { getUserFromStripeId } from "@/_actions/user-actions";
@@ -60,7 +60,7 @@ export const auth = betterAuth({
         },
     },
     plugins: [
-        adminPlugin({ ac, roles: { admin, editor } }),
+        adminPlugin({ ac, roles: { admin, editor, user, basic, pro } }),
         stripe({
             stripeClient,
             stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
@@ -85,7 +85,16 @@ export const auth = betterAuth({
                     console.log(text);
                     if (subscription.stripeCustomerId) {
                         const user = await getUserFromStripeId(subscription.stripeCustomerId);
+                        const newRole = plan.name.toLowerCase();
+                        // console.log(user, newRole);
+
                         if (user.success && user.data) {
+                            console.log("komemr vi hit?!");
+                            const res = await prisma.user.update({
+                                where: { id: user.data.id },
+                                data: { role: newRole },
+                            });
+                            console.log(res);
                             await transporter.sendMail(
                                 {
                                     from: '"Fakenews" <noreply@fakenews.com>',
@@ -111,6 +120,10 @@ export const auth = betterAuth({
                     if (subscription.stripeCustomerId) {
                         const user = await getUserFromStripeId(subscription.stripeCustomerId);
                         if (user.success && user.data) {
+                            await prisma.user.update({
+                                where: { id: user.data.id },
+                                data: { role: "user" }, // downgrade on cancel
+                            });
                             await transporter.sendMail(
                                 {
                                     from: '"Fakenews" <noreply@fakenews.com>',
@@ -131,6 +144,11 @@ export const auth = betterAuth({
                     if (subscription.stripeCustomerId) {
                         const user = await getUserFromStripeId(subscription.stripeCustomerId);
                         if (user.success && user.data) {
+                            const newRole = subscription.plan;
+                            await prisma.user.update({
+                                where: { id: user.data.id },
+                                data: { role: newRole },
+                            });
                             await transporter.sendMail(
                                 {
                                     from: '"Fakenews" <noreply@fakenews.com>',
