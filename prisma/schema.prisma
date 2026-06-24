@@ -197,6 +197,7 @@ model Plan {
     priceId       String
     annualPrice   Int?    @default(0)
     annualPriceId String?
+    annualImage   String?
 
     @@map("plan")
 }
@@ -260,7 +261,7 @@ model Image {
     id   String @id @default(uuid())
     name String
     url  String
-     }
+}
 
 model Advertisement {
     id        String    @id @default(ulid())
