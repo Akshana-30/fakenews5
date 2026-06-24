@@ -143,7 +143,7 @@ export async function getArticle(articleId: string): Promise<Result<Article>> {
             include: {
                 author: true,
                 category: true,
-                comments: { include: { reactions: true } },
+                comments: { include: { reactions: true }, orderBy: { updatedAt: "desc" } },
                 reactions: true,
                 bookmark: true,
             },

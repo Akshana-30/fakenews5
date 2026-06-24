@@ -14,6 +14,8 @@ const statement = {
         "read",
         "bookmark",
     ],
+
+    comments: ["delete"],
 } as const;
 
 export const ac = createAccessControl(statement);
@@ -41,6 +43,7 @@ export const editor = ac.newRole({
 
 export const admin = ac.newRole({
     article: ["create", "update", "delete", "comment", "like", "dislike", "read", "bookmark"],
+    comments: ["delete"],
     ...adminAc.statements,
 });
 

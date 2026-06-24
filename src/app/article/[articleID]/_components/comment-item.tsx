@@ -1,6 +1,9 @@
 import { getAllUserDataFromId, getUserId } from "@/_actions/user-actions";
 import { getReplies, getUserReaction } from "@/_actions/comment-actions";
 import ClientComment from "./client-comment";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 type CommentData = {
     id: string;
@@ -53,6 +56,16 @@ export default async function CommentItem({
         </div>
     ));
 
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) redirect("/");
+
+    const hasPermission = await auth.api.userHasPermission({
+        body: {
+            userId: session.user.id,
+            permissions: { comments: ["delete"] },
+        },
+    });
+
     return (
         <ClientComment
             num={num}
@@ -63,6 +76,7 @@ export default async function CommentItem({
             articleId={articleId}
             level={level}
             parentComment={data.replyTo}
+            canDelete={hasPermission.success}
         >
             {renderedReplies}
         </ClientComment>
