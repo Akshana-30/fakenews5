@@ -47,15 +47,21 @@ export default function NewsCard({
                 <div
                     className={`relative w-full ${aspectRatio} mb-3 overflow-hidden bg-muted border border-border`}
                 >
-                    {/* {image ? (
-                        <Image src={image} alt={title} fill
+                    {image ? (
+                        <Image
+                            src={image}
+                            alt={title}
+                            fill
                             className="object-cover transition-transform duration-300 group-hover:scale-105"
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px" />
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                        />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-xs text-muted-foreground opacity-50">No image</span>
+                            <span className="text-xs text-muted-foreground opacity-50">
+                                No image
+                            </span>
                         </div>
-                    )} */}
+                    )}
                 </div>
             )}
             {categoryLabel && (
