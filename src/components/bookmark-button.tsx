@@ -10,6 +10,7 @@ type BookmarkButtonProps = React.ComponentProps<typeof Button> & {
     articleId: string;
 };
 
+
 const BOOKMARK_ROLES = ["admin", "editor", "basic", "pro"] as const;
 
 export function BookmarkButton({ articleId, ...props }: BookmarkButtonProps) {

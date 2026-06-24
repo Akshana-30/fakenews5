@@ -126,7 +126,7 @@ export default function RegisterForm() {
   });
 
   return (
-    <Card className="w-2xl mt-13">
+    <Card className="max-w-2xl mx-auto mt-13">
       <CardHeader>
         <CardTitle>Create a new account</CardTitle>
       </CardHeader>

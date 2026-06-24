@@ -9,6 +9,7 @@ import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { SidebarLink } from "./sidebar-link";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type NavLink = { title: string; href: string };
 
@@ -16,9 +17,9 @@ export function NewsDropdown({ label, links }: { label: string; links: NavLink[]
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="cursor-pointer">
+                <Button variant="ghost" className="h-6 cursor-pointer">
                     {label}
-                    <ChevronDown color="white" />
+                    <ChevronDown color="black" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="grid grid-cols-2 min-w-sm p-1">
@@ -33,6 +34,28 @@ export function NewsDropdown({ label, links }: { label: string; links: NavLink[]
         </DropdownMenu>
     );
 }
+
+// export function NewsDropdownCollapsible({ label, links }: { label: string; links: NavLink[] }) {
+//     return (
+//         <Collapsible>
+//             <CollapsibleTrigger asChild>
+//                 <Button variant="ghost" className="cursor-pointer">
+//                     {label}
+//                     <ChevronDown color="black" />
+//                 </Button>
+//             </CollapsibleTrigger>
+//             <CollapsibleContent className="grid grid-cols-2 min-w-sm p-1">
+//                 {links.map((page) => (
+//                     <div key={page.title} >
+//                         <Link href={page.href} className="text-center justify-center">
+//                             {page.title}
+//                         </Link>
+//                     </div>
+//                 ))}
+//             </CollapsibleContent>
+//         </Collapsible>
+//     );
+// }
 
 export function NewsDropdownSM({ label, links }: { label: string; links: NavLink[] }) {
     return (

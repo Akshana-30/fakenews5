@@ -21,8 +21,8 @@ export default function AppSidebar({ categories }: { categories: Category[] | nu
         }
     }
     return (
-        <Sidebar variant="sidebar" collapsible="offcanvas">
-            <SidebarHeader>
+        <Sidebar  variant="sidebar" collapsible="offcanvas">
+            <SidebarHeader className="md:pt-50">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarLink href="/">Home</SidebarLink>

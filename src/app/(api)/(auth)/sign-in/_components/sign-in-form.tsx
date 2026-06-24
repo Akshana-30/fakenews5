@@ -68,8 +68,8 @@ export default function SignInForm() {
     });
 
     return (
-        <div className="w-6xl">
-            <Card className="  w-xl mt-10 mx-auto">
+        <div className="max-w-6xl">
+            <Card className=" mx-auto max-w-xl mt-10 ">
                 <CardHeader>
                     <CardTitle>Sign In</CardTitle>
                     <CardDescription>Fill the fields below to Login</CardDescription>
