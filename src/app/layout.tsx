@@ -13,7 +13,6 @@ import { auth } from "@/lib/auth";
 import { getCategories } from "@/_actions/category-actions";
 import EditorNavbar from "./dashboard/admin/_components/editor-navbar";
 import AdBanner from "@/components/ad-banner";
-import { userIsAdFree } from "@/lib/ads";
 import ScrollAwareNav from "@/components/navbar/_components/scroll-aware-nav";
 import { getViewerContext } from "@/lib/access";
 import { getSubscriptionPlanFromUserId } from "@/_actions/subscription-actions";
