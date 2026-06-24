@@ -32,7 +32,7 @@ const formSchema = z.object({
     title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
     summary: z.string().min(1, "Summary is required").max(200, "Between 1-200 characters"),
     content: z.string().min(1, "Content text is required"),
-    image: z.string().min(1, "Image is required"),
+    image: z.string(),
     category: z.array(z.string()),
     location: z.string(),
     author: z.array(z.string()),
@@ -165,8 +165,6 @@ export default function AddArticleForm() {
                             }}
                         </form.Field>
 
-                        {/* Image upload: file is uploaded to the bucket as soon as it's
-                            selected, and the returned URL is stored in form state. */}
                         <form.Field name="image">
                             {(field) => {
                                 const isInvalid =
@@ -213,12 +211,11 @@ export default function AddArticleForm() {
                                         {imageUploading && (
                                             <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                                                 <Spinner className="size-4" />
-                                                Uploading image...
+                                                Uploading ...
                                             </div>
                                         )}
 
                                         {field.state.value && !imageUploading && (
-                                            // eslint-disable-next-line @next/next/no-img-element
                                             <Image
                                                 src={field.state.value}
                                                 alt="Selected article image preview"
