@@ -6,7 +6,7 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import prisma from "./prisma";
 import { revalidatePath } from "next/cache";
 
-export type UploadResult = { success: true } | { error: string };
+export type UploadResult = { success: true; url: string } | { error: string };
 
 export async function uploadImage(formData: FormData): Promise<UploadResult> {
     const file = formData.get("file");
@@ -40,10 +40,12 @@ export async function uploadImage(formData: FormData): Promise<UploadResult> {
         }),
     );
 
+    const url = `${process.env.RUSTFS_ENDPOINT}/${BUCKET}/${key}`;
+
     await prisma.image.create({
-        data: { name: key, url: `${process.env.RUSTFS_ENDPOINT}/${BUCKET}/${key}` },
+        data: { name: key, url: url },
     });
 
     revalidatePath("/");
-    return { success: true };
+    return { success: true, url: url };
 }

@@ -8,50 +8,46 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import addArticle from "../_actions/add-article-action";
+import { uploadImage } from "@/lib/upload-action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Editor } from "@/components/tiptap";
 
-
 const formSchema = z.object({
     title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
     summary: z.string().min(1, "Summary is required").max(200, "Between 1-200 characters"),
     content: z.string().min(1, "Content text is required"),
-    image: z.string(),
+    image: z.string().min(1, "Image is required"),
     category: z.array(z.string()),
     location: z.string(),
     author: z.array(z.string()),
 });
 
-
 type UserSuggestion = {
-  id: string;
-  name: string;
-  role?: string ;
+    id: string;
+    name: string;
+    role?: string;
 };
 
 export default function AddArticleForm() {
     const [categoryInput, setCategoryInput] = useState("");
     const [authorInput, setAuthorInput] = useState("");
     const [loading, setLoading] = useState(false);
+    const [imageUploading, setImageUploading] = useState(false);
     const router = useRouter();
     const form = useForm({
         defaultValues: {
@@ -167,73 +163,68 @@ export default function AddArticleForm() {
                                 );
                             }}
                         </form.Field>
-                        {/* 
-                        <form.Field name="content">
-                            {(field) => {
-                                const isInvalid =
-                                    field.state.meta.isTouched && !field.state.meta.isValid;
-                                return (
-                                    <Field data-invalid={isInvalid}>
-                                        <FieldLabel htmlFor={field.name}>Content</FieldLabel>
-                                        <Textarea
-                                            className="border-r border-b"
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(ev) => field.handleChange(ev.target.value)}
-                                            aria-invalid={isInvalid}
-                                        />
-                                        {isInvalid && (
-                                            <FieldError errors={field.state.meta.errors} />
-                                        )}
-                                    </Field>
-                                );
-                            }}
-                        </form.Field> */}
 
-                        {/* <form.Field name="summary">
-              {(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Summary</FieldLabel>
-                    <Input
-                      className="border-r border-b"
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(ev) => field.handleChange(ev.target.value)}
-                      aria-invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            </form.Field> */}
-
+                        {/* Image upload: file is uploaded to the bucket as soon as it's
+                            selected, and the returned URL is stored in form state. */}
                         <form.Field name="image">
                             {(field) => {
                                 const isInvalid =
                                     field.state.meta.isTouched && !field.state.meta.isValid;
+
+                                const handleFileChange = async (
+                                    ev: React.ChangeEvent<HTMLInputElement>,
+                                ) => {
+                                    const file = ev.target.files?.[0];
+                                    if (!file) return;
+
+                                    setImageUploading(true);
+
+                                    const fd = new FormData();
+                                    fd.append("file", file);
+
+                                    const result = await uploadImage(fd);
+
+                                    if ("error" in result) {
+                                        toast.error(result.error, { position: "top-center" });
+                                        field.handleChange("");
+                                    } else {
+                                        field.handleChange(result.url);
+                                    }
+
+                                    field.handleBlur();
+                                    setImageUploading(false);
+                                };
+
                                 return (
                                     <Field data-invalid={isInvalid}>
-                                        <FieldLabel htmlFor={field.name}>Image URL</FieldLabel>
+                                        <FieldLabel htmlFor={field.name}>Image</FieldLabel>
                                         <Input
                                             type="file"
                                             accept="image/*"
                                             className="border-r border-b"
                                             id={field.name}
                                             name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(ev) => field.handleChange(ev.target.value)}
+                                            onChange={handleFileChange}
+                                            disabled={imageUploading}
                                             aria-invalid={isInvalid}
                                         />
+
+                                        {imageUploading && (
+                                            <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                                                <Spinner className="size-4" />
+                                                Uploading image...
+                                            </div>
+                                        )}
+
+                                        {field.state.value && !imageUploading && (
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img
+                                                src={field.state.value}
+                                                alt="Selected article image preview"
+                                                className="mt-2 h-28 w-auto rounded object-cover border"
+                                            />
+                                        )}
+
                                         {isInvalid && (
                                             <FieldError errors={field.state.meta.errors} />
                                         )}
@@ -409,20 +400,6 @@ export default function AddArticleForm() {
                                 }}
                             </form.Field>
                         </div>
-
-                        {/* <Field orientation="horizontal">
-              <Button className="cursor-pointer" type="submit">
-                Submit
-              </Button>
-              <Button
-                className="cursor-pointer"
-                type="reset"
-                variant="outline"
-                onClick={() => form.reset()}
-              >
-                Reset
-              </Button>
-            </Field> */}
                     </FieldGroup>
                 </form>
             </CardContent>
@@ -441,7 +418,7 @@ export default function AddArticleForm() {
                     type="submit"
                     size="lg"
                     className="cursor-pointer"
-                    disabled={loading}
+                    disabled={loading || imageUploading}
                 >
                     {loading ? <Spinner /> : "Submit"}
                 </Button>

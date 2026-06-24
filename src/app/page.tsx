@@ -39,7 +39,7 @@ export default async function HomePage() {
     const user = await auth.api.getSession({ headers: await headers() });
     if (user) {
         const plan = await getSubscriptionPlanFromUserId(user.user.id);
-        console.log(plan);
+        //console.log(plan);
     }
 
     return (
