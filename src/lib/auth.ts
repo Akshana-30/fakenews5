@@ -85,13 +85,16 @@ export const auth = betterAuth({
                     console.log(text);
                     if (subscription.stripeCustomerId) {
                         const user = await getUserFromStripeId(subscription.stripeCustomerId);
-                        const newRole = plan.name.toLowerCase() === "pro" ? "pro" : "basic";
+                        const newRole = plan.name.toLowerCase();
+                        // console.log(user, newRole);
 
                         if (user.success && user.data) {
-                            await prisma.user.update({
+                            console.log("komemr vi hit?!");
+                            const res = await prisma.user.update({
                                 where: { id: user.data.id },
                                 data: { role: newRole },
                             });
+                            console.log(res);
                             await transporter.sendMail(
                                 {
                                     from: '"Fakenews" <noreply@fakenews.com>',

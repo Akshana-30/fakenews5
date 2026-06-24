@@ -15,12 +15,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export type Article = {
-    views: {
-        id: string;
-        userId: string;
-        articleId: string;
-    }[];
-} & {
     id: string;
     title: string;
     summary: string | null;
@@ -31,6 +25,7 @@ export type Article = {
     location: string | null;
     editorsChoice: boolean;
     deleted: Date | null;
+    views: number;
 };
 
 function ActionsCell({ id }: { id: string }) {
@@ -73,6 +68,14 @@ function ActionsCell({ id }: { id: string }) {
                     >
                         Remove article
                     </DropdownMenuItem>
+                    <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={async () => {
+                            router.push(`/article/${id}/manage-comments`);
+                        }}
+                    >
+                        Manage comments
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
@@ -109,8 +112,7 @@ export const columns: ColumnDef<Article>[] = [
         header: "Views",
         cell: ({ row }) => {
             const views = row.original.views;
-            const total = views.length;
-            return <span className="flex justify-center">{total}</span>;
+            return <span className="flex justify-center">{views}</span>;
         },
     },
     {
