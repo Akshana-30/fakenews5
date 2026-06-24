@@ -19,7 +19,7 @@ import ArticleDoesntExist from "./_components/article-doesnt-exists";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkIns from "remark-ins";
-import InArticleAd from "@/components/in-article-ad";
+// import InArticleAd from "@/components/in-article-ad";
 import Image from "next/image";
 
 export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
@@ -114,7 +114,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                         {hasPermission ? article.data.content : article.data.content.slice(0, 500)}
                     </ReactMarkdown>
                 </article>
-                <InArticleAd />
+                {/* <InArticleAd /> */}
                 <div className="flex border-b-2 mt-2 pb-2 text-sm">
                     <div className="flex border-r pr-2">
                         <Views num={views} />

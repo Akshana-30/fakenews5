@@ -260,11 +260,13 @@ model Image {
     id   String @id @default(uuid())
     name String
     url  String
+}
+
 model Advertisement {
     id        String    @id @default(ulid())
     createdAt DateTime  @default(now())
     label     String
-    format    String    // "banner" | "sidebar" | "in-article" | "newsletter" | "sponsored"
+    format    String // "banner" | "sidebar" | "in-article" | "newsletter" | "sponsored"
     imageUrl  String
     linkUrl   String
     active    Boolean   @default(false)
