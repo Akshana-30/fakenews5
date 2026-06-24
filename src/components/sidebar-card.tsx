@@ -26,7 +26,7 @@ export default function SidebarCard({
             className="group block border-b border-border pb-5 last:border-0"
         >
             <div className="relative w-full aspect-video overflow-hidden bg-muted border border-border mb-2">
-                {/* {image ? (
+                {image ? (
                     <Image
                         src={image}
                         alt={title}
@@ -40,7 +40,7 @@ export default function SidebarCard({
                             No image
                         </span>
                     </div>
-                )} */}
+                )}
             </div>
             <div className="flex flex-wrap gap-2 mb-1">
                 {category.map((c) => (
