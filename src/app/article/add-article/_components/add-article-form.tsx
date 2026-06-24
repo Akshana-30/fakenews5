@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Editor } from "@/components/tiptap";
+import Image from "next/image";
 
 const formSchema = z.object({
     title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
@@ -218,9 +219,11 @@ export default function AddArticleForm() {
 
                                         {field.state.value && !imageUploading && (
                                             // eslint-disable-next-line @next/next/no-img-element
-                                            <img
+                                            <Image
                                                 src={field.state.value}
                                                 alt="Selected article image preview"
+                                                width={100}
+                                                height={100}
                                                 className="mt-2 h-28 w-auto rounded object-cover border"
                                             />
                                         )}
