@@ -14,6 +14,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 import Image from "next/image";
+import { uploadImage } from "@/lib/upload-action";
 
 const formSchema = z.object({
     name: z.string().min(1, "Name is required.").max(64),
@@ -307,27 +308,6 @@ export default function EditPlanForm({ plan }: { plan: Plan }) {
                                     </Field>
                                 );
                             }}
-                        </form.Field>
-
-                        <form.Field name="adFree">
-                            {(field) => (
-                                <Field>
-                                    <label className="flex items-center gap-2 cursor-pointer select-none">
-                                        <Checkbox
-                                            id={field.name}
-                                            checked={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onCheckedChange={(checked) =>
-                                                field.handleChange(checked === true)
-                                            }
-                                        />
-                                        <span className="text-sm font-medium">Ad-free plan</span>
-                                    </label>
-                                    <p className="text-xs text-muted-foreground mt-0.5">
-                                        Subscribers on this plan will not see advertisements.
-                                    </p>
-                                </Field>
-                            )}
                         </form.Field>
                     </FieldGroup>
                 </form>
