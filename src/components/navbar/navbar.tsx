@@ -14,7 +14,7 @@ export default function Navbar({ categories }: { categories: Category[] | null }
     }
     return (
         <div className="flex">
-            <div className="flex w-full items-center h-8 gap-2 px-6 dark:bg-background  bg-background">
+            <div className="flex w-full items-center h-15 gap-2 px-6 dark:bg-background  bg-background">
                 <ul className="flex justify-start w-5xl mx-auto">
                     <li className="lg:hidden">
                         {" "}
@@ -24,8 +24,11 @@ export default function Navbar({ categories }: { categories: Category[] | null }
                         <NewsDropdown label="News" links={links} />
                     </li>
                     <li className="max-lg:hidden my-auto">
-                        <Link href="/subscriptions">
-                            <Button variant="ghost" className="h-6 cursor-pointer">
+                        <Link href="/subscriptions" className="p-2 hover:bg-[#313131]">
+                            <Button
+                                variant="ghost"
+                                className="h-6 cursor-pointer border-b-primary rounded-b-none bg-[#313131] hover:bg-[#313131]"
+                            >
                                 Subscriptions
                             </Button>
                         </Link>
