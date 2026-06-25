@@ -60,7 +60,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         // end with a router.refresh() call.
         const referer = await getReferer();
         const currentUrl = `http://localhost:3000/article/${articleID}`;
-        console.log(referer, currentUrl);
+        //console.log(referer, currentUrl);
         let views = article.data.views;
         if (referer !== currentUrl) {
             await addView(articleID);
