@@ -56,8 +56,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
     if (userId && hasPermission && article.success && article.data) {
         const referer = await getReferer();
         const currentUrl = `http://localhost:3000/article/${articleID}`;
+        console.log(referer, currentUrl);
         if (referer !== currentUrl) {
             await addView(articleID);
+            redirect(currentUrl);
+        } else {
+            console.log("Nu ska vi inte lägga till en view");
         }
 
         const views = article.data.views;
