@@ -6,63 +6,63 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 export default function Header() {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+    const { resolvedTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+    useEffect(() => setMounted(true), []);
 
-  if (!mounted) return null; // avoid hydration mismatch
+    if (!mounted) return null; // avoid hydration mismatch
 
-  const isDark = resolvedTheme === "dark";
-  return (
-    <div className="flex justify-between dark:bg-[#2d2d2d] bg-background border-b-3 border-b-primary">
-      <span className="hidden md:flex p-5 justify-center mx-70">
-        <Link href="/">
-          <div className="flex gap-1">
-            <div className="relative">
-              <Image
-                src="/lightlogo.png"
-                width={200}
-                height={200}
-                alt="Logo"
-                className="dark:hidden"
-                priority
-              />
-              <Image
-                src="/darklogo.png"
-                width={200}
-                height={200}
-                alt="Logo"
-                className="hidden dark:block"
-                priority
-              />
-            </div>
+    const isDark = resolvedTheme === "dark";
+    return (
+        <div className="flex justify-between dark:bg-[#2d2d2d] bg-background border-b-3 border-b-primary">
+            <span className="hidden md:flex p-5 justify-center mx-auto">
+                <Link href="/">
+                    <div className="flex gap-1">
+                        <div className="relative">
+                            <Image
+                                src="/lightlogo.png"
+                                width={200}
+                                height={200}
+                                alt="Logo"
+                                className="dark:hidden"
+                                priority
+                            />
+                            <Image
+                                src="/darklogo.png"
+                                width={200}
+                                height={200}
+                                alt="Logo"
+                                className="hidden dark:block"
+                                priority
+                            />
+                        </div>
 
-            <div className="w-full max-w-100 pt-2">
-              <div className="flex items-center gap-3 mb-1">
-                <div className="flex-1 h-px bg-black dark:bg-white"></div>
-                <span className="font-serif font-bold text-lg tracking-widest">
-                  THE
-                </span>
-                <div className="flex-1 h-px bg-black dark:bg-white"></div>
-              </div>
-              <h1 className="font-serif font-bold text-5xl text-center tracking-tight">
-                Daily Commit
-              </h1>
-              <div className="border-b-4 border-primary mt-1"></div>
-              <p className="text-center text-xs tracking-wide mt-2">
-                YOUR DAILY DOSE OF NEWS.{" "}
-                <span className="text-primary font-bold">COMMITTED</span> TO THE
-                TRUTH.
-              </p>
-            </div>
-          </div>
-        </Link>
-      </span>
+                        <div className="w-full max-w-100 pt-2">
+                            <div className="flex items-center gap-3 mb-1">
+                                <div className="flex-1 h-px bg-black dark:bg-white"></div>
+                                <span className="font-serif font-bold text-lg tracking-widest">
+                                    THE
+                                </span>
+                                <div className="flex-1 h-px bg-black dark:bg-white"></div>
+                            </div>
+                            <h1 className="font-serif font-bold text-5xl text-center tracking-tight">
+                                Daily Commit
+                            </h1>
+                            <div className="border-b-4 border-primary mt-1"></div>
+                            <p className="text-center text-xs tracking-wide mt-2">
+                                YOUR DAILY DOSE OF NEWS.{" "}
+                                <span className="text-primary font-bold">COMMITTED</span> TO THE
+                                TRUTH.
+                            </p>
+                        </div>
+                    </div>
+                </Link>
+            </span>
 
-      <span className="flex items-end justify-end gap-3 pb-3 pr-4">
-        <ThemeToggle />
-      </span>
-    </div>
-  );
+            <span className="flex items-end justify-end gap-3 pb-3 pr-4">
+                <ThemeToggle />
+            </span>
+        </div>
+    );
 }
