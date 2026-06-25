@@ -60,8 +60,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         if (referer !== currentUrl) {
             await addView(articleID);
             redirect(currentUrl);
-        } else {
-            console.log("Nu ska vi inte lägga till en view");
         }
 
         const views = article.data.views;
