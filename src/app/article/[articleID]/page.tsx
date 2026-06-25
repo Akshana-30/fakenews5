@@ -26,7 +26,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
     const { articleID } = await params;
 
     const userId = await getUserId();
-    let article = await getArticle(articleID);
+    const article = await getArticle(articleID);
     // console.log(article);
 
     async function getReferer() {
