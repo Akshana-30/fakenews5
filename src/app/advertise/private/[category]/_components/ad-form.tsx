@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { submitAd } from "../_actions/submit-ad";
+import { uploadImage } from "@/lib/upload-action";
 import { CheckCircle2, ImagePlus, X } from "lucide-react";
 
 const CONDITIONS = [
@@ -120,19 +121,18 @@ export default function AdForm({ categorySlug, subcategories, titlePlaceholder }
         e.preventDefault();
         setError(null);
         startTransition(async () => {
-            let photoUrls: string[] = [];
+            const photoUrls: string[] = [];
 
-            if (photos.length > 0) {
+            // Upload each photo to S3 (same action the article form uses).
+            for (const photo of photos) {
                 const fd = new FormData();
-                photos.forEach(p => fd.append("photos", p));
-                const res = await fetch("/uploads/ad-photos", { method: "POST", body: fd });
-                if (!res.ok) {
-                    const body = await res.json().catch(() => ({}));
-                    setError(body.error ?? "Photo upload failed. Please try again.");
+                fd.append("file", photo);
+                const result = await uploadImage(fd);
+                if ("error" in result) {
+                    setError(result.error);
                     return;
                 }
-                const data = await res.json();
-                photoUrls = data.urls as string[];
+                photoUrls.push(result.url);
             }
 
             const result = await submitAd({ ...fields, listingType: fields.listingType, category: categorySlug, photos: photoUrls });
