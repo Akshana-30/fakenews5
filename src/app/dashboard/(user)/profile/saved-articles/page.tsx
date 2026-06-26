@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 import ArticleList from "@/components/article-list";
 
-export default async function SavedArticles({
+export default async function SettingsPage({
   searchParams,
 }: {
   searchParams: Promise<{ category?: string }>;

@@ -20,8 +20,7 @@ import React, { useState } from "react";
 
 import z from "zod";
 import { EditUser } from "../_actions/user-action";
-import ChangeEmailDialog from "./change-email-form";
-import ChangePasswordDialog from "./change-password-form";
+
 import {
   Collapsible,
   CollapsibleContent,
@@ -32,6 +31,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { CountryData } from "@/components/phone-input";
 import { Country, CountryDropdown } from "@/components/country-dropdown";
+import ChangeEmailDialog from "../security/_components/change-email-form";
+import ChangePasswordDialog from "../security/_components/change-password-form";
 
 type Props = {
   user: {
@@ -111,14 +112,14 @@ export default function EditProfileForm({ user }: Props) {
     <>
       {/* Regular info */}
 
-      <Collapsible className=" rounded-md data-[state=open]:bg-muted">
+      {/* <Collapsible className=" rounded-md data-[state=open]:bg-muted">
         <CollapsibleTrigger className=" h-20" asChild>
           <Button variant="ghost" className="group w-full">
             User settings
             <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />
           </Button>
         </CollapsibleTrigger>
-        <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
+        <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm"> */}
           <Card className="mx-auto w-full">
             <CardContent>
               <form
@@ -304,7 +305,10 @@ export default function EditProfileForm({ user }: Props) {
                                   ? countryCode
                                   : `+${countryCode}`;
                                 field.setValue(country.name);
-                                form.setFieldValue("phoneNumber", formattedCode);
+                                form.setFieldValue(
+                                  "phoneNumber",
+                                  formattedCode,
+                                );
                               }}
                               defaultValue={selectedCountry?.alpha3}
                             />
@@ -392,11 +396,10 @@ export default function EditProfileForm({ user }: Props) {
               </form>
             </CardContent>
           </Card>
-        </CollapsibleContent>
-      </Collapsible>
+  
 
       {/* Better-auth /password/email */}
-      <Collapsible className=" rounded-md data-[state=open]:bg-muted">
+      {/* <Collapsible className=" rounded-md data-[state=open]:bg-muted">
         <CollapsibleTrigger className="mb-0 h-20" asChild>
           <Button variant="ghost" className="group w-full">
             Email and Password
@@ -407,7 +410,7 @@ export default function EditProfileForm({ user }: Props) {
           <ChangeEmailDialog currentEmail={user.email} />
           <ChangePasswordDialog currentEmail={user.email} />
         </CollapsibleContent>
-      </Collapsible>
+      </Collapsible> */}
     </>
   );
 }

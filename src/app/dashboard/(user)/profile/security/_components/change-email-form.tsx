@@ -77,10 +77,10 @@ export default function ChangeEmailDialog({ currentEmail }: Props) {
       }
 
       setLoading(false);
-form.reset();
-setOpen(false);
-router.push('/verify');
-router.refresh();
+      form.reset();
+      setOpen(false);
+      router.push("/verify");
+      router.refresh();
     },
   });
 
@@ -98,10 +98,12 @@ router.refresh();
       {/* <label className="font-heading text-base leading-snug font-medium">
         Email and Password
       </label> */}
-      <div className=" flex flex-row gap-11">
-        <p className="my-auto text-black/60 font-semibold">{currentEmail}</p>
-        <DialogTrigger className="my-auto" asChild>
-          <Button variant="outline">Edit</Button>
+
+      <div className="grid grid-cols-[1fr_1fr_auto] items-center gap-4 py-3 max-w-2xl pt-8 border-b border-muted-foreground/20">
+        <p className="text-black/60 font-semibold">Change email</p>
+        <p className="text-sm text-end">{currentEmail}</p>
+        <DialogTrigger asChild>
+          <Button variant="outline" className="cursor-pointer">Edit</Button>
         </DialogTrigger>
       </div>
 
@@ -205,9 +207,7 @@ router.refresh();
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit" >
-              Save changes
-            </Button>
+            <Button type="submit">Save changes</Button>
           </DialogFooter>
         </form>
       </DialogContent>
