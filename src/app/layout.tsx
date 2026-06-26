@@ -33,7 +33,7 @@ const fontMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Fakenews",
+  title: "The Daily Commit",
   description: "A news website.",
 };
 

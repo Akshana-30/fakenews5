@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = { title: "Ad submitted — Classifieds | Fakenews5" };
+export const metadata: Metadata = { title: "Ad submitted — Classifieds | The Daily Commit" };
 
 export default function ClassifiedsSuccessPage() {
     return (

@@ -1,7 +1,7 @@
 // export default function Footer() {
 //   return (
 //     <div className="bg-[#2d2d2d] text-white text-sm p-4 border-t-5 border-[#c8a84b] text-center">
-//       <p>Copyright © 2026 Fakenews5. All Rights Reserved.</p>
+//       <p>Copyright © 2026 The Daily Commit. All Rights Reserved.</p>
 //     </div>
 //   );
 // }
@@ -142,7 +142,7 @@ export default async function Footer() {
         </div>
         <hr className="border-[#333] mb-3.5" />
         <div className="flex flex-col gap-1.5 md:flex-row md:justify-between md:items-center font-sans text-[11px]">
-          <span>Copyright © 2026 Fakenews5. All Rights Reserved.</span>
+          <span>Copyright © 2026 The Daily Commit. All Rights Reserved.</span>
           <span className="flex gap-3">
             <Link
               href="/legal/privacy"
