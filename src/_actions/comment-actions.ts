@@ -3,6 +3,8 @@
 import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
 import { getUserId } from "./user-actions";
+import { success } from "zod";
+import { error } from "console";
 
 type Comment = {
     id: string;
@@ -188,6 +190,7 @@ export async function getReplies(commentId: string) {
         const replies = await prisma.comment.findMany({
             where: { replyTo: commentId },
             include: { reactions: true },
+            orderBy: { createdAt: "desc" },
         });
         return { success: true, data: replies };
     } catch (err) {
@@ -217,6 +220,32 @@ export async function deleteComment(commentId: string): Promise<Result<boolean>>
         }
     } catch (err) {
         const msg = `An unknown error occurred when trying to delete comment with id ${commentId}.\n\n${err}`;
+        console.error(msg);
+        return { success: false, error: msg };
+    }
+}
+
+export async function updateComment(commentId: string, content: string) {
+    try {
+        const comment = await getComment(commentId);
+        if (comment.success && comment.data) {
+            const res = await prisma.comment.update({
+                data: { content: content, updatedAt: new Date() },
+                where: { id: commentId },
+            });
+            if (res) return { success: true, data: res };
+            else {
+                const msg = `Couldn't update comment with id ${commentId}.`;
+                console.error(msg);
+                return { success: false, error: msg };
+            }
+        } else {
+            const msg = `Couldn't fetch comment with id ${commentId}.`;
+            console.error(msg);
+            return { success: false, error: msg };
+        }
+    } catch (err) {
+        const msg = `An unknown error occurred when trying to edit comment with id ${commentId}.\n\n${err}`;
         console.error(msg);
         return { success: false, error: msg };
     }

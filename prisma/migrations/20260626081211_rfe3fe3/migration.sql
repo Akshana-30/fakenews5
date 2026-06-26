@@ -86,7 +86,7 @@ CREATE TABLE "Comment" (
     "user_id" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3),
     "reply_to" TEXT,
 
     CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
@@ -171,6 +171,7 @@ CREATE TABLE "plan" (
     "priceId" TEXT NOT NULL,
     "annualPrice" INTEGER DEFAULT 0,
     "annualPriceId" TEXT,
+    "annualImage" TEXT,
 
     CONSTRAINT "plan_pkey" PRIMARY KEY ("id")
 );
