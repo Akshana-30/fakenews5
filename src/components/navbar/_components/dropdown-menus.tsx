@@ -9,7 +9,6 @@ import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { SidebarLink } from "./sidebar-link";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type NavLink = { title: string; href: string };
 
@@ -19,15 +18,17 @@ export function NewsDropdown({ label, links }: { label: string; links: NavLink[]
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-6 cursor-pointer">
                     {label}
-                    <ChevronDown color="black" />
+                    <ChevronDown className="dark:text-white text-black" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="grid grid-cols-2 min-w-sm p-1">
                 {links.map((page) => (
                     <DropdownMenuItem key={page.title} asChild>
-                        <Link href={page.href} className="text-center justify-center">
-                            {page.title}
-                        </Link>
+                        <div className="text-center justify-center cursor-pointer">
+                            <Link href={page.href} className="">
+                                {page.title}
+                            </Link>
+                        </div>
                     </DropdownMenuItem>
                 ))}
             </DropdownMenuContent>

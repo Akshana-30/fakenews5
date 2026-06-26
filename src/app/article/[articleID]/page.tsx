@@ -29,6 +29,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
     const article = await getArticle(articleID);
     // console.log(article);
 
+    async function getReferer() {
+        const headerList = await headers();
+        const referer = headerList.get("referer");
+        return referer;
+    }
+
     let hasPermission = false;
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -48,10 +54,18 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
     }
 
     if (userId && hasPermission && article.success && article.data) {
-        await addView(articleID);
-        // Check if the user has viewed the article and add a view if not
-        const views = article.data.views;
-        // console.log(views);
+        // Only add a view when the referer url is not the same as the article url.
+        // This prevents the view counter from increasing when the user refresh the page
+        // or clicks on thumbs up/down, writing comments etc, since all those actions
+        // end with a router.refresh() call.
+        const referer = await getReferer();
+        const currentUrl = `http://localhost:3000/article/${articleID}`;
+        //console.log(referer, currentUrl);
+        let views = article.data.views;
+        if (referer !== currentUrl) {
+            await addView(articleID);
+            views++;
+        }
 
         // Calculate the total reactions (upvotes/downvotes) to one score
         const reactions = article.data.reactions;
@@ -106,12 +120,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                             priority
                             sizes="(max-width: 768px) 100vw, 900px"
                         />
-                        
                     </div>
                 )}
-                <div className="w-3/4 flex-row mx-auto max-w-none bg-gray-100 dark:bg-[#2d2d2d] text-black dark:text-white  p-4"><p>
-                        {article.data.summary}</p></div>
-                
+                <div className="w-3/4 flex-row mx-auto max-w-none bg-gray-100 dark:bg-[#2d2d2d] text-black dark:text-white  p-4">
+                    <p>{article.data.summary}</p>
+                </div>
 
                 <article className="w-3/4 flex-row mx-auto mt-2 mb-4 max-w-none prose  dark:bg-[#2d2d2d] dark:text-white dark:prose-headings:text-white p-4">
                     <ReactMarkdown remarkPlugins={[remarkGfm, remarkIns]}>
