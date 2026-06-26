@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { CATEGORIES } from "./_data/categories";
 
-export const metadata: Metadata = { title: "Classifieds | Fakenews5" };
+export const metadata: Metadata = { title: "Classifieds | The Daily Commit" };
 
 const ICONS: Record<string, React.ReactNode> = {
   Car: <Car size={22} />,
@@ -151,9 +151,9 @@ export default function PrivateAdvertisePage() {
           ))}
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
-          All rates include VAT. Ads may be moderated before publication.
-          Fakenews5 reserves the right to reject ads that violate our community
-          guidelines or Swedish consumer law.
+          All rates include VAT. Ads may be moderated before publication. The
+          Daily Commit reserves the right to reject ads that violate our
+          community guidelines or Swedish consumer law.
         </p>
       </section>
 
@@ -189,7 +189,7 @@ export default function PrivateAdvertisePage() {
         </p>
         <p className="flex items-center gap-2 text-sm">
           <Mail size={15} className="text-primary" />
-          <strong>classifieds@fakenews5.se</strong>
+          <strong>classifieds@thedailycommit.se</strong>
         </p>
       </section>
     </div>

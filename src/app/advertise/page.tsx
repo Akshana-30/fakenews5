@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, Newspaper, Users, TrendingUp, Megaphone } from "lucide-react";
 
-export const metadata: Metadata = { title: "Advertise | Fakenews5" };
+export const metadata: Metadata = { title: "Advertise | The Daily Commit" };
 
 const adFormats = [
   {
@@ -60,10 +60,11 @@ export default function AdvertisePage() {
     <div className="h-full flex flex-col mx-auto w-full max-w-5xl px-6 pt-14 pb-16">
       <div className="mb-10">
         <h1 className="font-serif text-4xl font-bold tracking-wide">
-          Advertise with Fakenews5
+          Advertise with The Daily Commit
         </h1>
         <p className="mt-2 font-serif italic text-muted-foreground">
-          Reach a loyal audience that reads everything — and believes most of it.
+          Reach a loyal audience that reads everything — and believes most of
+          it.
         </p>
       </div>
 
@@ -85,12 +86,14 @@ export default function AdvertisePage() {
       </section>
 
       <section className="mb-12">
-        <h2 className="font-serif font-bold text-2xl mb-3">Why Fakenews5?</h2>
+        <h2 className="font-serif font-bold text-2xl mb-3">
+          Why The Daily Commit?
+        </h2>
         <p className="leading-relaxed text-sm mb-3 max-w-3xl">
-          Fakenews5 is one of Sweden&apos;s fastest-growing news destinations. Our
-          readers come for local news from Linköping, national coverage, world
-          events, economy, and sports — and they stay because nowhere else
-          covers them quite like we do.
+          The Daily Commit is one of Sweden&apos;s fastest-growing news
+          destinations. Our readers come for local news from Linköping, national
+          coverage, world events, economy, and sports — and they stay because
+          nowhere else covers them quite like we do.
         </p>
         <p className="leading-relaxed text-sm max-w-3xl">
           Whether you want a banner across the masthead, a presence in our daily
@@ -101,7 +104,9 @@ export default function AdvertisePage() {
       </section>
 
       <section className="mb-12">
-        <h2 className="font-serif font-bold text-2xl mb-4">Formats &amp; Rates</h2>
+        <h2 className="font-serif font-bold text-2xl mb-4">
+          Formats &amp; Rates
+        </h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
@@ -118,7 +123,9 @@ export default function AdvertisePage() {
                   <td className="py-3 pr-4 font-medium text-foreground whitespace-nowrap">
                     {format.name}
                   </td>
-                  <td className="py-3 pr-4 leading-relaxed">{format.placement}</td>
+                  <td className="py-3 pr-4 leading-relaxed">
+                    {format.placement}
+                  </td>
                   <td className="py-3 pr-4 whitespace-nowrap">{format.size}</td>
                   <td className="py-3 whitespace-nowrap">{format.price}</td>
                 </tr>
@@ -145,7 +152,7 @@ export default function AdvertisePage() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <p className="flex items-center gap-2 text-sm">
             <Mail size={15} className="text-primary" />
-            <strong>ads@fakenews5.se</strong>
+            <strong>ads@thedailycommit.se</strong>
           </p>
           <span className="hidden sm:inline text-muted-foreground">·</span>
           <Link href="/contact" className="text-sm underline hover:opacity-70">
