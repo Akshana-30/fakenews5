@@ -85,7 +85,7 @@ export default function ClientComment({
             {level > 0 && (
                 <div className="relative w-5 shrink-0 mt-2.5 h-5">
                     <div className="absolute -left-12 top-12 w-15 h-0.5 bg-muted-foreground" />
-    <div className="bg-muted-foreground mt-10 h-5 w-5 [clip-path:polygon(0%_0%,100%_50%,0%_100%)]" />
+                    <div className="bg-muted-foreground mt-10 h-5 w-5 [clip-path:polygon(0%_0%,100%_50%,0%_100%)]" />
                 </div>
             )}
 
@@ -122,7 +122,7 @@ export default function ClientComment({
                                 userReaction={userReaction}
                                 num={totalReactions}
                             />
-                            <div className="p-1">
+                            <div className="p-1 flex gap-1">
                                 {replies.length > 4 && (
                                     <Button
                                         className="mx-auto"
@@ -146,7 +146,7 @@ export default function ClientComment({
                                         size="xs"
                                         onClick={() => setShowEditForm((f) => !f)}
                                     >
-                                        Edit
+                                        {showEditForm ? "Cancel" : "Edit"}
                                     </Button>
                                 )}
                             </div>

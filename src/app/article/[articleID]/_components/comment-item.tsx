@@ -37,7 +37,7 @@ export default async function CommentItem({
     const currentUserId = await getUserId();
 
     let canEdit = false;
-    console.log(userData.data?.userInfoTable.id, currentUserId);
+    //console.log(userData.data?.userInfoTable.id, currentUserId);
     if (userData.success && userData.data && currentUserId) {
         if (userData.data.userInfoTable.id == currentUserId) {
             canEdit = true;

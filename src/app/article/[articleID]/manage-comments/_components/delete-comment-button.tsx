@@ -1,5 +1,5 @@
 import { deleteComment } from "@/_actions/comment-actions";
-import Button from "@/components/button";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogClose,
@@ -36,7 +36,11 @@ export default function DeleteCommentButton({ commentId }: { commentId: string }
     return (
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
             <DialogTrigger asChild>
-                <Button size="xs" variant="destructive" className="ml-2">
+                <Button
+                    size="default"
+                    variant="destructive"
+                    className="cursor-pointer text-red-900 border border-red-900"
+                >
                     <Trash2 size={14} />
                 </Button>
             </DialogTrigger>
