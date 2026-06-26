@@ -37,7 +37,7 @@ export default function DeleteCommentButton({ commentId }: { commentId: string }
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
             <DialogTrigger asChild>
                 <Button
-                    size="default"
+                    size="xs"
                     variant="destructive"
                     className="cursor-pointer text-red-900 border border-red-900"
                 >

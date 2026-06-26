@@ -230,7 +230,7 @@ export async function updateComment(commentId: string, content: string) {
         const comment = await getComment(commentId);
         if (comment.success && comment.data) {
             const res = await prisma.comment.update({
-                data: { content: content },
+                data: { content: content, updatedAt: new Date() },
                 where: { id: commentId },
             });
             if (res) return { success: true, data: res };
