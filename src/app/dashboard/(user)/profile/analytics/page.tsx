@@ -10,8 +10,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { Analytics } from "./analytics/_components/analytics";
-import EditProfileForm from "./_components/edit-profile-form";
+import { Analytics } from "./_components/analytics";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -57,10 +56,10 @@ export default async function DashboardPage() {
 
   return (
     <div suppressContentEditableWarning suppressHydrationWarning>
-      <RouteHeading label="Dashboard" />
+      <RouteHeading label="Analytics" />
       <div className="">
-        <div className="pt-4">
-          <EditProfileForm user={userInfo} />
+        <div className="m-0 pt-10">
+          <Analytics data={data} />
         </div>
       </div>
     </div>

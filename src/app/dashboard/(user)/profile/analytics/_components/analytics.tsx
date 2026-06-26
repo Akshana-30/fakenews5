@@ -76,17 +76,17 @@ export function Analytics({ data }: AnalyticsProps) {
   };
 
   return (
-    <Collapsible className="rounded-md data-[state=open]:bg-muted mt-4">
-      <CollapsibleTrigger asChild>
-        <Button
-          variant="ghost"
-          className="group w-full justify-start hover:bg-muted"
-        >
-          <span className="flex-1 text-left">Analytics</span>
-          <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180 transition-transform" />
-        </Button>
-      </CollapsibleTrigger>
-      <CollapsibleContent className="p-4">
+    // <Collapsible className="rounded-md data-[state=open]:bg-muted mt-4">
+    //   <CollapsibleTrigger asChild>
+    //     <Button
+    //       variant="ghost"
+    //       className="group w-full justify-start hover:bg-muted"
+    //     >
+    //       <span className="flex-1 text-left">Analytics</span>
+    //       <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180 transition-transform" />
+    //     </Button>
+    //   </CollapsibleTrigger>
+    //   <CollapsibleContent className="p-4">
         <Card>
           <CardHeader>
             <CardTitle>Bookmark Distribution</CardTitle>
@@ -133,7 +133,7 @@ export function Analytics({ data }: AnalyticsProps) {
             <span className="ml-2 font-semibold text-foreground">{total}</span>
           </CardFooter>
         </Card>
-      </CollapsibleContent>
-    </Collapsible>
+    //   </CollapsibleContent>
+    // </Collapsible>
   );
 }

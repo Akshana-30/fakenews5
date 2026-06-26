@@ -27,8 +27,8 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 const formSchema = z
   .object({
-    oldPassword: z.string().min(8, 'password length must be =<8'),
-    password: z.string().min(8, 'password length must be =<8'),
+    oldPassword: z.string().min(8, "password length must be =<8"),
+    password: z.string().min(8, "password length must be =<8"),
     confirmPassword: z.string(),
   })
   .superRefine(({ password, confirmPassword }, ctx) => {
@@ -41,34 +41,37 @@ const formSchema = z
     }
   });
 
-  type Props = {
+type Props = {
   currentEmail: string;
 };
 
 export default function ChangePasswordDialog({ currentEmail }: Props) {
   const router = useRouter();
-  const [visible, setVisible] = useState({password:false, oldPassword:false, confirmPassword:false});
+  const [visible, setVisible] = useState({
+    password: false,
+    oldPassword: false,
+    confirmPassword: false,
+  });
   const [open, setOpen] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const form = useForm({
-    defaultValues: {oldPassword: "", password: "", confirmPassword: "" },
+    defaultValues: { oldPassword: "", password: "", confirmPassword: "" },
     validators: {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-        setServerError(null);
-        setLoading(true);
+      setServerError(null);
+      setLoading(true);
       const { error: signInError } = await authClient.signIn.email({
         email: currentEmail,
         password: value.oldPassword,
       });
-       
-    if (signInError) {
+
+      if (signInError) {
         setServerError("Incorrect password. Please try again.");
         return;
       }
-
 
       const { error: passwordError } = await authClient.changePassword({
         newPassword: value.password,
@@ -83,7 +86,7 @@ export default function ChangePasswordDialog({ currentEmail }: Props) {
       form.reset();
       setOpen(false);
       router.refresh();
-    } 
+    },
   });
 
   return (
@@ -97,10 +100,11 @@ export default function ChangePasswordDialog({ currentEmail }: Props) {
         }
       }}
     >
-      <DialogTrigger asChild className="text-md  font-semibold text-foreground">
-        <div className="flex flex-row my-auto gap-12">
-          <p className="text-black/60 my-auto">Password</p>
-          <Button variant="outline">Edit</Button>
+      <DialogTrigger asChild>
+        <div className="grid grid-cols-[1fr_1fr_auto] items-center gap-4 py-3 max-w-2xl cursor-pointer border-b border-muted-foreground/20">
+          <p className="text-black/60 font-semibold">Password</p>
+          <span /> {/* empty middle cell keeps columns aligned */}
+          <Button variant="outline" className="cursor-pointer">Edit</Button>
         </div>
       </DialogTrigger>
 
@@ -142,7 +146,12 @@ export default function ChangePasswordDialog({ currentEmail }: Props) {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          onClick={() => setVisible((v)=>({...v, oldPassword: !v.oldPassword}))}
+                          onClick={() =>
+                            setVisible((v) => ({
+                              ...v,
+                              oldPassword: !v.oldPassword,
+                            }))
+                          }
                         >
                           {visible.oldPassword ? (
                             <EyeOffIcon size={16} />
@@ -165,9 +174,7 @@ export default function ChangePasswordDialog({ currentEmail }: Props) {
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      New Password
-                    </FieldLabel>
+                    <FieldLabel htmlFor={field.name}>New Password</FieldLabel>
                     <InputGroup>
                       <Input
                         id={field.name}
@@ -183,7 +190,9 @@ export default function ChangePasswordDialog({ currentEmail }: Props) {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          onClick={() => setVisible((v)=>({...v, password: !v.password}))}
+                          onClick={() =>
+                            setVisible((v) => ({ ...v, password: !v.password }))
+                          }
                         >
                           {visible.password ? (
                             <EyeOffIcon size={16} />
@@ -224,7 +233,12 @@ export default function ChangePasswordDialog({ currentEmail }: Props) {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          onClick={() => setVisible((v)=>({...v, confirmPassword: !v.confirmPassword}))}
+                          onClick={() =>
+                            setVisible((v) => ({
+                              ...v,
+                              confirmPassword: !v.confirmPassword,
+                            }))
+                          }
                         >
                           {visible.confirmPassword ? (
                             <EyeOffIcon size={16} />

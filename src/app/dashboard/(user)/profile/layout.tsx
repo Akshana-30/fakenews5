@@ -1,11 +1,18 @@
+import ProfileSidebar from "./_components/sidebar";
 import UserNavbar from "./_components/user-navbar";
 
 
-export default function DashboardLayout({children}: {children : React.ReactNode}){
-    return (
-        <div className="w-full">
-            <UserNavbar/>
-            <div>{children}</div>
-        </div>
-    )
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="w-full">
+      <div className="flex min-h-screen">
+        <ProfileSidebar />
+        <main className="flex-1 min-w-0 p-6">{children}</main>
+      </div>
+    </div>
+  );
 }
