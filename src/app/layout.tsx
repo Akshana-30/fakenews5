@@ -18,7 +18,7 @@ import { getViewerContext } from "@/lib/access";
 import { LoginRegButtons } from "@/components/navbar/_components/login-register-buttons";
 import { SearchBar } from "@/components/navbar/_components/search-bar";
 import { CookieBanner } from "./cookies/cookie-banner";
-import { getConsent, markArticleAsViewed } from "@/lib/cookie-actions";
+import { getConsent } from "@/lib/cookie-actions";
 
 const fontSans = Anuphan({
     subsets: ["latin"],
