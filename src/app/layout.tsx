@@ -103,26 +103,18 @@ export default async function RootLayout({
             } as React.CSSProperties
           }
         >
-          <div className="sticky top-0 z-50">
-            <div className="relative z-20">
-              <Header />
-            </div>
-              <ScrollAwareNav>
-            <div className="flex justify-between bg-background mx-70">
-              <Navbar
-                categories={cats.success && cats.data ? cats.data : null}
-              />
-              <div className="flex gap-4">
-                <div className="my-auto">
-                <SearchBar />
-                </div>
-                <LoginRegButtons />
-              </div>
-            </div>
-              {hasPermission && <AdminNavbar />}
-              {editor && <EditorNavbar />}
-            </ScrollAwareNav>
-          </div>
+    <div className="sticky top-0 z-50 ">
+  <div className="relative z-20 "> 
+    <Header />
+  </div>
+  <ScrollAwareNav>
+    <div>
+      <Navbar categories={cats.success && cats.data ? cats.data : null} />
+      {hasPermission && <AdminNavbar />}
+      {editor && <EditorNavbar />}
+    </div>
+  </ScrollAwareNav>
+</div>
 
           {showAds && <AdBanner />}
 

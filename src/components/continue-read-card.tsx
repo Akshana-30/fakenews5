@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export function ContinueToReadCard() {
   return (
-    <Card className="w-xl mx-auto mt-4 border-0 bg-zinc-900 text-center">
+    <Card className="max-w-xl mx-auto mt-4 border-0 bg-zinc-900 text-center">
       <CardContent className="flex flex-col items-center px-7 py-8">
         <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/25">
           <Lock className="h-4 w-4 text-zinc-300" />

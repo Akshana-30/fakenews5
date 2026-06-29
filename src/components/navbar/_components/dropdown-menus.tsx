@@ -16,7 +16,7 @@ export function NewsDropdown({ label, links }: { label: string; links: NavLink[]
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-6 cursor-pointer">
+                <Button variant="ghost" className="hover:border-b-primary!  border-2 hover:bg-[#f4ede0]! hover:dark:text-background  text-[16px] cursor-pointer">
                     {label}
                     <ChevronDown className="dark:text-white text-black" />
                 </Button>
