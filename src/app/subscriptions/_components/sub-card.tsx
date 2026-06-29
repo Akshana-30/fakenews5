@@ -25,7 +25,7 @@ export default function SubCard({
     <div className="flex justify-center mb-5">
       <div
         className={
-          plan.annualPrice == null ? "flex mx-auto" : "flex mx-auto gap-5"
+          plan.annualPrice == null ? "flex mx-auto" : " md:grid md:grid-cols-2 md:gap-5  "
         }
       >
         <Card className="flex md:w-xs bg-muted dark:bg-[#2d2d2d]">
@@ -34,7 +34,7 @@ export default function SubCard({
               {plan.name} - {formatPrice(plan.price)} / month
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-row">
+          <CardContent className="h-full flex-row">
             <div className="mx-4">
               {plan.image ? (
                 <Image
@@ -62,7 +62,7 @@ export default function SubCard({
               ></SubButton>
             </div>
           </CardContent>
-          <CardFooter className="justify-center mt-auto">
+          <CardFooter className=" justify-center mt-auto">
             <p>{plan.description}</p>
           </CardFooter>
         </Card>

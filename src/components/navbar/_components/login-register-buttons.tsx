@@ -13,7 +13,7 @@ export async function LoginRegButtons() {
       {session ? (
         <>
           <li>
-            <Button asChild variant="ghost" className="">
+            <Button asChild variant="ghost" className="cursor-pointer border-2 hover:border-b-primary! hover:bg-[#f4ede0]! hover:dark:text-background rounded-b-none text-sm md:text-[16px]">
               <Link href="/dashboard">Dashboard</Link>
             </Button>
           </li>
@@ -24,13 +24,13 @@ export async function LoginRegButtons() {
       ) : (
         <>
         <li>
-            <Button asChild variant="ghost" className="">
+            <Button asChild variant="ghost" className="cursor-pointer border-2 hover:border-b-primary! hover:bg-[#f4ede0]! hover:dark:text-background rounded-b-none text-sm md:text-[16px]">
               <Link href="/sign-in">Sign in</Link>
             </Button>
           </li>{" "}
           {" "}
           <li>
-            <Button asChild variant="ghost" className="">
+            <Button asChild variant="ghost" className="cursor-pointer border-2 hover:border-b-primary! hover:bg-[#f4ede0]! hover:dark:text-background rounded-b-none text-sm md:text-[16px]">
               <Link href="/register">Register</Link>
             </Button>
           </li>

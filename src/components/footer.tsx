@@ -107,10 +107,10 @@ export default async function Footer() {
               </li>
               <li>
                 <Link
-                  href="/marketplace"
+                  href="/buy-and-sell"
                   className="hover:text-primary transition-colors"
                 >
-                  Marketplace
+                  Buy &amp; Sell
                 </Link>
               </li>
               <li>
