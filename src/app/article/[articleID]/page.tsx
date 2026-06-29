@@ -28,12 +28,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
     const article = await getArticle(articleID);
     // console.log(article);
 
-    async function getReferer() {
-        const headerList = await headers();
-        const referer = headerList.get("referer");
-        return referer;
-    }
-
     let hasPermission = false;
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -54,6 +48,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
 
     let storeCookies = false;
     const consent = await getConsent();
+    console.log(consent);
     if (consent && consent.value === "yes") {
         storeCookies = true;
     }

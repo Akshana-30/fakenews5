@@ -436,7 +436,6 @@ export async function hasUserBookmarkedArticle(
 }
 
 export async function addView(articleId: string): Promise<Result<number>> {
-    console.log("kommer vi hiut" + articleId);
     try {
         const article = await prisma.article.findUnique({ where: { id: articleId } });
         if (!article) {
