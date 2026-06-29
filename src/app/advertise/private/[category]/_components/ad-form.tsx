@@ -25,12 +25,11 @@ const PRICE_TYPES = [
 ];
 
 const TIERS = [
-    { value: "basic",    label: "Basic — Free",     desc: "1 photo · 30 days · Standard placement" },
-    { value: "plus",     label: "Plus — 49 kr",     desc: "5 photos · 60 days · Highlighted" },
-    { value: "featured", label: "Featured — 99 kr", desc: "10 photos · 60 days · Top placement + front page" },
+    { value: "basic", label: "Basic — Free", desc: "1 photo · 30 days · Standard placement" },
+    { value: "plus",  label: "Plus — 49 kr", desc: "5 photos · 60 days · Highlighted" },
 ];
 
-const MAX_PHOTOS: Record<string, number> = { basic: 1, plus: 5, featured: 10 };
+const MAX_PHOTOS: Record<string, number> = { basic: 1, plus: 5 };
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 type Props = {
@@ -428,7 +427,7 @@ export default function AdForm({ categorySlug, subcategories, titlePlaceholder }
             <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
                 {pending
                     ? fields.tier === "basic" ? "Submitting…" : "Preparing payment…"
-                    : fields.tier === "basic" ? "Submit ad" : `Pay & submit — ${fields.tier === "plus" ? "49 kr" : "99 kr"}`
+                    : fields.tier === "basic" ? "Submit ad" : "Pay & submit — 49 kr"
                 }
             </Button>
         </form>

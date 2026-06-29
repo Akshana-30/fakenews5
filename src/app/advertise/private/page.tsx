@@ -49,17 +49,6 @@ const tiers = [
       "Highlighted in category listing",
     ],
   },
-  {
-    name: "Featured",
-    price: "99 kr",
-    duration: "30 days",
-    features: [
-      "Up to 5 photos",
-      "Max 1 500 characters",
-      "Top placement + highlighted",
-      "Shown on front page",
-    ],
-  },
 ];
 
 export default function PrivateAdvertisePage() {
