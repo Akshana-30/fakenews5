@@ -14,6 +14,7 @@ import NewsSidebar from "@/components/news-sidebar";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { getSubscriptionPlanFromUserId } from "@/_actions/subscription-actions";
+import { getConsent } from "@/lib/consent-actions";
 
 export default async function HomePage() {
     const [allResult, editorsResult, popularResult] = await Promise.all([
@@ -42,8 +43,11 @@ export default async function HomePage() {
         //console.log(plan);
     }
 
+    const consent = await getConsent();
+    console.log(consent);
+
     return (
-        <div className="w-full px-5 pb-10">     
+        <div className="w-full px-5 pb-10">
             {/* ── Hero section ── */}
             <div className="flex items-center gap-3 mt-6 mb-4">
                 <div className="flex-1 border-t border-border" />
