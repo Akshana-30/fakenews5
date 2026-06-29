@@ -1,10 +1,5 @@
 "use server";
-import {
-    addView,
-    getArticle,
-    getUserReaction,
-    hasUserBookmarkedArticle,
-} from "@/_actions/article-actions";
+import { getArticle, getUserReaction, hasUserBookmarkedArticle } from "@/_actions/article-actions";
 import Link from "next/link";
 import Likes from "./_components/likes";
 import Bookmark from "./_components/bookmark";
@@ -57,7 +52,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         }
     }
 
-    let storeCookies;
+    let storeCookies = false;
     const consent = await getConsent();
     if (consent && consent.value === "yes") {
         storeCookies = true;
@@ -93,6 +88,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
 
         return (
             <div className="flex-row justify-center w-full px-4 py-2">
+                <h1>{storeCookies}</h1>
                 {storeCookies ? <MarkViewed articleId={articleID} /> : ""}
                 {article.data.category.length > 0 &&
                     article.data.category.map((c, i) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { getConsent, markArticleAsViewed } from "@/lib/cookie-actions";
+import { markArticleAsViewed } from "@/lib/cookie-actions";
 
 export default function MarkViewed({ articleId }: { articleId: string }) {
     const fired = useRef(false);
