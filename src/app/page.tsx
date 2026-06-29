@@ -14,7 +14,7 @@ import NewsSidebar from "@/components/news-sidebar";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { getSubscriptionPlanFromUserId } from "@/_actions/subscription-actions";
-import { getConsent } from "@/lib/consent-actions";
+import { getConsent } from "@/lib/cookie-actions";
 
 export default async function HomePage() {
     const [allResult, editorsResult, popularResult] = await Promise.all([

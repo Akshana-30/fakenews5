@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { Anuphan, Roboto_Mono, Gelasio } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar/navbar";
@@ -19,7 +18,7 @@ import { getViewerContext } from "@/lib/access";
 import { LoginRegButtons } from "@/components/navbar/_components/login-register-buttons";
 import { SearchBar } from "@/components/navbar/_components/search-bar";
 import { CookieBanner } from "./cookies/cookie-banner";
-import { getConsent } from "@/lib/consent-actions";
+import { getConsent, markArticleAsViewed } from "@/lib/cookie-actions";
 
 const fontSans = Anuphan({
     subsets: ["latin"],
@@ -82,11 +81,9 @@ export default async function RootLayout({
     const cookieConsent = await getConsent();
     if (cookieConsent === undefined) {
         showCookieBanner = true;
-    } else if (cookieConsent === "yes") {
+    } else if (cookieConsent.value === "yes") {
         showCookieBanner = false;
     }
-    console.log(cookieConsent);
-
     return (
         <html
             lang="en"

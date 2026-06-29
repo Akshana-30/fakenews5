@@ -1,3 +1,4 @@
+"use server";
 import {
     addView,
     getArticle,
@@ -13,7 +14,7 @@ import { format } from "date-fns";
 import CommentarySection from "./_components/commentary-section";
 import TopLevelCommentForm from "./_components/top-level-comment-form";
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import ArticleDoesntExist from "./_components/article-doesnt-exists";
 import ReactMarkdown from "react-markdown";
@@ -21,6 +22,9 @@ import remarkGfm from "remark-gfm";
 import remarkIns from "remark-ins";
 // import InArticleAd from "@/components/in-article-ad";
 import Image from "next/image";
+import { getConsent } from "@/lib/cookie-actions";
+import { NextResponse } from "next/server";
+import MarkViewed from "./_components/mark-viewed";
 
 export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
     const { articleID } = await params;
@@ -53,19 +57,15 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         }
     }
 
+    let storeCookies;
+    const consent = await getConsent();
+    if (consent && consent.value === "yes") {
+        storeCookies = true;
+    }
+
     if (userId && hasPermission && article.success && article.data) {
-        // Only add a view when the referer url is not the same as the article url.
-        // This prevents the view counter from increasing when the user refresh the page
-        // or clicks on thumbs up/down, writing comments etc, since all those actions
-        // end with a router.refresh() call.
-        const referer = await getReferer();
-        const currentUrl = `http://localhost:3000/article/${articleID}`;
         //console.log(referer, currentUrl);
-        let views = article.data.views;
-        if (referer !== currentUrl) {
-            await addView(articleID);
-            views++;
-        }
+        const views = article.data.views;
 
         // Calculate the total reactions (upvotes/downvotes) to one score
         const reactions = article.data.reactions;
@@ -93,6 +93,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
 
         return (
             <div className="flex-row justify-center w-full px-4 py-2">
+                {storeCookies ? <MarkViewed articleId={articleID} /> : ""}
                 {article.data.category.length > 0 &&
                     article.data.category.map((c, i) => {
                         if (i + 1 !== article.data.category.length)

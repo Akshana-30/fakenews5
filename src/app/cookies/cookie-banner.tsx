@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { saveConsent } from "@/lib/consent-actions";
+import { getConsent, saveConsent } from "@/lib/cookie-actions";
 import Link from "next/link";
-import Image from "next/image";
 import Button from "@/components/button";
 
 export function CookieBanner() {
