@@ -48,7 +48,7 @@ export const auth = betterAuth({
             console.log(text);
             await transporter.sendMail(
                 {
-                    from: '"Fakenews" <noreply@fakenews.com>',
+                    from: '"The Daily Commit" <noreply@thedailycommit.com>',
                     to: user.email,
                     subject: "Reset your password",
                     text: text,
@@ -97,9 +97,9 @@ export const auth = betterAuth({
                             console.log(res);
                             await transporter.sendMail(
                                 {
-                                    from: '"Fakenews" <noreply@fakenews.com>',
+                                    from: '"The Daily Commit" <noreply@thedailycommit.com>',
                                     to: user.data.email,
-                                    subject: "Welcome to fakenews",
+                                    subject: "Welcome to The Daily Commit",
                                     text: text,
                                 },
                                 function (error, info) {
@@ -126,7 +126,7 @@ export const auth = betterAuth({
                             });
                             await transporter.sendMail(
                                 {
-                                    from: '"Fakenews" <noreply@fakenews.com>',
+                                    from: '"The Daily Commit" <noreply@thedailycommit.com>',
                                     to: user.data.email,
                                     subject: "Cancellation of subscription",
                                     text: text,
@@ -151,7 +151,7 @@ export const auth = betterAuth({
                             });
                             await transporter.sendMail(
                                 {
-                                    from: '"Fakenews" <noreply@fakenews.com>',
+                                    from: '"The Daily Commit" <noreply@thedailycommit.com>',
                                     to: user.data.email,
                                     subject: "Update of your subscription",
                                     text: text,
@@ -175,7 +175,7 @@ export const auth = betterAuth({
             console.log(text);
             await transporter.sendMail(
                 {
-                    from: '"Fakenews" <noreply@fakenews.com>',
+                    from: '"The Daily Commit" <noreply@thedailycommit.com>',
                     to: user.email,
                     subject: "Verify your email",
                     text: text,

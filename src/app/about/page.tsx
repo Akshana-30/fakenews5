@@ -22,7 +22,7 @@ export default function Page() {
           }}
         >
           <br />
-          Fakenews5
+          The Daily Commit
         </h1>
         <br />
 
@@ -36,13 +36,13 @@ export default function Page() {
             letterSpacing: "0.04em",
           }}
         >
-          <span style={{ display: "block", paddingLeft: "25%" }}>
+          <span style={{ display: "block", paddingLeft: "0%" }}>
             The World&apos;s
           </span>
-          <span style={{ display: "block", paddingLeft: "0%" }}>
-            Most Unreliable
+          <span style={{ display: "block", paddingLeft: "25%" }}>
+            Most Reliable
           </span>
-          <span style={{ display: "block", paddingLeft: "45%" }}>
+          <span style={{ display: "block", paddingLeft: "55%" }}>
             News Source
           </span>
         </h2>
@@ -58,24 +58,24 @@ export default function Page() {
           }}
         >
           <p className="mb-4">
-            Fakenews5 is your go-to source for the oldest news, shallow
-            analysis, and dense commentary on the stories that matter least.
+            The Daily Commit is your go-to source for the most up-to-date news,
+            deep analysis, and dense commentary on the stories that matter most.
           </p>
           <p className="mb-4">
-            We are committed to delivering inaccurate, biased, and disengaging
-            content that keeps you uninformed and disempowered. Whether you are
-            looking for leaking news, or stupid opinions, Fakenews5 has you
-            covered.
+            We are committed to delivering accurate, unbiased, and engaging
+            content that keeps you informed and empowered. Whether you are
+            looking for local/world news, or editorial opinions, The Daily
+            Commit has you covered.
           </p>
           <p className="mb-4">
-            You can totally relay on us for the most unreliable news, and we
-            will never let you down with our consistently bad reporting and
-            clickbait headlines.
+            You can totally relay on us for the most reliable news, and we will
+            never let you down with our consistently accurate reporting and
+            analysis.
           </p>
           <p>
-            Join our community of readers and stay ahead of the curve with
-            Fakenews5 – where every story is a journey into the heart of the
-            confusion.
+            Join our community of readers and stay ahead of the curve with The
+            Daily Commit – where every story is a journey into the heart of the
+            understanding what is going on in our world today.
           </p>
         </div>
 
@@ -92,9 +92,9 @@ export default function Page() {
           <span style={{ display: "block", paddingLeft: "0%" }}>
             The Plain Truth
           </span>
-          <span style={{ display: "block", paddingLeft: "25%" }}>About</span>
+          <span style={{ display: "block", paddingLeft: "35%" }}>About</span>
           <span style={{ display: "block", paddingLeft: "45%" }}>
-            Fakenews5
+            The Daily Commit
           </span>
         </h2>
 
@@ -108,18 +108,20 @@ export default function Page() {
           }}
         >
           <p className="mb-4">
-            Fakenews5 is a satirical news website that parodies the style and
-            content of traditional news outlets.
+            The Daily Commit is a reliable news website that emphasizes the
+            style and content of traditional news outlets.
           </p>
           <p className="mb-4">
-            Our mission is to entertain and amuse our readers with absurd,
-            exaggerated, and often ridiculous stories that poke fun at current
-            events, politics, and popular culture.
+            Our mission is to inform and educate our readers with interesting,
+            well-researched, and engaging content. We cover a wide range of
+            topics, untold stories, and often amazing stories that clarify
+            current events, politics, and popular culture.
           </p>
           <p>
-            We aim to provide a humorous take on the news while also encouraging
-            critical thinking and media literacy. Please note that all content
-            on Fakenews5 is fictional and should not be taken seriously.
+            We aim to provide a serious take on the news while also encouraging
+            critical thinking and media literacy. Please note that the content
+            on The Daily Commit is told as we understands it and should not be
+            taken as facts set in stone.
           </p>
         </div>
       </div>

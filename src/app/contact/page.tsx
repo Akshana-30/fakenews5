@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Mail, MapPin, Clock } from "lucide-react";
 import { ContactForm } from "./ContactForm";
 
-export const metadata: Metadata = { title: "Contact Us | Fakenews5" };
+export const metadata: Metadata = { title: "Contact Us | The Daily Commit" };
 
 export default function ContactPage() {
   return (
@@ -12,7 +12,7 @@ export default function ContactPage() {
           Get in Touch
         </h1>
         <p className="mt-2 font-serif italic text-muted-foreground">
-          Questions, tips, or spotted a fake? We&apos;d love to hear from you.
+          Questions, tips, or spotted a typo? We&apos;d love to hear from you.
         </p>
       </div>
 
@@ -24,7 +24,7 @@ export default function ContactPage() {
             {
               icon: <Mail size={15} />,
               title: "Email",
-              lines: ["tips@fakenews5.se", "support@fakenews5.se"],
+              lines: ["tips@thedailycommit.se", "support@thedailycommit.se"],
             },
             {
               icon: <MapPin size={15} />,

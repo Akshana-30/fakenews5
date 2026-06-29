@@ -72,7 +72,7 @@ export default function AddArticleForm() {
                 toast.error(result.error, { position: "top-center" });
                 setLoading(false);
             } else {
-                toast.success("Article was added to Fakenews5 database", {
+                toast.success("Article was added to The Daily Commit database", {
                     position: "bottom-right",
                 });
                 router.push("/");
