@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { submitAd } from "../_actions/submit-ad";
+import { uploadImage } from "@/lib/upload-action";
 import { CheckCircle2, ImagePlus, X } from "lucide-react";
 
 const CONDITIONS = [
@@ -24,12 +25,11 @@ const PRICE_TYPES = [
 ];
 
 const TIERS = [
-    { value: "basic",    label: "Basic — Free",     desc: "1 photo · 30 days · Standard placement" },
-    { value: "plus",     label: "Plus — 49 kr",     desc: "5 photos · 60 days · Highlighted" },
-    { value: "featured", label: "Featured — 99 kr", desc: "10 photos · 60 days · Top placement + front page" },
+    { value: "basic", label: "Basic — Free", desc: "1 photo · 30 days · Standard placement" },
+    { value: "plus",  label: "Plus — 49 kr", desc: "5 photos · 60 days · Highlighted" },
 ];
 
-const MAX_PHOTOS: Record<string, number> = { basic: 1, plus: 5, featured: 10 };
+const MAX_PHOTOS: Record<string, number> = { basic: 1, plus: 5 };
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 type Props = {
@@ -120,19 +120,18 @@ export default function AdForm({ categorySlug, subcategories, titlePlaceholder }
         e.preventDefault();
         setError(null);
         startTransition(async () => {
-            let photoUrls: string[] = [];
+            const photoUrls: string[] = [];
 
-            if (photos.length > 0) {
+            // Upload each photo to S3 (same action the article form uses).
+            for (const photo of photos) {
                 const fd = new FormData();
-                photos.forEach(p => fd.append("photos", p));
-                const res = await fetch("/uploads/ad-photos", { method: "POST", body: fd });
-                if (!res.ok) {
-                    const body = await res.json().catch(() => ({}));
-                    setError(body.error ?? "Photo upload failed. Please try again.");
+                fd.append("file", photo);
+                const result = await uploadImage(fd);
+                if ("error" in result) {
+                    setError(result.error);
                     return;
                 }
-                const data = await res.json();
-                photoUrls = data.urls as string[];
+                photoUrls.push(result.url);
             }
 
             const result = await submitAd({ ...fields, listingType: fields.listingType, category: categorySlug, photos: photoUrls });
@@ -428,7 +427,7 @@ export default function AdForm({ categorySlug, subcategories, titlePlaceholder }
             <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
                 {pending
                     ? fields.tier === "basic" ? "Submitting…" : "Preparing payment…"
-                    : fields.tier === "basic" ? "Submit ad" : `Pay & submit — ${fields.tier === "plus" ? "49 kr" : "99 kr"}`
+                    : fields.tier === "basic" ? "Submit ad" : "Pay & submit — 49 kr"
                 }
             </Button>
         </form>
