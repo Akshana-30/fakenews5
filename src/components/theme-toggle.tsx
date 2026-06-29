@@ -90,7 +90,7 @@ export function ThemeToggle() {
                 height: "26px",
                 borderRadius: "999px",
                 border: "1px solid rgba(200,168,75,0.4)",
-                background: isDark ? "#c8a84b" : "rgba(255,255,255,0.15)",
+                background: isDark ? "#cf9126" : "rgba(255,255,255,0.15)",
                 cursor: "pointer",
                 padding: 0,
                 flexShrink: 0,

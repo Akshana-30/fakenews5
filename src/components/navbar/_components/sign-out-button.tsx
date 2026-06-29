@@ -36,7 +36,7 @@ export function SignOutButton({ children, disabled, ...props }: Props) {
       disabled={loading || disabled}
       onClick={handleClick}
       {...props}
-      className="cursor-pointer"
+      className="cursor-pointer border-2 hover:border-b-primary! hover:bg-[#f4ede0]! hover:dark:text-background rounded-b-none text-sm md:text-[16px]"
     >
       {loading ? (
         <>
