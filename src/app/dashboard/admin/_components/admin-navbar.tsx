@@ -8,9 +8,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function AdminNavbar() {
-
     return (
         <div className="flex flex-wrap gap-2 px-6 sticky top-0 bg-chart-5 dark:bg-muted">
             <ul className="flex flex-wrap items-center mx-auto">
@@ -29,11 +29,11 @@ export default function AdminNavbar() {
                         <Link href="/dashboard/admin/users">User table</Link>
                     </Button>
                 </li>
-         <li>
-          <Button asChild variant="ghost" className="">
-            <Link href="/dashboard/admin/saved-articles">Saved articles</Link>
-          </Button>
-        </li>
+                <li>
+                    <Button asChild variant="ghost" className="">
+                        <Link href="/dashboard/admin/saved-articles">Saved articles</Link>
+                    </Button>
+                </li>
                 <li>
                     <Button asChild variant="ghost" className="">
                         <Link href="/dashboard/admin/plans">Plans</Link>
@@ -47,9 +47,9 @@ export default function AdminNavbar() {
                 <li>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="">
+                            <Button variant="ghost" className="cursor-pointer">
                                 Editor tools
-                                <ChevronDown color="black" />
+                                <ChevronDown className="dark:text-white black:text-black" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
