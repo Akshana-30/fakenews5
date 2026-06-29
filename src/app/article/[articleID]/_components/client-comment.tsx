@@ -130,13 +130,10 @@ export default function ClientComment({
                                 className="cursor-pointer"
                                 type="reset"
                                 variant={"outline"}
-                                onClick={() => {
-                                    form.reset();
-                                }}
+                                onClick={() => form.reset()}
                                 size={"xs"}
-                                form="comment"
                             >
-                                Reset
+                                Clear
                             </Button>
                             <Button
                                 className="cursor-pointer"

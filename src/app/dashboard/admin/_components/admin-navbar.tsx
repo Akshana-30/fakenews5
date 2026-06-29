@@ -12,8 +12,8 @@ import { ChevronDown } from "lucide-react";
 export default function AdminNavbar() {
 
     return (
-        <div className="flex w-full gap-2 px-6 sticky top-0 bg-chart-5 dark:bg-muted">
-            <ul className="flex items-center mx-auto">
+        <div className="flex flex-wrap gap-2 px-6 sticky top-0 bg-chart-5 dark:bg-muted">
+            <ul className="flex flex-wrap items-center mx-auto">
                 <li>
                     <Button asChild variant="ghost" className="">
                         <Link href="/dashboard/admin">Overview</Link>
