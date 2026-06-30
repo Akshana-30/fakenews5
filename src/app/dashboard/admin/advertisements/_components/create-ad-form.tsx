@@ -8,10 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { uploadImage } from "@/lib/upload-action";
+import Image from "next/image";
 
 export default function CreateAdForm() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [imageUploading, setImageUploading] = useState(false);
     const [fields, setFields] = useState({
         label: "",
         format: "banner",
@@ -20,6 +23,22 @@ export default function CreateAdForm() {
         startsAt: "",
         endsAt: "",
     });
+
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setImageUploading(true);
+        const fd = new FormData();
+        fd.append("file", file);
+        const result = await uploadImage(fd);
+        if ("error" in result) {
+            toast.error(result.error, { position: "top-center" });
+            setFields(f => ({ ...f, imageUrl: "" }));
+        } else {
+            setFields(f => ({ ...f, imageUrl: result.url }));
+        }
+        setImageUploading(false);
+    };
 
     const set = (key: keyof typeof fields) =>
         (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -85,9 +104,29 @@ export default function CreateAdForm() {
 
                 <div className="space-y-1 sm:col-span-2">
                     <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        Image URL
+                        Image
                     </label>
-                    <Input placeholder="https://example.com/banner.jpg" value={fields.imageUrl} onChange={set("imageUrl")} />
+                    <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        disabled={imageUploading}
+                    />
+                    {imageUploading && (
+                        <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                            <Spinner className="size-4" />
+                            Uploading...
+                        </div>
+                    )}
+                    {fields.imageUrl && !imageUploading && (
+                        <Image
+                            src={fields.imageUrl}
+                            alt="Ad image preview"
+                            width={300}
+                            height={100}
+                            className="mt-2 h-20 w-auto rounded object-contain border"
+                        />
+                    )}
                 </div>
 
                 <div className="space-y-1 sm:col-span-2">
@@ -112,7 +151,7 @@ export default function CreateAdForm() {
                 </div>
             </div>
 
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || imageUploading}>
                 {loading ? <Spinner /> : "Create ad (inactive)"}
             </Button>
         </form>
