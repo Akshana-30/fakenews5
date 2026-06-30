@@ -101,3 +101,8 @@ export async function getUserFromStripeId(stripeId: string): Promise<Result<User
         return { success: false, error: msg };
     }
 }
+
+export async function getUserInfoFromId(userId: string) {
+    const userInfoId = getUserId();
+    console.log(userInfoId);
+}
