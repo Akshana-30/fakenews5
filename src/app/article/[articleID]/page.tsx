@@ -46,13 +46,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         }
     }
 
-    let storeCookies = false;
-    const consent = await getConsent();
-    console.log(consent);
-    if (consent && consent.value === "yes") {
-        storeCookies = true;
-    }
-
     if (userId && hasPermission && article.success && article.data) {
         //console.log(referer, currentUrl);
         const views = article.data.views;
@@ -83,8 +76,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
 
         return (
             <div className="flex-row justify-center w-full px-4 py-2">
-                <h1>{storeCookies}</h1>
-                {storeCookies ? <MarkViewed articleId={articleID} /> : ""}
+                <MarkViewed articleId={articleID} />
                 {article.data.category.length > 0 &&
                     article.data.category.map((c, i) => {
                         if (i + 1 !== article.data.category.length)
