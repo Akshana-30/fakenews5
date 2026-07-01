@@ -1,3 +1,4 @@
+import { cache } from "react";
 import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
 
@@ -13,6 +14,12 @@ export type Advertisement = {
     endsAt: Date | null;
 };
 
+// Per-request memo of which ad ids have already been shown for a given
+// format, so multiple slots on the same page (e.g. top + bottom banner,
+// or two sidebar slots) don't all draw the same random ad when more than
+// one is active. cache() resets automatically on the next request.
+const getSeenAdIds = cache(() => new Map<string, Set<string>>());
+
 export async function getActiveAd(format: string): Promise<Advertisement | null> {
     try {
         const now = new Date();
@@ -26,7 +33,16 @@ export async function getActiveAd(format: string): Promise<Advertisement | null>
         });
         console.log(`[getActiveAd] format="${format}" found=${ads.length} now=${now.toISOString()}`);
         if (ads.length === 0) return null;
-        return ads[Math.floor(Math.random() * ads.length)];
+
+        const seenStore = getSeenAdIds();
+        const seen = seenStore.get(format) ?? new Set<string>();
+        const unseen = ads.filter((a) => !seen.has(a.id));
+        const pool = unseen.length > 0 ? unseen : ads;
+
+        const chosen = pool[Math.floor(Math.random() * pool.length)];
+        seen.add(chosen.id);
+        seenStore.set(format, seen);
+        return chosen;
     } catch (err) {
         console.error(`[getActiveAd] format="${format}" ERROR:`, err);
         return null;
