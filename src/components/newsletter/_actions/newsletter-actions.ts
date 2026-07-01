@@ -1,9 +1,7 @@
 "use server";
 
-import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { Author, Category, Result } from "@/lib/types";
-import { success } from "zod";
+import { Result } from "@/lib/types";
 
 type NewsletterSettings = {
     id: string;
@@ -56,6 +54,29 @@ export async function setNewsletterSettings(
         }
     } catch (err) {
         const msg = `An unknown error occurred when trying to register to the newsletter.\n\n${err}`;
+        console.error(msg);
+        return { success: false, error: msg };
+    }
+}
+
+export async function getNewsLettersettingsFromId(
+    userId: string,
+): Promise<Result<NewsletterSettings>> {
+    try {
+        const res = await prisma.newsletterSettings.findFirst({
+            where: { user_id: userId },
+            include: { authors: true, categories: true },
+        });
+        if (res) {
+            return { success: true, data: res };
+        } else {
+            return {
+                success: false,
+                error: `Couldn't find newsletter subscription for user id ${userId}.`,
+            };
+        }
+    } catch (err) {
+        const msg = `An error occurred when trying to find newsletter settings for user ${userId}.\n\n${err}`;
         console.error(msg);
         return { success: false, error: msg };
     }
