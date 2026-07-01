@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
 import { Role } from "better-auth/plugins";
 import { headers } from "next/headers";
-import { z } from "zod";
+import { success, z } from "zod";
 
 const userInfoSchema = z.object({
     userId: z.string(),
@@ -104,4 +104,18 @@ export async function getUserFromStripeId(stripeId: string): Promise<Result<User
 
 export async function getUserInfoFromId(userId: string) {
     const userInfoId = getUserId();
+}
+
+export async function getEmailFromUserId(id: string): Promise<Result<string>> {
+    try {
+        const user = await prisma.user.findFirst({ where: { id: id } });
+        if (user) {
+            return { success: true, data: user.email };
+        } else {
+            return { success: false, error: `Couldn't find user with id ${id}.` };
+        }
+    } catch (err) {
+        const msg = `Couldn't find user with id ${id}.`;
+        return { success: false, error: msg };
+    }
 }
