@@ -2,16 +2,29 @@ import { sub } from "date-fns";
 import dotenv from "dotenv";
 dotenv.config();
 
-console.log(process.env.DATABASE_URL);
-
 import cron from "node-cron";
+import { getEmailFromUserId } from "@/_actions/user-actions";
+import nodemailer from "nodemailer";
 
+console.log(process.env.SMTP_HOST);
+
+// The maximum numbers of articles per category, if it exists that many.
 const NUMBER_OF_NEW_ARTICLES_PER_CATEGORY = 3;
 const NUMBER_OF_NEW_ARTICLES_PER_AUTHOR = 2;
 const NUMBER_OF_NEW_ARTICLES_MOST_VIEWS = 3;
 const NUMBER_OF_NEW_ARTICLES_MOST_REACTIONS = 3;
 
-async function generateNewsletter(userId: string) {
+const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    secure: false,
+    auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+    },
+});
+
+async function generateNewsletter(userId: string, num: number) {
     const { default: prisma } = await import("./prisma");
     const dateBack = sub(new Date(), { days: 7 }); // How far back in time we will select articles
     let text = "";
@@ -26,6 +39,9 @@ async function generateNewsletter(userId: string) {
         where: { user_id: userId },
         include: { categories: true, authors: true },
     });
+    if (!newsLetterSettings) {
+        return;
+    }
 
     // Get the five latest articles from each category that the user is subscribed to.
     if (newsLetterSettings?.categories) {
@@ -44,7 +60,7 @@ async function generateNewsletter(userId: string) {
                 text += `In the list below you will find the newest articles from each category you're subscribed to.\n`;
                 text += `${c.name}: `;
                 res.article.map((a, id) => {
-                    text += `http://localhost:3000/article/${a.id}`;
+                    text += `${a.title} (http://localhost:3000/article/${a.id})`;
                     if (id < res.article.length - 1) {
                         text += ", ";
                     } else {
@@ -72,7 +88,7 @@ async function generateNewsletter(userId: string) {
                 });
                 if (res?.articles && res.articles.length > 0) {
                     res.articles.map((a, id) => {
-                        text += `http://localhost:3000/article/${a.id}`;
+                        text += `${a.title} (http://localhost:3000/article/${a.id})`;
                         if (id < res.articles.length - 1) {
                             text += ", ";
                         } else {
@@ -92,7 +108,7 @@ async function generateNewsletter(userId: string) {
         if (res && res.length > 0) {
             text += `\n\nBelow you will find the most viewed articles for the latest week:`;
             res.map((a, id) => {
-                text += `http://localhost:3000/article/${a.id}`;
+                text += `${a.title} (http://localhost:3000/article/${a.id})`;
                 if (id < res.length - 1) {
                     text += ", ";
                 } else {
@@ -123,7 +139,7 @@ async function generateNewsletter(userId: string) {
             text += `The articles that has had the most reactions (positive/negative): `;
             const slicedArticles = sorted.slice(0, NUMBER_OF_NEW_ARTICLES_MOST_REACTIONS);
             slicedArticles.map((a, i) => {
-                text += `http://localhost:3000/article/${a.id}`;
+                text += `${a.title} (http://localhost:3000/article/${a.id})`;
                 if (i < sorted.length - 1) {
                     text += ", ";
                 } else {
@@ -133,24 +149,37 @@ async function generateNewsletter(userId: string) {
         }
     }
 
-    if (!newsLetterSettings) {
-        return;
+    const email = await getEmailFromUserId(userId);
+    if (email && email.data) {
+        await transporter.sendMail(
+            {
+                from: '"The Daily Commit" <noreply@thedailycommit.com>',
+                to: email.data,
+                subject: `The Daily Commit's newsletter no. ${num}`,
+                text: text,
+            },
+            function (error, info) {
+                console.error(`Unable to send email.\n\n${error}\n${info}`);
+            },
+        );
     }
-    // console.log(newsLetterSettings);
+    // console.log(user);
 
     console.log(text);
 }
 
+let num = 1;
 // Körs varje måndag kl. 17.
 cron.schedule("0 17 * * 1", async () => {
     console.log("Running weekly newsletter job ...");
     try {
-        await generateNewsletter("EQU4LXMp2WgxOdJ2X5P0eGqZ3qxyxIHQ");
+        await generateNewsletter("EQU4LXMp2WgxOdJ2X5P0eGqZ3qxyxIHQ", num);
+        num++;
     } catch (err) {
         console.error(`An unknown error occurred when trying to send the newsletter.\n\n${err}`);
     }
 });
 
 if (process.env.RUN_ON_START === "true") {
-    generateNewsletter("EQU4LXMp2WgxOdJ2X5P0eGqZ3qxyxIHQ");
+    generateNewsletter("EQU4LXMp2WgxOdJ2X5P0eGqZ3qxyxIHQ", num);
 }
