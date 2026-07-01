@@ -19,8 +19,8 @@ export default function Navbar({
   }
   return (
     <div>
-      <div className="flex w-full  h-15 gap-2 md:px-6 dark:bg-background  bg-background">
-        <ul className="flex justify-start! [1300px]:w-3/4 xl:mx-auto my-auto w-full">
+      <div className="flex  h-15 gap-2 md:px-6 dark:bg-background  bg-background">
+        <ul className="flex justify-start! [1300px]:w-3/4! xl:mx-auto my-auto w-full">
           <li className="lg:hidden">
             <SidebarTrigger size="lg" className="lg:hidden" />
           </li>

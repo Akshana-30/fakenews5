@@ -35,7 +35,7 @@ export default function ArticleList({
     const articlesToShow = articles.slice(startIndex, lastIndex);
 
     return (
-        <div className="mx-auto md:w-3xl">
+        <div className="mx-auto w-full max-w-3xl">
             <ul>
                 {articlesToShow.map((article, i) => {
                     return (
@@ -109,7 +109,7 @@ function ArticleItem({ article }: { article: Article }) {
 
     return (
         <div>
-            <Card className="mb-2 pt-0!">
+            <Card className="mb-2 pt-0! max-w-full">
                 <Link href={`/article/${article.id}`}>
                     <div className="flex justify-end mr-5">
                         <BookmarkButton articleId={article.id} className="w-5" />
