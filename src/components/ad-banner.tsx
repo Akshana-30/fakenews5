@@ -1,8 +1,12 @@
 import { getActiveAd } from "@/lib/ad-queries";
 import Image from "next/image";
 
-export default async function AdBanner() {
-    const ad = await getActiveAd("banner");
+type Props = {
+    slot?: "top" | "bottom";
+};
+
+export default async function AdBanner({ slot }: Props) {
+    const ad = await getActiveAd("banner", slot);
 
     return (
         <div className="w-full bg-gray-100 border-y border-gray-300 py-3 px-4 flex flex-col items-center gap-2">

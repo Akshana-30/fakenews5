@@ -22,6 +22,7 @@ export default function CreateAdForm() {
         linkUrl: "",
         startsAt: "",
         endsAt: "",
+        placement: "both",
     });
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,10 +61,11 @@ export default function CreateAdForm() {
                 active: false,
                 startsAt: fields.startsAt ? new Date(fields.startsAt) : null,
                 endsAt: fields.endsAt ? new Date(fields.endsAt) : null,
+                placement: fields.format === "banner" ? fields.placement : "both",
             });
             if (res.success) {
                 toast.success("Ad created — remember to activate it.");
-                setFields({ label: "", format: "banner", imageUrl: "", linkUrl: "", startsAt: "", endsAt: "" });
+                setFields({ label: "", format: "banner", imageUrl: "", linkUrl: "", startsAt: "", endsAt: "", placement: "both" });
                 router.refresh();
             } else {
                 toast.error(res.error ?? "Failed to create ad.");
@@ -101,6 +103,23 @@ export default function CreateAdForm() {
                         ))}
                     </select>
                 </div>
+
+                {fields.format === "banner" && (
+                    <div className="space-y-1">
+                        <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Placement
+                        </label>
+                        <select
+                            value={fields.placement}
+                            onChange={set("placement")}
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        >
+                            <option value="both">Top &amp; bottom</option>
+                            <option value="top">Top only</option>
+                            <option value="bottom">Bottom only</option>
+                        </select>
+                    </div>
+                )}
 
                 <div className="space-y-1 sm:col-span-2">
                     <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

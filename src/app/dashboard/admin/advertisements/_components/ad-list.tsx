@@ -25,6 +25,7 @@ type EditFields = {
     linkUrl: string;
     startsAt: string;
     endsAt: string;
+    placement: string;
 };
 
 function toDateInput(d: Date | null): string {
@@ -42,6 +43,7 @@ function EditForm({ ad, onDone }: { ad: Advertisement; onDone: () => void }) {
         linkUrl: ad.linkUrl,
         startsAt: toDateInput(ad.startsAt),
         endsAt: toDateInput(ad.endsAt),
+        placement: ad.placement ?? "both",
     });
 
     const set = (key: keyof EditFields) =>
@@ -63,6 +65,7 @@ function EditForm({ ad, onDone }: { ad: Advertisement; onDone: () => void }) {
                 linkUrl: fields.linkUrl,
                 startsAt: fields.startsAt ? new Date(fields.startsAt) : null,
                 endsAt: fields.endsAt ? new Date(fields.endsAt) : null,
+                placement: fields.format === "banner" ? fields.placement : "both",
             });
             if (res.success) {
                 toast.success("Ad updated.");
@@ -97,6 +100,20 @@ function EditForm({ ad, onDone }: { ad: Advertisement; onDone: () => void }) {
                         ))}
                     </select>
                 </div>
+                {fields.format === "banner" && (
+                    <div className="space-y-1">
+                        <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Placement</label>
+                        <select
+                            value={fields.placement}
+                            onChange={set("placement")}
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        >
+                            <option value="both">Top &amp; bottom</option>
+                            <option value="top">Top only</option>
+                            <option value="bottom">Bottom only</option>
+                        </select>
+                    </div>
+                )}
                 <div className="space-y-1 sm:col-span-2">
                     <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Image URL</label>
                     <Input value={fields.imageUrl} onChange={set("imageUrl")} placeholder="https://…" />
@@ -182,7 +199,10 @@ export default function AdList({ ads }: { ads: Advertisement[] }) {
                         {/* Info */}
                         <div className="flex-1 min-w-0">
                             <p className="font-semibold text-sm truncate">{ad.label}</p>
-                            <p className="text-xs text-muted-foreground">{FORMAT_LABELS[ad.format] ?? ad.format}</p>
+                            <p className="text-xs text-muted-foreground">
+                                {FORMAT_LABELS[ad.format] ?? ad.format}
+                                {ad.format === "banner" && ad.placement !== "both" && ` — ${ad.placement} only`}
+                            </p>
                             {(ad.startsAt || ad.endsAt) && (
                                 <p className="text-xs text-muted-foreground mt-0.5">
                                     {ad.startsAt ? new Date(ad.startsAt).toLocaleDateString("sv-SE") : "—"}

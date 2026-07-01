@@ -12,6 +12,7 @@ export type Advertisement = {
     active: boolean;
     startsAt: Date | null;
     endsAt: Date | null;
+    placement: string;
 };
 
 // Per-request memo of which ad ids have already been shown for a given
@@ -20,7 +21,11 @@ export type Advertisement = {
 // one is active. cache() resets automatically on the next request.
 const getSeenAdIds = cache(() => new Map<string, Set<string>>());
 
-export async function getActiveAd(format: string): Promise<Advertisement | null> {
+// `slot` scopes the pick to a placement preference ("top" | "bottom") set on
+// the ad itself — only meaningful for the banner format, which has two fixed
+// positions on the page. Ads set to "both" (the default) are eligible for
+// either slot. Pass no slot to ignore placement entirely (sidebar, in-article, etc).
+export async function getActiveAd(format: string, slot?: string): Promise<Advertisement | null> {
     try {
         const now = new Date();
         const ads = await prisma.advertisement.findMany({
@@ -31,17 +36,21 @@ export async function getActiveAd(format: string): Promise<Advertisement | null>
                 AND: [{ OR: [{ endsAt: null }, { endsAt: { gte: now } }] }],
             },
         });
-        console.log(`[getActiveAd] format="${format}" found=${ads.length} now=${now.toISOString()}`);
+        console.log(`[getActiveAd] format="${format}" slot="${slot}" found=${ads.length} now=${now.toISOString()}`);
         if (ads.length === 0) return null;
 
-        const seenStore = getSeenAdIds();
-        const seen = seenStore.get(format) ?? new Set<string>();
-        const unseen = ads.filter((a) => !seen.has(a.id));
-        const pool = unseen.length > 0 ? unseen : ads;
+        const pool = slot ? ads.filter((a) => a.placement === slot || a.placement === "both") : ads;
+        if (pool.length === 0) return null;
 
-        const chosen = pool[Math.floor(Math.random() * pool.length)];
+        const seenStore = getSeenAdIds();
+        const seenKey = slot ? `${format}:${slot}` : format;
+        const seen = seenStore.get(seenKey) ?? new Set<string>();
+        const unseen = pool.filter((a) => !seen.has(a.id));
+        const finalPool = unseen.length > 0 ? unseen : pool;
+
+        const chosen = finalPool[Math.floor(Math.random() * finalPool.length)];
         seen.add(chosen.id);
-        seenStore.set(format, seen);
+        seenStore.set(seenKey, seen);
         return chosen;
     } catch (err) {
         console.error(`[getActiveAd] format="${format}" ERROR:`, err);
