@@ -7,7 +7,7 @@ export default async function InArticleAd() {
     if (!ad) {
         return (
             <div className="my-6 flex flex-col items-center gap-1">
-                <p className="text-[10px] font-sans font-bold uppercase tracking-[0.12em] text-gray-400 dark:text-gray-500">
+                <p className="text-[10px] font-sans font-bold uppercase tracking-[0.12em] text-gray-400 ">
                     Advertisement
                 </p>
                 <div className="w-full max-w-[728px] h-[90px] bg-muted border border-dashed border-border flex items-center justify-center">
@@ -21,7 +21,7 @@ export default async function InArticleAd() {
 
     return (
         <div className="my-6 flex flex-col items-center gap-1">
-            <p className="text-[10px] font-sans font-bold uppercase tracking-[0.12em] text-gray-400 dark:text-gray-500">
+            <p className="text-[10px] font-sans font-bold uppercase tracking-[0.12em] text-gray-400 ">
                 Advertisement
             </p>
             <a

@@ -54,9 +54,9 @@ export default function NewsSidebar({ mostRead }: Props) {
       )}
 
       {/* Sidebar ad */}
-      {/* <div className="mb-7">
+      <div className="mb-7">
         <SidebarAd />
-      </div> */}
+      </div>
 
       {/* Morning Briefing / Newsletter */}
       {/* suppressHydrationWarning: password managers (e.g. ProtonPass) inject attributes onto forms */}
