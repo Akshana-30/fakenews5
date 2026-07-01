@@ -115,7 +115,7 @@ export default async function RootLayout({
                             <Header />
                         </div>
                         <ScrollAwareNav>
-                            <div className="flex justify-between bg-background mx-70">
+                            <div className="flex justify-between bg-background">
                                 <Navbar categories={cats.success && cats.data ? cats.data : null} />
                                 <div className="flex gap-4">
                                     <div className="my-auto">
