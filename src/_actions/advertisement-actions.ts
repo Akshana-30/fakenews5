@@ -15,6 +15,7 @@ type AdInput = {
     active?: boolean;
     startsAt?: Date | null;
     endsAt?: Date | null;
+    placement?: string;
 };
 
 export async function createAdvertisement(data: AdInput): Promise<Result<Advertisement>> {

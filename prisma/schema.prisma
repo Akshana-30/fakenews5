@@ -275,7 +275,8 @@ model Advertisement {
     active    Boolean   @default(false)
     startsAt  DateTime?
     endsAt    DateTime?
- 
+    placement String    @default("both") // "top" | "bottom" | "both" — only meaningful for format="banner"
+
     @@map("advertisement")
 }
  

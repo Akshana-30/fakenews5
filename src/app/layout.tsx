@@ -128,14 +128,14 @@ export default async function RootLayout({
                         </ScrollAwareNav>
                     </div>
 
-                    {showAds && <AdBanner />}
+                    {showAds && <AdBanner slot="top" />}
 
                     <div className="  min-h-screen w-full mx-auto md:max-w-6xl bg-background dark:bg-muted border-x border-gray-500/50 flex-1 ">
                         <AppSidebar categories={cats.success && cats.data ? cats.data : null} />
                         <main className=" max-w-6xl lg:min-w-5xl">{children}</main>
                         <Toaster />
                     </div>
-                    {showAds && <AdBanner />}
+                    {showAds && <AdBanner slot="bottom" />}
                     <Footer />
                 </SidebarProvider>
             </body>

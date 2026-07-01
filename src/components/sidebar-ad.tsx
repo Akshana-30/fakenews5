@@ -6,7 +6,7 @@ export default async function SidebarAd() {
 
     return (
         <div className="flex flex-col items-center gap-1">
-            <p className="text-[10px] font-sans font-bold uppercase tracking-[0.12em] text-gray-400 dark:text-gray-500">
+            <p className="text-[10px] font-sans font-bold uppercase tracking-[0.12em] text-gray-400">
                 Advertisement
             </p>
             {ad ? (
@@ -27,8 +27,8 @@ export default async function SidebarAd() {
                     </div>
                 </a>
             ) : (
-                <div className="w-[300px] h-[300px] rounded bg-gradient-to-b from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
-                    <span className="text-xs text-gray-400 dark:text-gray-500 italic text-center px-4">
+                <div className="w-[300px] h-[300px] rounded bg-gradient-to-b from-gray-200 to-gray-300 flex items-center justify-center">
+                    <span className="text-xs text-gray-400 italic text-center px-4">
                         Your sidebar ad could be here
                     </span>
                 </div>
