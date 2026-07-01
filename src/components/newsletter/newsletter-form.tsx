@@ -9,9 +9,11 @@ import { Spinner } from "../ui/spinner";
 import { Checkbox } from "../ui/checkbox";
 import { setNewsletterSettings } from "./_actions/newsletter-actions";
 import { authClient } from "@/lib/auth-client";
+import { isEmailAddressUsed } from "@/_actions/user-actions";
+import { toast } from "sonner";
 
 const formSchema = z.object({
-    email: z.email("Enter a valid email address"),
+    email: z.email("Enter a valid email address."),
     categories: z.array(z.string()),
     authors: z.array(z.string()),
 });
@@ -36,6 +38,10 @@ export default function NewsletterForm({
             setLoading(true);
             const user = await authClient.getSession();
             if (!user || !user.data) {
+                return;
+            }
+            if (await isEmailAddressUsed(value.email)) {
+                toast.error("That email address is already registered.");
                 return;
             }
             const res = await setNewsletterSettings(
@@ -90,10 +96,7 @@ export default function NewsletterForm({
                                     {categories.map((category) => {
                                         const checked = field.state.value.includes(category);
                                         return (
-                                            <label
-                                                key={category}
-                                                className="flex items-center gap-2"
-                                            >
+                                            <div className="flex gap-2 items-center" key={category}>
                                                 <Checkbox
                                                     checked={checked}
                                                     onCheckedChange={(isChecked) => {
@@ -107,7 +110,7 @@ export default function NewsletterForm({
                                                     }}
                                                 />
                                                 <span>{category}</span>
-                                            </label>
+                                            </div>
                                         );
                                     })}
                                 </div>
@@ -122,7 +125,7 @@ export default function NewsletterForm({
                                     {authors.map((author) => {
                                         const checked = field.state.value.includes(author);
                                         return (
-                                            <label key={author} className="flex items-center gap-2">
+                                            <div key={author} className="flex items-center gap-2">
                                                 <Checkbox
                                                     checked={checked}
                                                     onCheckedChange={(isChecked) => {
@@ -134,7 +137,7 @@ export default function NewsletterForm({
                                                     }}
                                                 />
                                                 <span>{author}</span>
-                                            </label>
+                                            </div>
                                         );
                                     })}
                                 </div>
