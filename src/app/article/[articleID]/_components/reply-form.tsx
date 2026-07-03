@@ -44,7 +44,9 @@ export default function ReplyForm({
             setLoading(true);
             const comment = await addComment(articleId, value.reply, replyTo);
             if (comment.success === false) {
-                toast.error(`Couldn't save reply to the database.\n\n${comment.error}`);
+                toast.error(`Couldn't save reply to the database.\n\n${comment.error}`, {
+                    position: "top-center",
+                });
             }
             form.reset();
             setLoading(false);
@@ -54,7 +56,7 @@ export default function ReplyForm({
     });
 
     return (
-        <Card className="md:w-2xl mx-auto mb-4">
+        <Card className="md:w-2xl mx-auto mb-4 mt-4">
             <CardHeader>
                 <CardTitle className="flex">
                     <span className="mr-auto">Reply</span>

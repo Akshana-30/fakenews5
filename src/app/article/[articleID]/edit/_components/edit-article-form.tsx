@@ -56,7 +56,7 @@ export default function EditArticleForm({ articleId, defaultValues }: EditArticl
                 setLoading(false);
             } else {
                 toast.success("Article updated successfully", {
-                    position: "bottom-right",
+                    position: "top-center",
                 });
                 router.push(`/article/${articleId}`);
             }

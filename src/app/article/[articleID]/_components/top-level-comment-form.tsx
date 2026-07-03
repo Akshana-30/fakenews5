@@ -34,6 +34,7 @@ export default function TopLevelCommentForm({ articleId }: { articleId: string }
             if (comment.success === false) {
                 toast.error(
                     `An unknown error occurred while trying to save comment to the database.\n\n${comment.error}`,
+                    { position: "top-center" },
                 );
             }
             form.reset();

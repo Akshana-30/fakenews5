@@ -106,6 +106,7 @@ function ActionsCell({ id }: { id: string }) {
         } else if (!res.success && res.error) {
             toast.error(
                 `An error occurred when trying to delete the plan with id ${id}.\n\n${res.error}`,
+                { position: "top-center" },
             );
         }
     }
