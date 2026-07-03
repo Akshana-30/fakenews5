@@ -39,11 +39,6 @@ export default function AdminNavbar() {
                     </Button>
                 </li>
                 <li>
-                    <Button asChild variant="ghost">
-                        <Link href="/dashboard/admin/ai">AI</Link>
-                    </Button>
-                </li>
-                <li>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="cursor-pointer">
@@ -57,6 +52,9 @@ export default function AdminNavbar() {
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <Link href="/dashboard/admin/articles">Edit articles</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <Link href="/dashboard/admin/ai">AI Helper</Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
