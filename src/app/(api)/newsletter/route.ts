@@ -1,8 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { format, sub } from "date-fns";
 import dotenv from "dotenv";
-import { getEmailFromUserId } from "@/_actions/user-actions";
-import nodemailer from "nodemailer";
 import prisma from "@/lib/prisma";
 import { transporter } from "@/lib/auth";
 dotenv.config();
@@ -26,7 +23,8 @@ async function generateNewsletter(userId: string) {
         return;
     }
 
-    // Get the five latest articles from each category that the user is subscribed to.
+    // Get the latest articles from each category that the user is subscribed to.
+    // Get a maximum of NUMBER_OF_NEW_ARTICLES_PER_CATEGORY articles.
     if (newsLetterSettings?.categories) {
         for (const c of newsLetterSettings.categories) {
             const res = await prisma.category.findUnique({

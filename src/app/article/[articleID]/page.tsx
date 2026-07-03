@@ -9,7 +9,7 @@ import { format } from "date-fns";
 import CommentarySection from "./_components/commentary-section";
 import TopLevelCommentForm from "./_components/top-level-comment-form";
 import { auth } from "@/lib/auth";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import ArticleDoesntExist from "./_components/article-doesnt-exists";
 import ReactMarkdown from "react-markdown";
@@ -17,8 +17,6 @@ import remarkGfm from "remark-gfm";
 import remarkIns from "remark-ins";
 // import InArticleAd from "@/components/in-article-ad";
 import Image from "next/image";
-import { getConsent } from "@/lib/cookie-actions";
-import { NextResponse } from "next/server";
 import MarkViewed from "./_components/mark-viewed";
 
 export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
