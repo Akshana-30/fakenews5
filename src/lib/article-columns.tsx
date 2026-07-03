@@ -60,9 +60,10 @@ function ActionsCell({ id }: { id: string }) {
                             if (res.success && res.data) {
                                 toast.success(
                                     `Successfully removed article called "${res.data.title}" from the website.`,
+                                    { position: "top-center" },
                                 );
                             } else if (res.success == false && res.error) {
-                                toast.error(`${res.error}`);
+                                toast.error(`${res.error}`, { position: "top-center" });
                             }
                         }}
                     >

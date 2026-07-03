@@ -44,7 +44,9 @@ export default function ReplyForm({
             setLoading(true);
             const comment = await addComment(articleId, value.reply, replyTo);
             if (comment.success === false) {
-                toast.error(`Couldn't save reply to the database.\n\n${comment.error}`);
+                toast.error(`Couldn't save reply to the database.\n\n${comment.error}`, {
+                    position: "top-center",
+                });
             }
             form.reset();
             setLoading(false);

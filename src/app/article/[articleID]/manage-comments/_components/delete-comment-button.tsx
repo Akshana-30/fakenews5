@@ -27,7 +27,10 @@ export default function DeleteCommentButton({ commentId }: { commentId: string }
         if (res.success) {
             toast("The comment has successfully been deleted", { position: "top-center" });
         } else {
-            toast(res.error);
+            toast.error(
+                "An unknown error occurred when trying to delete the comment." + "\n\n" + res.error,
+                { position: "top-center" },
+            );
         }
         setLoading(false);
         router.refresh();

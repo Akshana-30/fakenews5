@@ -101,9 +101,7 @@ export default function EditUserForm({ data }: Props) {
         },
         onSubmit: async ({ value }) => {
             await UserAction(data.id, value);
-            toast.success("User was successfully updated.", {
-                position: "bottom-right",
-            });
+            toast.success("User was successfully updated.", { position: "top-center" });
             router.push("/dashboard/admin/users");
             router.refresh();
         },
