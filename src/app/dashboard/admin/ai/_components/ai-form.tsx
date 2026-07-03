@@ -52,7 +52,7 @@ export default function AIForm() {
         },
     });
     return (
-        <Card className="w-2xl mx-auto mt-5">
+        <Card className="md:w-3xl mx-auto mt-5">
             <CardHeader>
                 <CardTitle>Prompt our AI</CardTitle>
             </CardHeader>
@@ -104,14 +104,14 @@ export default function AIForm() {
                                         });
                                     }}
                                     variant="ghost"
-                                    className="mr-2 mb-2 ml-auto py-0 px-2 border-gray-600 justify-center items-center"
+                                    className="mr-2 mb-2 ml-auto py-0 px-2 border-primary justify-center items-center"
                                 >
                                     <Copy className="" size={30} />
                                 </Button>
                             </div>
                             <Textarea
-                                id="output"
-                                name="oputput"
+                                id="output-txt"
+                                name="oputput-txt"
                                 className="border h-50"
                                 value={loading ? loadingText : output}
                                 readOnly
@@ -128,9 +128,9 @@ export default function AIForm() {
                                         });
                                     }}
                                     variant="ghost"
-                                    className="mr-2 mb-2 ml-auto py-0 px-2 border-gray-600 justify-center items-center"
+                                    className="mr-2 mb-2 ml-auto py-0 px-2 border-primary justify-center items-center"
                                 >
-                                    <Copy className="" size={30} />
+                                    <Copy size={30} />
                                 </Button>
                             </div>
                             <OutputEditor markdown={loading ? loadingText : output} />
