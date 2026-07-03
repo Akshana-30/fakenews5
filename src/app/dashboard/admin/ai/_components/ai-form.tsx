@@ -2,7 +2,6 @@
 import Button from "@/components/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +11,6 @@ import z from "zod";
 import { generateResponse } from "../_actions/ai";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
-import { Editor } from "@/components/tiptap";
 import { OutputEditor } from "./output-editor";
 
 const formSchema = z.object({
