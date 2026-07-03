@@ -12,6 +12,8 @@ import z from "zod";
 import { generateResponse } from "../_actions/ai";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
+import { Editor } from "@/components/tiptap";
+import { OutputEditor } from "./output-editor";
 
 const formSchema = z.object({
     input: z
@@ -29,7 +31,7 @@ export default function AIForm() {
 
         const interval = setInterval(() => {
             setDotCount((prev) => (prev % 3) + 1);
-        }, 500);
+        }, 400);
         return () => clearInterval(interval);
     }, [loading]);
 
@@ -92,7 +94,7 @@ export default function AIForm() {
                         </form.Field>
                         <div>
                             <div className="flex">
-                                <Label className="mb-3">Output</Label>
+                                <Label className="mb-3">Output (pure text)</Label>
                                 <Button
                                     onClick={(ev) => {
                                         ev.preventDefault();
@@ -114,6 +116,24 @@ export default function AIForm() {
                                 value={loading ? loadingText : output}
                                 readOnly
                             />
+                            <hr className="mt-5 mb-5" />
+                            <div className="flex">
+                                <Label className="mb-3">Output (styled)</Label>
+                                <Button
+                                    onClick={(ev) => {
+                                        ev.preventDefault();
+                                        navigator.clipboard.writeText(output);
+                                        toast.success("Copied to clipboard!", {
+                                            position: "top-center",
+                                        });
+                                    }}
+                                    variant="ghost"
+                                    className="mr-2 mb-2 ml-auto py-0 px-2 border-gray-600 justify-center items-center"
+                                >
+                                    <Copy className="" size={30} />
+                                </Button>
+                            </div>
+                            <OutputEditor markdown={loading ? loadingText : output} />
                         </div>
                     </FieldGroup>
                 </form>

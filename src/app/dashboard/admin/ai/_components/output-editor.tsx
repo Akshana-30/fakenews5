@@ -5,10 +5,15 @@ import { Placeholder } from "@tiptap/extensions";
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import type { Editor as TiptapEditor } from "@tiptap/react";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 
-interface EditorProps {
-    initialMarkdown?: string;
+interface LiveEditorProps {
+    // Unlike <Editor>, this value is watched on every render and pushed into
+    // the document via setContent whenever it changes — so it behaves like a
+    // controlled <Textarea value={...}> instead of only setting content once
+    // on mount. Useful for showing "Generating…" placeholder text and then
+    // swapping in AI output once it's ready.
+    markdown?: string;
     onChange?: (markdown: string) => void;
     // Tailwind class controlling the editable area's min height, so the same
     // editor can be tall (article body) or short (summary). Defaults to tall.
@@ -225,17 +230,17 @@ function MenuBar({ editor }: { editor: TiptapEditor }) {
     );
 }
 
-export function Editor({
-    initialMarkdown = "",
+export function OutputEditor({
+    markdown = "",
     onChange,
     minHeightClass = "min-h-[16rem]",
     placeholder = "Write something …",
     editable = true,
-}: EditorProps) {
+}: LiveEditorProps) {
     const editor = useEditor({
         editable,
         extensions: [StarterKit, Markdown, Placeholder.configure({ placeholder })],
-        content: initialMarkdown,
+        content: markdown,
         contentType: "markdown",
         immediatelyRender: false,
         editorProps: {
@@ -249,6 +254,12 @@ export function Editor({
             onChange?.(editor.getMarkdown());
         },
     });
+
+    useEffect(() => {
+        if (!editor) return;
+        if (editor.getMarkdown() === markdown) return;
+        editor.commands.setContent(markdown, { contentType: "markdown" } as never);
+    }, [editor, markdown]);
 
     if (!editor) return null;
 
