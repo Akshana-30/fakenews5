@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Forecast } from "@/lib/types";
 import { getForecastByCity, getForecastByCoordinates } from "@/lib/weather";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import {
   ChevronDownIcon,
   Search,
@@ -26,6 +26,14 @@ import {
 } from "lucide-react";
 import { createElement, useEffect, useState } from "react";
 import { Spinner } from "./ui/spinner";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "./ui/carousel";
+import { Card, CardContent } from "./ui/card";
 
 const weatherIcons: Record<number, LucideIcon> = {
   1: Sun, // Clear sky
@@ -69,6 +77,11 @@ function WeatherIconSM(symbol: number) {
   return createElement(getWeatherIcon(symbol), { className: "w-4 h-4" });
 }
 
+function WeatherIconMD(symbol: number) {
+  return createElement(getWeatherIcon(symbol), {
+    className: "w-8 h-8 mx-auto block",
+  });
+}
 export default function WeatherApp() {
   const [forecast, setForecast] = useState<Forecast | null>(null);
   const [query, setQuery] = useState("");
@@ -106,10 +119,47 @@ export default function WeatherApp() {
     );
   }
 
+  function chunk<T>(arr: T[], size: number): T[][] {
+    const result: T[][] = [];
+    for (let i = 0; i < arr.length; i += size) {
+      result.push(arr.slice(i, i + size));
+    }
+    return result;
+  }
+
+  function groupByDay(entries: Forecast["timeseries"]) {
+    const groups: Record<string, Forecast["timeseries"]> = {};
+    entries.forEach((t) => {
+      const day = format(t.validTime, "yyyy-MM-dd");
+      if (!groups[day]) groups[day] = [];
+      groups[day].push(t);
+    });
+    return Object.entries(groups);
+  }
+
+
+  function summarizeDay(entries: Forecast["timeseries"]) {
+  const avgTemp =
+    entries.reduce((sum, t) => sum + t.temp, 0) / entries.length;
+
+  const midday = entries.reduce((best, t) =>
+    Math.abs(new Date(t.validTime).getHours() - 12) < Math.abs(new Date(best.validTime).getHours() - 12)
+      ? t
+      : best
+  );
+
+  return {
+    avgTemp,
+    symbol: midday.symbol,
+    summary: midday.summary,
+    date: entries[0].validTime,
+  };
+}
+
   const now = forecast.timeseries[0];
 
   return (
-    <div className="border bg-muted min-w-60 px-4 pb-4">
+    <div className="border bg-muted min-w-60 px-2 pb-4 relative">
       <form
         onSubmit={onSearch}
         className="flex justify-center border rounded-2xl bg-card mt-4 focus-within:ring-2 focus-within:ring-ring focus-within:border-transparent"
@@ -140,27 +190,58 @@ export default function WeatherApp() {
         </div>
       </div>
 
-      <Collapsible className="rounded-md data-[state=open]:bg-card">
+      <Carousel className="relative px-6 pb-4">
+        <CarouselContent>
+          {chunk(forecast.timeseries.slice(0, 12), 3).map((group, i) => (
+            <CarouselItem key={i} className="grid grid-cols-3 gap-2">
+              {group.map((t) => (
+                <div
+                  className=" mx-auto text-[14px] align-middle"
+                  key={t.validTime}
+                >
+                  <div className="text-center">
+                    {format(t.validTime, "HH:mm")}
+                  </div>
+                  <div className="text-center">{WeatherIconMD(t.symbol)}</div>
+                  <div className="text-[14px] text-center max-w-20 font-bold">
+                    {Math.round(t.temp)}°C
+                  </div>
+                  <div className="text-[10px] text-center max-w-20">
+                    {t.summary}
+                  </div>
+                </div>
+              ))}
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className="left-0 h-7 w-7" />
+        <CarouselNext className="right-0 h-7 w-7" />
+      </Carousel>
+
+      <Collapsible className="rounded-md data-[state=open]:bg-card w-full">
         <CollapsibleTrigger asChild>
           <Button className="group w-full bg-card text-muted-foreground">
-            Next hours
+            Upcoming days
             <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />
           </Button>
         </CollapsibleTrigger>
-        <CollapsibleContent className="flex flex-col items-start p-2.5 pt-0 text-sm">
-          <ul>
-            {forecast.timeseries.slice(0, 12).map((t) => {
-              return (
-                <li key={t.validTime} className="flex items-center gap-2">
-                  <span>{format(t.validTime, "HH:mm")}</span>
-                  <span>{WeatherIconSM(t.symbol)}</span>
-                  <span>{Math.round(t.temp)}°C</span>
-                  <span className="truncate max-w-30">{t.summary}</span>
-                </li>
-              );
-            })}
-          </ul>
-        </CollapsibleContent>
+        <CollapsibleContent className="flex flex-col items-start p-2.5 pt-0 text-sm w-full">
+  <ul className="w-full">
+    {groupByDay(forecast.timeseries).map(([day, entries]) => {
+      const { avgTemp, symbol, summary, date } = summarizeDay(entries);
+      return (
+        <li key={day} className="flex flex-row gap-3 w-full">
+          <span>{format(date, "MMM d")}</span>
+          <span className="flex items-center gap-1">
+            {WeatherIconSM(symbol)}
+            <span>{Math.round(avgTemp)}°C</span>
+          </span>
+          <span className="truncate">{summary}</span>
+        </li>
+      );
+    })}
+  </ul>
+</CollapsibleContent>
       </Collapsible>
     </div>
   );
