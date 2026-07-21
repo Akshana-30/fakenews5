@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
+import { User } from "better-auth/types";
 import { headers } from "next/headers";
 import { z } from "zod";
 

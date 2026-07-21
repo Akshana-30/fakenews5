@@ -8,23 +8,23 @@
 
 */
 -- DropForeignKey
-ALTER TABLE "author" DROP CONSTRAINT "author_newsletterSettingsId_fkey";
+ALTER TABLE "author" DROP CONSTRAINT IF EXISTS "author_newsletterSettingsId_fkey";
 
 -- DropIndex
-DROP INDEX "category_newsletterId_key";
+DROP INDEX IF EXISTS "category_newsletterId_key";
 
 -- AlterTable
-ALTER TABLE "NewsletterSettings" ADD COLUMN     "active" BOOLEAN NOT NULL,
-ADD COLUMN     "email" TEXT NOT NULL;
+ALTER TABLE "NewsletterSettings" ADD COLUMN IF NOT EXISTS "active" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "NewsletterSettings" ADD COLUMN IF NOT EXISTS "email" TEXT NOT NULL DEFAULT '';
 
 -- AlterTable
-ALTER TABLE "author" DROP COLUMN "newsletterSettingsId";
+ALTER TABLE "author" DROP COLUMN IF EXISTS "newsletterSettingsId";
 
 -- AlterTable
-ALTER TABLE "category" DROP COLUMN "newsletterId";
+ALTER TABLE "category" DROP COLUMN IF EXISTS "newsletterId";
 
 -- CreateTable
-CREATE TABLE "_AuthorToNewsletterSettings" (
+CREATE TABLE IF NOT EXISTS "_AuthorToNewsletterSettings" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
 
@@ -32,10 +32,18 @@ CREATE TABLE "_AuthorToNewsletterSettings" (
 );
 
 -- CreateIndex
-CREATE INDEX "_AuthorToNewsletterSettings_B_index" ON "_AuthorToNewsletterSettings"("B");
+CREATE INDEX IF NOT EXISTS "_AuthorToNewsletterSettings_B_index" ON "_AuthorToNewsletterSettings"("B");
 
 -- AddForeignKey
-ALTER TABLE "_AuthorToNewsletterSettings" ADD CONSTRAINT "_AuthorToNewsletterSettings_A_fkey" FOREIGN KEY ("A") REFERENCES "author"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+    ALTER TABLE "_AuthorToNewsletterSettings" ADD CONSTRAINT "_AuthorToNewsletterSettings_A_fkey" FOREIGN KEY ("A") REFERENCES "author"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "_AuthorToNewsletterSettings" ADD CONSTRAINT "_AuthorToNewsletterSettings_B_fkey" FOREIGN KEY ("B") REFERENCES "NewsletterSettings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+    ALTER TABLE "_AuthorToNewsletterSettings" ADD CONSTRAINT "_AuthorToNewsletterSettings_B_fkey" FOREIGN KEY ("B") REFERENCES "NewsletterSettings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;

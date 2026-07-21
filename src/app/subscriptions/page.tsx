@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getPlans, getStripeSubscriptionIdForUser } from "@/_actions/subscription-actions";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -21,7 +23,7 @@ export default async function SubscriptionsPage() {
     if (plans.success && plans.data && plans.data.length >= 1) {
         return (
             <div className="">
-                <RouteHeading label="Subscriptions"/>
+                <RouteHeading label="Subscriptions" />
                 <h1 className="text-xl md:text-2xl font-extrabold text-center">
                     Subscription plans
                 </h1>

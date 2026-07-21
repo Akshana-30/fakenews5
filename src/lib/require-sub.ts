@@ -4,20 +4,7 @@ import prisma from "./prisma";
 
 const ACTIVE_STATUSES = ["active", "trialing"];
 
-const plans = await prisma.plan.findMany({});
-
-type PlanName = (typeof plans)[number]["name"];
-
-const isSubscriber = await requiureSubscription("basic");
-
-{
-    isSubscriber.authorized ? "true" : "false";
-}
-{
-    JSON.stringify(isSubscriber.subscription, null, 2);
-} // .(more displayable options)
-
-// {isSubscriber.authorized ? (<>content for subs</>) : (<>Subscribe NOW component</>)} // conditionally render
+type PlanName = Awaited<ReturnType<typeof prisma.plan.findMany>>[number]["name"];
 
 export async function requiureSubscription(plan: PlanName) {
     const session = await auth.api.getSession({
