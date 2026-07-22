@@ -151,7 +151,6 @@ export default function ClientComment({
         );
     }
 
-    //console.log(currentUserId, commentAuthor);
     return (
         <div className="flex mb-5 justify-center w-full mt-4">
             <div className="relative w-5 shrink-0 h-5 mx-2">
@@ -175,10 +174,8 @@ export default function ClientComment({
                                     <span>{commentAuthor.user.name} </span>
                                 </div>
                             </div>
-                            {hasBeenEdited ? (
+                            {hasBeenEdited ?? (
                                 <div>Edited: {format(comment.updatedAt, "yyyy-MM-dd HH:mm")}</div>
-                            ) : (
-                                ""
                             )}
                             <div className="flex gap-2 mx-5 justify-center">
                                 {format(comment.createdAt, "yyyy-MM-dd HH:mm")}
