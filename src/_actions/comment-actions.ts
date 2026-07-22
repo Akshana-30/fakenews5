@@ -143,7 +143,7 @@ export async function changeReaction(
             return { success: true, data: newReaction };
         } else if (reaction.success && reaction.data == -1) {
             const newReaction = await prisma.commentReaction.update({
-                data: { val: -1 },
+                data: { val: 1 }, // was -1, now correctly toggles back to 1
                 where: { userId_commentId: { commentId, userId } },
             });
             return { success: true, data: newReaction };
