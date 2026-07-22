@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/static-components */
 "use client";
 import CommentaryReactions from "./commentary-reactions";
-import { compareAsc, format, isAfter } from "date-fns";
+import { format, isAfter } from "date-fns";
 import { type ReactNode } from "react";
 import ReplyForm from "./reply-form";
 import { Children } from "react";
@@ -151,7 +151,6 @@ export default function ClientComment({
         );
     }
 
-    //console.log(currentUserId, commentAuthor);
     return (
         <div className="flex mb-5 justify-center w-full mt-5">
             {level > 0 && (
