@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Forecast } from "@/lib/types";
 import { getForecastByCity, getForecastByCoordinates } from "@/lib/weather";
-import { format, isSameDay } from "date-fns";
+import { format } from "date-fns";
 import {
   ChevronDownIcon,
   Search,
@@ -33,7 +33,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "./ui/carousel";
-import { Card, CardContent } from "./ui/card";
 
 const weatherIcons: Record<number, LucideIcon> = {
   1: Sun, // Clear sky
@@ -64,6 +63,40 @@ const weatherIcons: Record<number, LucideIcon> = {
   26: Snowflake, // Moderate snowfall
   27: Snowflake, // Heavy snowfall
 };
+
+const weatherBackgrounds: Record<number, string> = {
+  1: "/backgrounds/clear.avif",
+  2: "/backgrounds/clear.avif",
+  3: "/backgrounds/cloudy.jpg",
+  4: "/backgrounds/cloudy.jpg",
+  5: "/backgrounds/cloudy.jpg",
+  6: "/backgrounds/cloudy.jpg",
+  7: "/backgrounds/fog.jpg",
+  8: "/backgrounds/rain.jpg",
+  9: "/backgrounds/rain.jpg",
+  10: "/backgrounds/rain.jpg",
+  11: "/backgrounds/thunder.jpg",
+  12: "/backgrounds/snow.jpg",
+  13: "/backgrounds/snow.jpg",
+  14: "/backgrounds/snow.jpg",
+  15: "/backgrounds/snow.jpg",
+  16: "/backgrounds/snow.jpg",
+  17: "/backgrounds/snow.jpg",
+  18: "/backgrounds/rain.jpg",
+  19: "/backgrounds/rain.jpg",
+  20: "/backgrounds/rain.jpg",
+  21: "/backgrounds/thunder.jpg",
+  22: "/backgrounds/snow.jpg",
+  23: "/backgrounds/snow.jpg",
+  24: "/backgrounds/snow.jpg",
+  25: "/backgrounds/snow.jpg",
+  26: "/backgrounds/snow.jpg",
+  27: "/backgrounds/snow.jpg",
+};
+
+function getWeatherBackground(symbol: number): string {
+  return weatherBackgrounds[symbol] ?? "/weather.jpg";
+}
 
 function getWeatherIcon(symbol: number): LucideIcon {
   return weatherIcons[symbol] ?? Cloud;
@@ -158,8 +191,12 @@ export default function WeatherApp() {
 
   const now = forecast.timeseries[0];
 
+  const bg = forecast.timeseries[0];
+  const bgImage = getWeatherBackground(bg.symbol);
+
   return (
-    <div className="border bg-muted min-w-60 px-2 pb-4 relative">
+    <div className="border bg-[url('/weather.jpg')] bg-cover min-w-60 px-2 pb-4 relative" style={{ backgroundImage: `url(${bgImage})`, transition: "background-image 0.6s ease" }}>
+      <div className="bg-white/30">
       <form
         onSubmit={onSearch}
         className="flex justify-center border rounded-2xl bg-card mt-4 focus-within:ring-2 focus-within:ring-ring focus-within:border-transparent"
@@ -243,6 +280,7 @@ export default function WeatherApp() {
   </ul>
 </CollapsibleContent>
       </Collapsible>
+    </div>
     </div>
   );
 }

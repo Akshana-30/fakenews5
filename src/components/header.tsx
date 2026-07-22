@@ -5,51 +5,61 @@ import { LoginRegButtons } from "./navbar/_components/login-register-buttons";
 
 export default async function Header() {
   return (
-    <div className="flex justify-between max-md:gap-2 dark:bg-[#2d2d2d] bg-background border-b-3 border-b-primary">
-      {/* invisible mirror of the right-side buttons — reserves equal width so the logo centers correctly */}
-      <span
-        className="hidden md:flex items-end justify-end gap-3 pb-3 pr-4 invisible pointer-events-none"
-        aria-hidden="true"
-      >
-        <LoginRegButtons />
-        <ThemeToggle />
-      </span>
+    <div className="flex justify-between max-lg:gap-5 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:justify-normal dark:bg-[#2d2d2d] bg-background border-b-3 border-b-primary">
+      <div aria-hidden="true" className="hidden lg:block" />
 
-      <span className="md:flex md:p-5 justify-start">
+      <span className=" lg:flex lg:items-center p-2 justify-start  ">
         <Link href="/">
-          <div className="flex md:gap-1">
-            <div className="relative">
+          <div className="flex md:gap-1 ">
+            <div className="sm:hidden relative shrink-0.5">
               <Image
                 src="/lightlogo.png"
-                width={144}
-                height={144}
+                width={100}
+                height={100}
                 alt="Logo"
                 className="dark:hidden"
                 priority
               />
               <Image
                 src="/darklogo.png"
-                width={144}
-                height={144}
+                width={100}
+                height={100}
                 alt="Logo"
                 className="hidden dark:block"
                 priority
               />
             </div>
 
-            <div className="my-auto w-full max-w-40 md:max-w-100 pt-2">
-              <div className="flex items-center gap-2 md:gap-3 mb-0.5 md:mb-1">
+            <div className=" my-auto w-full max-w-160 pt-2 max-sm:hidden">
+              <div className="flex items-center max-sm:h-1 gap-3 sm:mb-1">
                 <div className="flex-1 h-px bg-black dark:bg-white"></div>
-                <span className="font-serif font-bold text-[8px] md:text-lg tracking-tighter md:tracking-widest whitespace-nowrap">
+                <span className="font-serif font-bold text-[10px] sm:text-lg tracking-tighter md:tracking-widest max-[540px]:text-[6px]">
                   THE
                 </span>
                 <div className="flex-1 h-px bg-black dark:bg-white"></div>
               </div>
-              <h1 className="font-serif font-bold text-sm md:text-5xl text-center leading-tight tracking-tight whitespace-nowrap">
-                Daily Commit
-              </h1>
-              <div className="border-b-2 md:border-b-4 border-primary mt-0.5 md:mt-1"></div>
-              <p className="text-center text-[6px] md:text-xs tracking-tighter md:tracking-wide mt-0.5 md:mt-2 leading-tight">
+              <span className="inline-flex items-center whitespace-nowrap font-serif font-bold text-sm sm:text-5xl leading-tight tracking-tight">
+              <span>Daily C</span>
+                <span className="relative inline-block w-[1.2em] h-[1.2em] mx-[-0.15em] align-middle rotate-70">
+                  <Image
+                    src="/lightlogo.png"
+                    alt=""
+                    fill
+                    className="dark:hidden object-contain"
+                    priority
+                  />
+                  <Image
+                    src="/darklogo.png"
+                    alt=""
+                    fill
+                    className="hidden dark:inline-block object-contain"
+                    priority
+                  />
+                </span>
+                <span>mmit</span>
+              </span>
+              <div className="border-b-4 border-primary md:mt-1"></div>
+              <p className="text-center text-[7px] sm:text-xs tracking-tighter md:tracking-wide max-[540px]:mt-0 mt-0.5 md:mt-2 ">
                 YOUR DAILY DOSE OF NEWS.{" "}
                 <span className="text-primary font-bold">COMMITTED</span> TO THE
                 TRUTH.
