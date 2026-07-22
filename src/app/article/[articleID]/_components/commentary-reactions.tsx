@@ -45,13 +45,13 @@ export default function CommentaryReactions({
                 className="cursor-pointer"
                 size={17}
                 onClick={upvote}
-                fill={userReaction == 1 ? "black" : "white"}
+                fill={userReaction == 1 ? "currentColor" : "none"}
             />
             <ThumbsDown
                 className="cursor-pointer"
                 size={17}
                 onClick={downvote}
-                fill={userReaction == -1 ? "black" : "white"}
+                fill={userReaction == -1 ? "currentColor" : "none"}
             />
             <span className="my-auto ml-1">{num}</span>
         </div>

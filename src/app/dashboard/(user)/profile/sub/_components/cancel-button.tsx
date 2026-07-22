@@ -13,7 +13,11 @@ export default function CancelButton({ subscriptionId }: { subscriptionId: strin
     }
 
     return (
-        <Button className="cursor-pointer" variant="destructive" onClick={handleClick}>
+        <Button
+            className="cursor-pointer dark:bg-[#F49F1D]/20 dark:text-[#F49F1D] dark:hover:bg-destructive/30 dark:hover:text-destructive"
+            variant="destructive"
+            onClick={handleClick}
+        >
             Cancel
         </Button>
     );

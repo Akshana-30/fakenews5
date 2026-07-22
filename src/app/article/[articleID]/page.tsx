@@ -108,7 +108,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                     <p>{article.data.summary}</p>
                 </div>
 
-                <article className="w-3/4 flex-row mx-auto mt-2 mb-4 max-w-none prose  dark:bg-[#2d2d2d] dark:text-white dark:prose-headings:text-white p-4">
+                <article className="w-3/4 flex-row mx-auto mt-2 mb-4 max-w-none prose dark:prose-invert dark:bg-[#2d2d2d] dark:text-white dark:prose-headings:text-white p-4">
                     <ReactMarkdown remarkPlugins={[remarkGfm, remarkIns]}>
                         {hasPermission ? article.data.content : article.data.content.slice(0, 500)}
                     </ReactMarkdown>

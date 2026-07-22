@@ -42,13 +42,13 @@ export default function Likes({
     return (
         <div className="flex pl-2">
             <ThumbsUp
-                fill={userReaction == 1 ? "black" : "white"}
+                fill={userReaction == 1 ? "currentColor" : "none"}
                 size={20}
                 onClick={upvote}
                 className="cursor-pointer"
             />
             <ThumbsDown
-                fill={userReaction == -1 ? "black" : "white"}
+                fill={userReaction == -1 ? "currentColor" : "none"}
                 size={20}
                 onClick={downvote}
                 className="cursor-pointer"

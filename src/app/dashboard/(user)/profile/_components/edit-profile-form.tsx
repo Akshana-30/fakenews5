@@ -449,7 +449,11 @@ export default function EditProfileForm({ user }: Props) {
                                 >
                                     Reset
                                 </Button>
-                                <Button className="cursor-pointer" type="submit" disabled={loading}>
+                                <Button
+                                    className="cursor-pointer hover:bg-primary/80"
+                                    type="submit"
+                                    disabled={loading}
+                                >
                                     {loading ? "Saving..." : "Submit"}
                                 </Button>
                             </Field>
