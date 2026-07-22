@@ -153,7 +153,7 @@ export default function ClientComment({
 
     //console.log(currentUserId, commentAuthor);
     return (
-        <div className="flex mb-5 justify-center w-full">
+        <div className="flex mb-5 justify-center w-full mt-5">
             {level > 0 && (
                 <div className="relative w-5 shrink-0 mt-2.5 h-5">
                     <div className="absolute -left-12 top-12 w-15 h-0.5 bg-muted-foreground" />
