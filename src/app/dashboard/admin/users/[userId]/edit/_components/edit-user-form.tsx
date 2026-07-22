@@ -108,8 +108,8 @@ export default function EditUserForm({ data }: Props) {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
+      let imageUrl = value.image;
       if (imageFile) {
-        let imageUrl = "";
         const fd = new FormData();
         fd.append("file", imageFile);
         const uploadResult = await uploadImage(fd);
@@ -118,9 +118,11 @@ export default function EditUserForm({ data }: Props) {
           return;
         }
         imageUrl = uploadResult.url;
-        await UserAction(data.id, { ...value, image: imageUrl });
-      } else {
-        await UserAction(data.id, value)
+      }
+      const result = await UserAction(data.id, { ...value, image: imageUrl });
+      if (!result.success) {
+        toast.error(result.error, { position: "top-center" });
+        return;
       }
       toast.success("User was successfully updated.", {
         position: "top-center",

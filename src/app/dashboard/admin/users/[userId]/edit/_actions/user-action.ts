@@ -2,6 +2,9 @@
 
 import { roles } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { Result } from "@/lib/types";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 
@@ -25,8 +28,33 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-export default async function UserAction(id: string, input: FormValues) {
+export default async function UserAction(id: string, input: FormValues): Promise<Result<string>> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) {
+    return { success: false, error: "You must be signed in." };
+  }
+  if (session.user.role !== "admin") {
+    return { success: false, error: "Only admins can edit user accounts." };
+  }
+
   const data = formSchema.parse(input);
+
+  const target = await prisma.user.findUnique({ where: { id }, select: { role: true } });
+  const isDemotingFromAdmin = target?.role === "admin" && data.role !== "admin";
+
+  if (isDemotingFromAdmin) {
+    if (session.user.id === id) {
+      return { success: false, error: "You cannot remove your own admin role." };
+    }
+
+    const adminCount = await prisma.user.count({ where: { role: "admin" } });
+    if (adminCount <= 1) {
+      return {
+        success: false,
+        error: "Cannot remove the last admin — promote another user to admin first.",
+      };
+    }
+  }
 
   const existingAuthor = await prisma.author.findUnique({ where: { userId: id } });
   const aliasChanged = existingAuthor?.alias !== data.authorAlias;
@@ -92,5 +120,5 @@ export default async function UserAction(id: string, input: FormValues) {
   });
 
   revalidatePath("/dashboard/admin/users");
-  return editUser.id;
+  return { success: true, data: editUser.id };
 }
