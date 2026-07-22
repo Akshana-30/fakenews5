@@ -165,8 +165,14 @@ export default function ClientComment({
                 <div className="">
                     <div className="border-b bg-chart-5 dark:bg-chart-4 py-2">
                         <div className="flex items-center justify-between">
-                            <div className="mx-5 ">
-                                <span>{commentAuthor.user.name} </span>
+                            <div className="flex items-center ml-2">
+                                <CommentAvatar
+                                    imageUrl={commentAuthor.user.image ?? undefined}
+                                    fallbackTxt={commentAuthor.user.name[0]}
+                                />
+                                <div className="ml-2">
+                                    <span>{commentAuthor.user.name} </span>
+                                </div>
                             </div>
                             {hasBeenEdited ? (
                                 <div>Edited: {format(comment.updatedAt, "yyyy-MM-dd HH:mm")}</div>
@@ -255,6 +261,7 @@ import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
+import CommentAvatar from "./comment-avatar";
 
 const formSchema = z.object({
     comment: z

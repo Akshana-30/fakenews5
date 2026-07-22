@@ -17,7 +17,7 @@ export default function UserAvatarNavbar({
     return (
         <div className="flex flex-row flex-wrap items-center gap-6 md:gap-12">
             <Avatar>
-                <AvatarImage src={imageUrl} alt="@evilrabbit" />
+                <AvatarImage src={imageUrl} alt="avatar" />
                 <AvatarFallback>{fallbackTxt}</AvatarFallback>
                 <AvatarBadge className="bg-green-600 dark:bg-green-800" />
             </Avatar>

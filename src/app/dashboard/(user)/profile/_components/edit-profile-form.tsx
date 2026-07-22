@@ -266,7 +266,7 @@ export default function EditProfileForm({ user }: Props) {
                                                 aria-invalid={isInvalid}
                                             />
 
-                                            {user.image && (
+                                            {user.image && imagePreview === "" && (
                                                 <div>
                                                     <img
                                                         src={user.image}
