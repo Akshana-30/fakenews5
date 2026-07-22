@@ -16,6 +16,7 @@ import { isEmailAddressUsed, setUserInfo } from "@/_actions/user-actions";
 import { toast } from "sonner";
 import { InputGroup, InputGroupAddon, InputGroupButton } from "@/components/ui/input-group";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { uploadImage } from "@/lib/upload-action";
 
 const formSchema = z
     .object({
@@ -32,6 +33,7 @@ const formSchema = z
         city: z.string().min(1, "City is required").max(50),
         country: z.string().min(1, "Country is required.").max(50),
         phone: z.string().min(5, "Phone number is required").max(15),
+        image: z.string(),
     })
     .superRefine(({ confirmPassword, password }, ctx) => {
         if (confirmPassword !== password) {
@@ -52,6 +54,8 @@ export default function RegisterForm() {
     });
     const [countryData, setCountryData] = useState<CountryData>();
     const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState("");
     const form = useForm({
         defaultValues: {
             name: "",
@@ -64,6 +68,7 @@ export default function RegisterForm() {
             city: "",
             country: "",
             phone: "",
+            image: "",
         },
         validators: {
             onSubmit: formSchema,
@@ -76,10 +81,23 @@ export default function RegisterForm() {
                     position: "top-center",
                 });
             } else {
+                let imageUrl = "";
+                if (imageFile) {
+                    const fd = new FormData();
+                    fd.append("file", imageFile);
+                    const uploadResult = await uploadImage(fd);
+                    if ("error" in uploadResult) {
+                        toast.error(uploadResult.error, { position: "top-center" });
+                        setLoading(false);
+                        return; // stop submission, don't create the article
+                    }
+                    imageUrl = uploadResult.url;
+                }
                 const { data, error } = await authClient.signUp.email({
                     name: value.name,
                     email: value.email,
                     password: value.password,
+                    image: imageUrl,
                 });
                 if (data && error == null) {
                     const userInfo = await setUserInfo({
@@ -422,6 +440,55 @@ export default function RegisterForm() {
                                             autoComplete="address-level2"
                                             type="text"
                                         />
+                                        {isInvalid && (
+                                            <FieldError errors={field.state.meta.errors} />
+                                        )}
+                                    </Field>
+                                );
+                            }}
+                        </form.Field>
+                        <form.Field name="image">
+                            {(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched && !field.state.meta.isValid;
+                                const handleFileChange = (
+                                    ev: React.ChangeEvent<HTMLInputElement>,
+                                ) => {
+                                    const file = ev.target.files?.[0];
+                                    if (!file) return;
+
+                                    setImageFile(file);
+                                    setImagePreview(URL.createObjectURL(file));
+
+                                    field.handleChange(file.name);
+                                    field.handleBlur();
+                                };
+
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>Image</FieldLabel>
+                                        <Input
+                                            type="file"
+                                            accept="image/*"
+                                            className="border-r border-b"
+                                            id={field.name}
+                                            name={field.name}
+                                            onChange={handleFileChange}
+                                            aria-invalid={isInvalid}
+                                        />
+
+                                        {imagePreview && (
+                                            <div>
+                                                <img
+                                                    src={imagePreview}
+                                                    alt="Current avatar"
+                                                    width={50}
+                                                    height={50}
+                                                    className="mt-2 mx-auto h-50 w-50 rounded object-cover border"
+                                                />
+                                            </div>
+                                        )}
+
                                         {isInvalid && (
                                             <FieldError errors={field.state.meta.errors} />
                                         )}
