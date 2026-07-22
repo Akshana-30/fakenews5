@@ -15,17 +15,12 @@ export async function LoginRegButtons() {
                 <>
                     <li>
                         <div className="flex">
-                            <UserAvatarNavbar
-                                imageUrl={session.user.image ?? ""}
-                                fallbackTxt={session.user.name[0]}
-                            />
-                            <Button
-                                asChild
-                                variant="ghost"
-                                className="cursor-pointer border-2 hover:border-b-primary! hover:bg-[#f4ede0]! hover:dark:text-background rounded-b-none text-sm md:text-[16px]"
-                            >
-                                <Link href="/dashboard">Dashboard</Link>
-                            </Button>
+                            <Link href="/dashboard">
+                                <UserAvatarNavbar
+                                    imageUrl={session.user.image ?? ""}
+                                    fallbackTxt={session.user.name[0]}
+                                />
+                            </Link>
                         </div>
                     </li>
                     <li>
