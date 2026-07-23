@@ -18,12 +18,6 @@ const adFormats = [
     price: "7 500 kr / week",
   },
   {
-    name: "In-article",
-    placement: "Inside article body, after second paragraph",
-    size: "728 × 90 px",
-    price: "5 000 kr / week",
-  },
-  {
     name: "Newsletter",
     placement: "Sponsored slot in our daily newsletter",
     size: "600 × 200 px",

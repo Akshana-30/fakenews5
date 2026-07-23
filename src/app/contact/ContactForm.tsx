@@ -107,7 +107,7 @@ export function ContactForm() {
   });
 
   const inputStyle =
-    "bg-sidebar-accent/40 border-(--gold)/30 text-(--text) focus-visible:ring-(--gold)/30 focus-visible:ring-2 focus-visible:border-(--gold)/50";
+    "bg-sidebar-accent/40 dark:bg-input/30 border-(--gold)/30 dark:border-input text-(--text) focus-visible:ring-(--gold)/30 focus-visible:ring-2 focus-visible:border-(--gold)/50";
   const inputCls =
     "w-full rounded-2xl border px-3 py-2.5 text-sm outline-none transition-colors focus:border-gold";
   const labelCls = "block text-xs tracking-wide mb-1.5";
@@ -213,7 +213,7 @@ export function ContactForm() {
         <Button
           type="submit"
           disabled={isPending || countdown > 0}
-          className="inline-flex self-start items-center gap-2 rounded-2xl px-3 py-1 text-xs font-medium transition-colors hover:opacity-90 disabled:opacity-50 -mt-2 bg-(--gold) text-black"
+          className="inline-flex self-start items-center gap-2 rounded-2xl px-3 py-1 text-xs font-medium transition-colors hover:opacity-90 disabled:opacity-50 -mt-2 bg-(--gold) text-black dark:text-white"
           suppressHydrationWarning
         >
           {isPending ? (

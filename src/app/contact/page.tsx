@@ -11,7 +11,7 @@ export default function ContactPage() {
         <h1 className="font-serif text-4xl font-bold tracking-wide">
           Get in Touch
         </h1>
-        <p className="mt-2 font-serif italic text-muted-foreground">
+        <p className="mt-2 font-serif italic text-black/60 dark:text-muted-foreground">
           Questions, tips, or spotted a typo? We&apos;d love to hear from you.
         </p>
       </div>
@@ -46,7 +46,7 @@ export default function ContactPage() {
                 {item.title}
               </div>
               {item.lines.map((line) => (
-                <p key={line} className="text-sm text-muted-foreground">
+                <p key={line} className="text-sm text-black/60 dark:text-muted-foreground">
                   {line}
                 </p>
               ))}
