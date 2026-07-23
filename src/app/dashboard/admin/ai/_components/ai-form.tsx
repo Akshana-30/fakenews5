@@ -90,6 +90,27 @@ export default function AIForm() {
                                 );
                             }}
                         </form.Field>
+                        <div className="flex justify-center gap-4">
+                            <Button
+                                form="ai-form"
+                                type="reset"
+                                variant="outline"
+                                size="lg"
+                                className="cursor-pointer"
+                                onClick={() => form.reset()}
+                            >
+                                Reset
+                            </Button>
+                            <Button
+                                form="ai-form"
+                                type="submit"
+                                size="lg"
+                                className="cursor-pointer"
+                                disabled={loading}
+                            >
+                                {loading ? <Spinner /> : "Submit"}
+                            </Button>
+                        </div>
                         <div>
                             <div className="flex">
                                 <Label className="mb-3">Output (pure text)</Label>
@@ -135,26 +156,6 @@ export default function AIForm() {
                         </div>
                     </FieldGroup>
                 </form>
-                <CardFooter className="flex justify-center gap-4">
-                    <Button
-                        form="ai-form"
-                        type="reset"
-                        size="lg"
-                        className="cursor-pointer"
-                        onClick={() => form.reset()}
-                    >
-                        Reset
-                    </Button>
-                    <Button
-                        form="ai-form"
-                        type="submit"
-                        size="lg"
-                        className="cursor-pointer"
-                        disabled={loading}
-                    >
-                        {loading ? <Spinner /> : "Submit"}
-                    </Button>
-                </CardFooter>
             </CardContent>
         </Card>
     );
