@@ -45,13 +45,9 @@ export default function TopLevelCommentForm({ articleId }: { articleId: string }
 
     return (
         <div>
-            <Card className="md:w-2xl mx-auto mb-4">
-                <CardHeader>
-                    <CardTitle className="flex">
-                        <div className="mr-auto">Leave a comment ...</div>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
+            <div className="md:w-2xl mx-auto mb-4">
+                <div className="mr-auto">Leave a comment ...</div>
+                <div>
                     <form
                         id="comment"
                         onSubmit={(ev) => {
@@ -84,16 +80,16 @@ export default function TopLevelCommentForm({ articleId }: { articleId: string }
                             </form.Field>
                         </FieldGroup>
                     </form>
-                </CardContent>
-                <CardFooter className="flex gap-2 justify-center p-1">
+                </div>
+                <div className="flex gap-2 justify-center mt-2">
                     <Button type="reset" variant="outline" onClick={() => form.reset()}>
                         Clear
                     </Button>
-                    <Button type="submit" disabled={loading} form="comment">
+                    <Button type="submit" variant={"default"} disabled={loading} form="comment">
                         {loading ? <Spinner /> : "Submit"}
                     </Button>
-                </CardFooter>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 }
