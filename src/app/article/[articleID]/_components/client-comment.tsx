@@ -6,6 +6,25 @@ import { type ReactNode } from "react";
 import ReplyForm from "./reply-form";
 import { Children } from "react";
 import DeleteCommentButton from "../manage-comments/_components/delete-comment-button";
+import { updateComment } from "@/_actions/comment-actions";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup } from "@/components/ui/field";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
+import { useForm } from "@tanstack/react-form";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { z } from "zod";
+import CommentAvatar from "./comment-avatar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { ArrowDown } from "lucide-react";
+const formSchema = z.object({
+    comment: z
+        .string()
+        .min(1, "Comment has to be at least one character.")
+        .max(2000, "Comment can't be longer than 2000 characters."),
+});
 
 type CommentData = {
     id: string;
@@ -184,10 +203,36 @@ export default function ClientComment({
                                     </span>
                                 </div>
                             </div>
-                            {hasBeenEdited ?? (
-                                <div>Edited: {format(comment.updatedAt, "yyyy-MM-dd HH:mm")}</div>
+                            <div className="sm:hidden">
+                                <HoverCard openDelay={10} closeDelay={100}>
+                                    <HoverCardTrigger asChild>
+                                        <Button variant="link" className="cursor-pointer">
+                                            Info <ArrowDown />
+                                        </Button>
+                                    </HoverCardTrigger>
+                                    <HoverCardContent className="w-auto max-w-sm">
+                                        <h3 className="font-semibold">Comment #{num + 1}</h3>
+                                        <div>
+                                            <p>
+                                                Written by {commentAuthor.user.name}{" "}
+                                                {format(comment.createdAt, "yyyy-MM-dd HH:mm")}
+                                            </p>
+                                            {hasBeenEdited && (
+                                                <p>
+                                                    Edited:{" "}
+                                                    {format(comment.updatedAt, "yyyy-MM-dd HH:mm")}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </HoverCardContent>
+                                </HoverCard>
+                            </div>
+                            {hasBeenEdited && (
+                                <p className="hidden sm:block">
+                                    Edited: {format(comment.updatedAt, "yyyy-MM-dd HH:mm")}
+                                </p>
                             )}
-                            <div className="flex gap-2 mx-5 justify-center">
+                            <div className="hidden gap-2 mx-5 justify-center sm:flex">
                                 {format(comment.createdAt, "yyyy-MM-dd HH:mm")}
                                 {level === 0 ? (
                                     <strong className="font-extrabold">#{num + 1}</strong>
@@ -259,21 +304,3 @@ export default function ClientComment({
         </div>
     );
 }
-
-import { updateComment } from "@/_actions/comment-actions";
-import { Button } from "@/components/ui/button";
-import { Field, FieldGroup } from "@/components/ui/field";
-import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "@tanstack/react-form";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { z } from "zod";
-import CommentAvatar from "./comment-avatar";
-
-const formSchema = z.object({
-    comment: z
-        .string()
-        .min(1, "Comment has to be at least one character.")
-        .max(2000, "Comment can't be longer than 2000 characters."),
-});
