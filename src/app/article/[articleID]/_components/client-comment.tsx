@@ -168,7 +168,7 @@ export default function ClientComment({
 
             <div className="w-full border-l-2 border-muted-foreground">
                 <div className="">
-                    <div className="border-b bg-chart-5 dark:bg-chart-4 py-2">
+                    <div className="border-b bg-chart-5 dark:bg-chart-4 py-1 sm:py-2">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center ml-2">
                                 <div className="sm:hidden block">
@@ -179,7 +179,9 @@ export default function ClientComment({
                                     />
                                 </div>
                                 <div className="ml-2">
-                                    <span>{commentAuthor.user.name} </span>
+                                    <span className="hidden sm:block">
+                                        {commentAuthor.user.name}
+                                    </span>
                                 </div>
                             </div>
                             {hasBeenEdited ?? (

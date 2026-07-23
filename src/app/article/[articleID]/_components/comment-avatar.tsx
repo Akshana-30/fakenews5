@@ -20,14 +20,12 @@ export default function CommentAvatar({
         );
     } else {
         return (
-            <p>
-                <div className="flex flex-row flex-wrap items-center gap-6 md:gap-12">
-                    <Avatar className="h-7 w-7">
-                        <AvatarImage src={imageUrl} alt={"avatar " + fallbackTxt} />
-                        <AvatarFallback>{fallbackTxt}</AvatarFallback>
-                    </Avatar>
-                </div>
-            </p>
+            <div className="flex flex-row flex-wrap items-center gap-6 md:gap-12">
+                <Avatar className="h-7 w-7">
+                    <AvatarImage src={imageUrl} alt={"avatar " + fallbackTxt} />
+                    <AvatarFallback>{fallbackTxt}</AvatarFallback>
+                </Avatar>
+            </div>
         );
     }
 }
