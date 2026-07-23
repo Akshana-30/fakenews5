@@ -3,8 +3,6 @@
 import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
 import { getUserId } from "./user-actions";
-import { success } from "zod";
-import { error } from "console";
 
 type Comment = {
     id: string;

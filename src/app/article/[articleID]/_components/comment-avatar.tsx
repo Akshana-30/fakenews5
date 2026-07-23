@@ -3,16 +3,31 @@ import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "@/components/u
 export default function CommentAvatar({
     imageUrl,
     fallbackTxt,
+    size = "lg",
 }: {
     imageUrl: string | undefined;
     fallbackTxt: string;
+    size: "sm" | "lg";
 }) {
-    return (
-        <div className="flex flex-row flex-wrap items-center gap-6 md:gap-12">
-            <Avatar className="h-13 w-13">
-                <AvatarImage src={imageUrl} alt={"avatar " + fallbackTxt}/>
-                <AvatarFallback>{fallbackTxt}</AvatarFallback>
-            </Avatar>
-        </div>
-    );
+    if (size === "lg") {
+        return (
+            <div className="flex flex-row flex-wrap items-center gap-6 md:gap-12">
+                <Avatar className="h-13 w-13">
+                    <AvatarImage src={imageUrl} alt={"avatar " + fallbackTxt} />
+                    <AvatarFallback>{fallbackTxt}</AvatarFallback>
+                </Avatar>
+            </div>
+        );
+    } else {
+        return (
+            <p>
+                <div className="flex flex-row flex-wrap items-center gap-6 md:gap-12">
+                    <Avatar className="h-7 w-7">
+                        <AvatarImage src={imageUrl} alt={"avatar " + fallbackTxt} />
+                        <AvatarFallback>{fallbackTxt}</AvatarFallback>
+                    </Avatar>
+                </div>
+            </p>
+        );
+    }
 }

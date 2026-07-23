@@ -145,7 +145,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                     </div>
                 </div>
                 <h1 className="font-extrabold text-2xl text-center my-2">Comments</h1>
-                <div className="border-b-2 md:w-3xl mx-auto">
+                <div className="border-b-2 max-w-75 md:max-w-3xl mx-auto">
                     {article.data.comments ? (
                         <CommentarySection
                             comments={article.data.comments}

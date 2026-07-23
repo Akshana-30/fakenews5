@@ -153,12 +153,13 @@ export default function ClientComment({
 
     return (
         <div className="flex mb-5 justify-center w-full mt-4">
-            <div className="relative w-5 shrink-0 h-5 mx-2">
+            <div className="relative w-5 shrink-0 h-5 mx-2 hidden md:block">
                 <div className="absolute -left-11 w-14 h-14 rounded-full bg-muted-foreground">
                     <div className="flex justify-center mt-0.5">
                         <CommentAvatar
                             imageUrl={commentAuthor.user.image ?? undefined}
                             fallbackTxt={commentAuthor.user.name[0]}
+                            size="lg"
                         />
                     </div>
                 </div>
@@ -170,6 +171,13 @@ export default function ClientComment({
                     <div className="border-b bg-chart-5 dark:bg-chart-4 py-2">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center ml-2">
+                                <div className="sm:hidden block">
+                                    <CommentAvatar
+                                        imageUrl={commentAuthor.user.image ?? undefined}
+                                        fallbackTxt={commentAuthor.user.name[0]}
+                                        size="sm"
+                                    />
+                                </div>
                                 <div className="ml-2">
                                     <span>{commentAuthor.user.name} </span>
                                 </div>
