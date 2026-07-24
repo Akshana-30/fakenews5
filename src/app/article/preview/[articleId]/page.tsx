@@ -81,6 +81,7 @@ export default async function PreviewArticlePage({
                         {article.data.content.slice(0, 500)}
                     </ReactMarkdown>
                 </article>
+                <ContinueToReadCard />
                 {/* <InArticleAd /> */}
                 <div className="flex border-b-2 mt-2 pb-2 text-sm bg-gray-100 dark:bg-[#2d2d2d] p-4">
                     <div className="flex border-r pr-2">
