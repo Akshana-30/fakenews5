@@ -43,12 +43,11 @@ export default async function PreviewArticlePage({
                             );
                     })}
                 <h1 className="font-extrabold text-3xl text-center">{article.data.title}</h1>
-                <article className="mt-2 mb-4 max-w-none dark:bg-[#2d2d2d] dark:text-white prose dark:prose-headings:text-white border p-4">
+                <article className="w-3/4 flex-row mx-auto mt-2 mb-4 max-w-none prose dark:prose-invert dark:bg-[#2d2d2d] dark:text-white dark:prose-headings:text-white p-4">
                     <ReactMarkdown remarkPlugins={[remarkGfm, remarkIns]}>
-                        {article.data.content.slice(0, 500) + " ..."}
+                        {article.data.content.slice(0, 500)}
                     </ReactMarkdown>
-                    <ContinueToReadCard />
-                </article>{" "}
+                </article>
                 <div className="flex border-b-2 mt-2 pb-2 text-sm">
                     <div className="flex border-r pr-2">
                         <Views num={article.data.views} />
