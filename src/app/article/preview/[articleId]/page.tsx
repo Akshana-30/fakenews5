@@ -72,11 +72,11 @@ export default async function PreviewArticlePage({
                 <h1 className="font-extrabold text-3xl text-center w-3/4 mx-auto my-2">
                     {article.data.title}
                 </h1>
-                <div className="w-3/4 flex-row mx-auto max-w-none bg-gray-100 dark:bg-[#2d2d2d] text-black dark:text-white  p-4">
+                <div className="md:w-3/4 flex-row mx-auto max-w-none bg-gray-100 dark:bg-[#2d2d2d] text-black dark:text-white  p-4">
                     <p>{article.data.summary}</p>
                 </div>
 
-                <article className="w-3/4 flex-row mx-auto mt-2 mb-4 max-w-none prose dark:prose-invert dark:bg-[#2d2d2d] dark:text-white dark:prose-headings:text-white p-1">
+                <article className="md:w-3/4 flex-row mx-auto mt-2 mb-4 max-w-none prose dark:prose-invert dark:bg-[#2d2d2d] dark:text-white dark:prose-headings:text-white p-1">
                     <ReactMarkdown remarkPlugins={[remarkGfm, remarkIns]}>
                         {article.data.content.slice(0, 500)}
                     </ReactMarkdown>
