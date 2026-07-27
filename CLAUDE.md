@@ -138,7 +138,7 @@ Roles live on the `User.role` (Better Auth) field, NOT on `UserInfo` (that colum
 | Branch | Purpose |
 |---|---|
 | `main` | Team's main branch — never push directly |
-| `fix/remove-userinfo-role` | Removes role from UserInfo schema — PR open, not merged |
+| `fix/remove-userinfo-role` | Removes role from UserInfo schema — local branch only, no open PR on GitHub (checked 2026-07-24), likely stale; re-evaluate before reviving |
 
 ⚠️ Stale local branches can silently become `HEAD` again (happened once — `git branch --show-current` showed `feature/remove-classifieds`, an old already-merged branch, instead of `main`). Before trusting `git status`, always check `git branch --show-current` first. If it's not `main`, verify the old branch is an ancestor of `main` (`git merge-base --is-ancestor <old> main`) before `git switch main` — safe to switch if true, since uncommitted changes carry over.
 
@@ -150,7 +150,8 @@ Roles live on the `User.role` (Better Auth) field, NOT on `UserInfo` (that colum
 - **Known unfixed issue:** deeply-indented (4+ space) nested list items from AI-generated markdown get parsed as CommonMark *indented code blocks* instead of nested list items — a structural parsing issue, not something the entity-escaping fix touches. No general fix yet; one corrupted article (`01KWKYVH6NZTQ16CJESXC1HWP0`) was manually repaired in the DB.
 
 ## Ads system
-- **Model:** `Advertisement` in schema.prisma — `format` (`banner` \| `sidebar` \| `in-article` \| `newsletter` \| `sponsored`), `active`, `startsAt`/`endsAt`, `placement` (`top` \| `bottom` \| `both`, banner-only, default `both`)
+- **Model:** `Advertisement` in schema.prisma — `format` (`banner` \| `sidebar` \| `newsletter` \| `sponsored`), `active`, `startsAt`/`endsAt`, `placement` (`top` \| `bottom` \| `both`, banner-only, default `both`)
+- **"in-article" format removed from the UI (team decision):** dropped from the shared `AD_FORMATS` list in `src/lib/ad-formats.ts`, so it no longer appears in the Formats & Rates table on `/advertise` or the Format dropdown on the admin "Add new advertisement" form. The `in-article-ad.tsx` display component and its label in `ad-list.tsx`'s formatLabels map were deliberately left in place (dormant/unused, and needed if any legacy `Advertisement` row in the DB still has `format = "in-article"`) — don't reintroduce the format as a *creatable* option without team sign-off
 - **Query:** `src/lib/ad-queries.ts` — `getActiveAd(format, slot?)` filters by placement when a slot is passed and dedupes per `(format, slot)` within a single page render (React `cache()`), so top/bottom banner or multiple sidebar slots don't draw the same ad when more than one is active
 - **Admin UI:** `/dashboard/admin/advertisements` — create/edit forms show a Placement dropdown only when format is "banner". **Selecting a value in the dropdown does nothing until "Save changes" is clicked** — this has tripped us up before
 - **Display components:** `ad-banner.tsx` (`slot` prop), `sidebar-ad.tsx`, `in-article-ad.tsx` — deliberately no `dark:` classes so creatives render identically in both themes
@@ -175,6 +176,10 @@ Roles live on the `User.role` (Better Auth) field, NOT on `UserInfo` (that colum
 | Stripe subscription paid but role not updated | `stripe listen --forward-to localhost:3000/api/auth/stripe/webhook` not running locally — `onSubscriptionComplete` never fires without it. Fix stuck users manually: `UPDATE "user" SET role = '<plan>' WHERE email = '...'` |
 | Tiptap extension command missing at runtime (e.g. `setImage is not a function`) | Peer version mismatch between the extension and `@tiptap/core` — pnpm doesn't error on this. Pin the extension to the exact `@tiptap/core` version, `pnpm install`, then fully restart `pnpm dev` (not just `.next` clear — node_modules changed) |
 | Article body has literal `&amp;` or stray `\*`/code-block-looking bullet lists | The `&` bug is fixed going forward (see Tiptap section above); existing corrupted content needs manual DB repair. The nested-list-as-code-block issue is still open |
+
+## Contact form
+- **Component:** `src/app/contact/ContactForm.tsx` — Name/Email/Subject are plain `<input>` elements styled by a shared `inputStyle` string; Message uses the shadcn `Textarea` component with the same string passed as `className`.
+- **⚠️ Dark-mode background gotcha:** a plain `<input>` gets no default background classes, so whatever `inputStyle` sets applies as-is in both themes. The shadcn `Textarea` component ships its own `dark:bg-input/30` default, which `tailwind-merge` keeps unless `inputStyle` also declares a `dark:` variant for the same utility — so a bg class with only a light-mode value (no `dark:` counterpart) will visibly diverge between the native inputs and the `Textarea` in dark mode even though both receive the identical class string. `inputStyle` now explicitly sets `dark:bg-input/30 dark:border-input` so all four fields match.
 
 ## Admin user management
 - **Self-lockout guards** (`src/app/dashboard/admin/users/[userId]/edit/_actions/user-action.ts`): an admin cannot demote their own account, and the last remaining admin cannot be demoted by anyone. Both return a `Result<string>` error surfaced as a toast in `edit-user-form.tsx` — check `result.success` there, don't assume the action always succeeds.
