@@ -13,7 +13,7 @@ import Link from "next/link";
 
 export default function UserDetailsTable(user: Props) {
   return (
-    <Table className="md:w-xl mx-auto mt-5">
+    <Table className="md:w-xl mt-5 border-l-2">
       <TableBody>
         <TableRow>
           <TableCell className="font-semibold">Name</TableCell>

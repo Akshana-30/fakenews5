@@ -2,10 +2,14 @@
 
 import { Markdown } from "@tiptap/markdown";
 import { Placeholder } from "@tiptap/extensions";
+import TiptapImage from "@tiptap/extension-image";
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import type { Editor as TiptapEditor } from "@tiptap/react";
-import React, { Fragment } from "react";
+import React, { Fragment, useRef, useState } from "react";
+import { uploadImage } from "@/lib/upload-action";
+import { fixEditorMarkdownEscaping } from "@/lib/markdown";
+import { toast } from "sonner";
 
 interface EditorProps {
     initialMarkdown?: string;
@@ -199,6 +203,27 @@ function MenuBar({ editor }: { editor: TiptapEditor }) {
             })),
     });
 
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [imageUploading, setImageUploading] = useState(false);
+
+    const handleImageFile = async (ev: React.ChangeEvent<HTMLInputElement>) => {
+        const file = ev.target.files?.[0];
+        ev.target.value = ""; // allow re-selecting the same file next time
+        if (!file) return;
+
+        setImageUploading(true);
+        const fd = new FormData();
+        fd.append("file", file);
+        const result = await uploadImage(fd);
+
+        if ("error" in result) {
+            toast.error(result.error, { position: "top-center" });
+        } else {
+            editor.chain().focus().setImage({ src: result.url, alt: file.name }).run();
+        }
+        setImageUploading(false);
+    };
+
     let i = 0;
     return (
         <div className="flex flex-wrap items-center gap-1 border-b border-zinc-300 bg-zinc-50 p-2">
@@ -221,6 +246,21 @@ function MenuBar({ editor }: { editor: TiptapEditor }) {
                     })}
                 </Fragment>
             ))}
+            <Divider />
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageFile}
+            />
+            <ToolbarButton
+                label="Insert image"
+                disabled={imageUploading}
+                onClick={() => fileInputRef.current?.click()}
+            >
+                {imageUploading ? "…" : "🖼"}
+            </ToolbarButton>
         </div>
     );
 }
@@ -234,7 +274,7 @@ export function Editor({
 }: EditorProps) {
     const editor = useEditor({
         editable,
-        extensions: [StarterKit, Markdown, Placeholder.configure({ placeholder })],
+        extensions: [StarterKit, Markdown, Placeholder.configure({ placeholder }), TiptapImage],
         content: initialMarkdown,
         contentType: "markdown",
         immediatelyRender: false,
@@ -246,7 +286,7 @@ export function Editor({
             },
         },
         onUpdate({ editor }) {
-            onChange?.(editor.getMarkdown());
+            onChange?.(fixEditorMarkdownEscaping(editor.getMarkdown()));
         },
     });
 

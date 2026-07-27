@@ -1,11 +1,29 @@
 /* eslint-disable react-hooks/static-components */
 "use client";
 import CommentaryReactions from "./commentary-reactions";
-import { compareAsc, format, isAfter } from "date-fns";
+import { format, isAfter } from "date-fns";
 import { type ReactNode } from "react";
 import ReplyForm from "./reply-form";
 import { Children } from "react";
 import DeleteCommentButton from "../manage-comments/_components/delete-comment-button";
+import { updateComment } from "@/_actions/comment-actions";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup } from "@/components/ui/field";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
+import { useForm } from "@tanstack/react-form";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { z } from "zod";
+import CommentAvatar from "./comment-avatar";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { ArrowDown } from "lucide-react";
+const formSchema = z.object({
+    comment: z
+        .string()
+        .min(1, "Comment has to be at least one character.")
+        .max(2000, "Comment can't be longer than 2000 characters."),
+});
 
 type CommentData = {
     id: string;
@@ -151,29 +169,69 @@ export default function ClientComment({
         );
     }
 
-    //console.log(currentUserId, commentAuthor);
     return (
-        <div className="flex mb-5 justify-center w-full">
-            {level > 0 && (
-                <div className="relative w-5 shrink-0 mt-2.5 h-5">
-                    <div className="absolute -left-12 top-12 w-15 h-0.5 bg-muted-foreground" />
-                    <div className="bg-muted-foreground mt-10 h-5 w-5 [clip-path:polygon(0%_0%,100%_50%,0%_100%)]" />
+        <div className="flex mb-5 justify-center w-full mt-4">
+            <div className="relative w-5 shrink-0 h-5 mx-2 hidden md:block">
+                <div className="absolute -left-11 w-14 h-14 rounded-full bg-muted-foreground">
+                    <div className="flex justify-center mt-0.5">
+                        <CommentAvatar
+                            imageUrl={commentAuthor.user.image ?? undefined}
+                            fallbackTxt={commentAuthor.user.name[0]}
+                            size="lg"
+                        />
+                    </div>
                 </div>
-            )}
+                <div className="bg-muted-foreground ml-2.5 mt-4.5 h-5 w-3 [clip-path:polygon(0%_0%,100%_50%,0%_100%)]" />
+            </div>
 
-            <div className="w-full border-l-4 border-muted-foreground">
+            <div className="w-full border-l-2 border-muted-foreground">
                 <div className="">
-                    <div className="border-b bg-chart-5 dark:bg-chart-4 py-2">
+                    <div className="border-b bg-chart-5 dark:bg-chart-4 py-1 sm:py-2">
                         <div className="flex items-center justify-between">
-                            <div className="mx-5 ">
-                                <span>{commentAuthor.user.name} </span>
+                            <div className="flex items-center ml-2">
+                                <div className="sm:hidden block">
+                                    <CommentAvatar
+                                        imageUrl={commentAuthor.user.image ?? undefined}
+                                        fallbackTxt={commentAuthor.user.name[0]}
+                                        size="sm"
+                                    />
+                                </div>
+                                <div className="ml-2">
+                                    <span className="hidden sm:block">
+                                        {commentAuthor.user.name}
+                                    </span>
+                                </div>
                             </div>
-                            {hasBeenEdited ? (
-                                <div>Edited: {format(comment.updatedAt, "yyyy-MM-dd HH:mm")}</div>
-                            ) : (
-                                ""
+                            <div className="sm:hidden">
+                                <HoverCard openDelay={10} closeDelay={100}>
+                                    <HoverCardTrigger asChild>
+                                        <Button variant="link" className="cursor-pointer">
+                                            Info <ArrowDown />
+                                        </Button>
+                                    </HoverCardTrigger>
+                                    <HoverCardContent className="w-auto max-w-sm">
+                                        <h3 className="font-semibold">Comment #{num + 1}</h3>
+                                        <div>
+                                            <p>
+                                                Written by {commentAuthor.user.name}{" "}
+                                                {format(comment.createdAt, "yyyy-MM-dd HH:mm")}
+                                            </p>
+                                            {hasBeenEdited && (
+                                                <p>
+                                                    Edited:{" "}
+                                                    {format(comment.updatedAt, "yyyy-MM-dd HH:mm")}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </HoverCardContent>
+                                </HoverCard>
+                            </div>
+                            {hasBeenEdited && (
+                                <p className="hidden sm:block">
+                                    Edited: {format(comment.updatedAt, "yyyy-MM-dd HH:mm")}
+                                </p>
                             )}
-                            <div className="flex gap-2 mx-5 justify-center">
+                            <div className="hidden gap-2 mx-5 justify-center sm:flex">
                                 {format(comment.createdAt, "yyyy-MM-dd HH:mm")}
                                 {level === 0 ? (
                                     <strong className="font-extrabold">#{num + 1}</strong>
@@ -245,20 +303,3 @@ export default function ClientComment({
         </div>
     );
 }
-
-import { updateComment } from "@/_actions/comment-actions";
-import { Button } from "@/components/ui/button";
-import { Field, FieldGroup } from "@/components/ui/field";
-import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "@tanstack/react-form";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { z } from "zod";
-
-const formSchema = z.object({
-    comment: z
-        .string()
-        .min(1, "Comment has to be at least one character.")
-        .max(2000, "Comment can't be longer than 2000 characters."),
-});

@@ -3,8 +3,6 @@
 import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
 import { getUserId } from "./user-actions";
-import { success } from "zod";
-import { error } from "console";
 
 type Comment = {
     id: string;
@@ -81,12 +79,15 @@ export async function addReaction(
 ): Promise<Result<CommentReaction>> {
     const comment = await getComment(commentId);
     if (comment.success && comment.data) {
-        const reaction = await prisma.commentReaction.create({
-            data: { userId: userId, commentId: commentId, val: val },
-        });
-        if (reaction) {
+        try {
+            const reaction = await prisma.commentReaction.upsert({
+                where: { userId_commentId: { commentId, userId } },
+                update: { val },
+                create: { userId, commentId, val },
+            });
             return { success: true, data: reaction };
-        } else {
+        } catch (err) {
+            console.error(`Couldn't add reaction to comment with id ${commentId}.\n\n${err}`);
             return {
                 success: false,
                 error: `Couldn't add reaction to comment with id ${commentId}.`,
@@ -135,13 +136,13 @@ export async function changeReaction(
         if (reaction.success && reaction.data == 1) {
             const newReaction = await prisma.commentReaction.update({
                 data: { val: -1 },
-                where: { commentId: commentId, userId: userId },
+                where: { userId_commentId: { commentId, userId } },
             });
             return { success: true, data: newReaction };
         } else if (reaction.success && reaction.data == -1) {
             const newReaction = await prisma.commentReaction.update({
-                data: { val: 1 },
-                where: { commentId: commentId, userId: userId },
+                data: { val: 1 }, // was -1, now correctly toggles back to 1
+                where: { userId_commentId: { commentId, userId } },
             });
             return { success: true, data: newReaction };
         } else {
@@ -170,7 +171,7 @@ export async function removeUserReaction(
 ): Promise<Result<CommentReaction>> {
     try {
         const res = await prisma.commentReaction.delete({
-            where: { commentId: commentId, userId: userId },
+            where: { userId_commentId: { commentId, userId } },
         });
         return { success: true, data: res };
     } catch (err) {

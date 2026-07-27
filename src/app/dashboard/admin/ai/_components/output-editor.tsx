@@ -6,6 +6,7 @@ import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import type { Editor as TiptapEditor } from "@tiptap/react";
 import React, { Fragment, useEffect } from "react";
+import { fixEditorMarkdownEscaping } from "@/lib/markdown";
 
 interface LiveEditorProps {
     // Unlike <Editor>, this value is watched on every render and pushed into
@@ -251,13 +252,13 @@ export function OutputEditor({
             },
         },
         onUpdate({ editor }) {
-            onChange?.(editor.getMarkdown());
+            onChange?.(fixEditorMarkdownEscaping(editor.getMarkdown()));
         },
     });
 
     useEffect(() => {
         if (!editor) return;
-        if (editor.getMarkdown() === markdown) return;
+        if (fixEditorMarkdownEscaping(editor.getMarkdown()) === markdown) return;
         editor.commands.setContent(markdown, { contentType: "markdown" } as never);
     }, [editor, markdown]);
 
