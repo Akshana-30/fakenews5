@@ -80,8 +80,10 @@ export default async function HomePage() {
                   </div>
                 )}
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-primary mb-1">
-                {hero.category[0]?.name ?? "Editor's Choice"}
+
+              <p className="font-sans text-[10px] font-bold uppercase tracking-[0.08em] text-primary mb-1">
+                {hero.category.find((c) => c.parentId === null)?.name ?? "Editor's Choice"}
+
               </p>
               <h1 className="text-[22px] md:text-[28px] font-bold leading-tight text-foreground group-hover:text-primary transition-colors mb-2">
                 {hero.title}

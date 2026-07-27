@@ -9,7 +9,7 @@ type NewsCardProps = {
     summary: string | null;
     location: string | null;
     author: { alias: string }[];
-    category: { name: string }[];
+    category: { name: string, parentId:string|null }[];
     image: string | null;
     createdAt: Date;
     updatedAt: Date;
@@ -31,6 +31,7 @@ export default function NewsCard({
     const wasUpdated = updatedAt.getTime() - createdAt.getTime() > 60_000;
     const categoryLabel = category[0]?.name ?? null;
     const timeAgo = formatDistanceToNow(createdAt, { addSuffix: true });
+    const parentCategory = category.find((c) => c.parentId === null);
     const titleSize =
         size === "hero"
             ? "text-2xl leading-tight"
@@ -65,8 +66,8 @@ export default function NewsCard({
                 </div>
             )}
             {categoryLabel && (
-                <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-primary mb-1">
-                    {categoryLabel}
+                <p className="font-sans text-[10px] font-bold uppercase tracking-[0.08em] text-primary mb-1">
+                    {parentCategory?.name}
                 </p>
             )}
             <h3

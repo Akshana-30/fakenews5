@@ -6,10 +6,12 @@ type SidebarCardProps = {
     id: string;
     title: string;
     image: string | null;
-    category: { name: string }[];
+    category: { name: string, parentId: string|null }[];
     author: { alias: string }[];
     createdAt: Date;
 };
+
+
 
 export default function SidebarCard({
     id,
@@ -20,6 +22,7 @@ export default function SidebarCard({
     createdAt,
 }: SidebarCardProps) {
     const timeAgo = formatDistanceToNow(createdAt, { addSuffix: true });
+    const parentCategory = category.find((c) => c.parentId === null);
     return (
         <Link
             href={`/article/${id}`}
@@ -43,14 +46,11 @@ export default function SidebarCard({
                 )}
             </div>
             <div className="flex flex-wrap gap-2 mb-1">
-                {category.map((c) => (
-                    <span
-                        key={c.name}
-                        className="font-sans text-[10px] font-bold uppercase tracking-[0.08em] text-primary"
-                    >
-                        {c.name}
-                    </span>
-                ))}
+                {parentCategory && (
+         <span className="font-sans text-[10px] font-bold uppercase tracking-[0.08em] text-primary">
+             {parentCategory.name}
+         </span>
+     )}
             </div>
             <h3 className="text-[15px] font-bold leading-snug text-foreground group-hover:text-primary transition-colors mb-1">
                 {title}

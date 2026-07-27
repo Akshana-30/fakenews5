@@ -55,6 +55,8 @@ type Author = {
 type Category = {
     id: string;
     name: string;
+    parentId: string|null;
+    articleCount ?: number;
 };
 
 type CommentReaction = {
