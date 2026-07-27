@@ -47,7 +47,10 @@ export default async function EditArticlePage({
         content: article.content,
         image: article.image ?? "",
         location: article.location ?? "",
-        category: article.category.map((c) => c.name),
+        category: article.category.find((c) => c.parentId === null)?.name ?? "",
+       subcategory: article.category
+           .filter((c) => c.parentId !== null)
+           .map((c) => c.name),
         author: article.author.map((a) => a.alias),
     };
 

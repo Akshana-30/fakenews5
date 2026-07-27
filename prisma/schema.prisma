@@ -91,7 +91,6 @@ model Article {
     createdAt     DateTime          @default(now()) @map("created_at")
     updatedAt     DateTime          @default(now()) @map("updated_at")
     category      Category[]
-    subCategory    SubCategory[]
     location      String?
     author        Author[]
     bookmark      Bookmark[]
@@ -135,24 +134,17 @@ model Bookmark {
     @@map("bookmark")
 }
  
-model SubCategory {
-    id                  String               @id @default(ulid())
-    name                String               @unique
-    article             Article[]
-    categoryId          String
-    category_main       Category             @relation(fields: [categoryId],references: [id])
-
-    @@map("sub_category")
-}
  
 model Category {
     id              String                  @id @default(ulid())
     name            String                  @unique
-    article         Article[]
-    subCategory     SubCategory[]            
+    parentId        String?                 
+    parent          Category?                @relation("CategoryHierarchy" ,fields: [parentId],references: [id])   
+    subcategory     Category[]              @relation("CategoryHierarchy")
+    article         Article[]         
     newsletter      NewsletterSettings[]
 
-    @@map("Category") 
+    @@map("category") 
 }
 model Author {
     id                 String               @id @default(ulid())

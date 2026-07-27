@@ -212,7 +212,7 @@ export default function WeatherApp() {
         </button>
       </form>
 
-      <div className="m-4 pb-5 border-b border-black">
+      <div className="m-4 pb-5 text-black border-b border-black">
         <h1 className="text-2xl text-center mb-2">
           {forecast.location?.name ?? "Your location"}
         </h1>
@@ -227,7 +227,7 @@ export default function WeatherApp() {
         </div>
       </div>
 
-      <Carousel className="relative px-6 pb-4">
+      <Carousel className=" text-black relative px-6 pb-4">
         <CarouselContent>
           {chunk(forecast.timeseries.slice(0, 12), 3).map((group, i) => (
             <CarouselItem key={i} className="grid grid-cols-3 gap-2">
