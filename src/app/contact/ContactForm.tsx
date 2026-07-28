@@ -123,7 +123,10 @@ export function ContactForm() {
           <p className="mt-2 text-sm text-(--text)">
             We&apos;ll get back to you within 1–2 business days.
           </p>
-          <Button onClick={() => setSent(false)} className="mt-5 text-xs text-(--text-dim) underline">
+          <Button
+            onClick={() => setSent(false)}
+            className="mt-5 text-xs text-(--text-dim) underline"
+          >
             Okay
           </Button>
         </div>
@@ -184,7 +187,8 @@ export function ContactForm() {
 
         <form.Field name="message">
           {(field) => {
-            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <>
                 <Label

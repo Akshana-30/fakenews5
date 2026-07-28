@@ -19,22 +19,21 @@ import ArticleDoesntExist from "./_components/article-doesnt-exists";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkIns from "remark-ins";
-// import InArticleAd from "@/components/in-article-ad";
 import Image from "next/image";
 import MarkViewed from "./_components/mark-viewed";
 import RouteHeading from "@/components/route-heading";
-import { ArrowBigRight } from "lucide-react";
 
 export default async function ArticlePage({
   params,
 }: {
   params: Promise<{ articleID: string }>;
 }) {
-  const { articleID } = await params;
+  
 
-  const userId = await getUserId();
-  const article = await getArticle(articleID);
-  // console.log(article);
+    const { articleID } = await params;
+    const userId = await getUserId();
+    const article = await getArticle(articleID);
+
 
   let hasPermission = false;
   const session = await auth.api.getSession({

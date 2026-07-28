@@ -7,8 +7,8 @@
 
 ## Last session
 
-**Date:** 2026-07-20
-**Branch:** `main` (up to date with origin/main, includes PR #156) — today's fixes are all **uncommitted, local-only**, not yet branched/PR'd/merged
+**Date:** 2026-07-22 to 2026-07-24
+**Branch:** `main` (up to date with origin/main at `922b82d`, includes PR #171, #174, and everything the team merged through #180) — contact form has one small **uncommitted, local-only** formatting-only diff (see below)
 
 ---
 
@@ -18,12 +18,18 @@
 
 - ✅ Newspaper landing page layout, live weather/markets widgets, dark/light theme toggle, S3 image upload — see prior sessions
 - ✅ Classified Ads / Buy & Sell / Marketplace removed (PR #136); Ad display fixes incl. placement control (PR #142) — see prior sessions
-- ✅ **Dashboard sidebar theming** (uncommitted): sidebar text/icon color now matches the "Saved articles" badge red in light mode; sidebar collapse-toggle icon color fixed in light mode; hover "amplify" effect (scale + bold) added to sidebar nav items; "Change email"/"Password" labels fixed (were invisible black-on-black in dark mode); Subscription page Cancel button now amber-by-default/red-on-hover in dark mode; "Reset" button text visibility + working hover states added to Reset/Submit buttons (a shared `Button` component quirk meant `hover:` never worked on plain `<button>` elements before)
-- ✅ **Article dark mode fix** (uncommitted): `dark:prose-invert` added to the article body wrapper — bold text was staying black in dark mode. Permanent fix since the article page is a shared template for every article, not per-article.
-- ✅ **Article reactions fix** (uncommitted): thumbs up/down icons no longer render pre-filled — only fill after the user actually reacts (`likes.tsx`, `fill="none"` vs `fill="currentColor"`)
-- ✅ **Image insertion in articles** (uncommitted): new 🖼 toolbar button in the shared Tiptap editor (`src/components/tiptap.tsx`) — uploads to S3 via the existing `uploadImage` action and inserts at the cursor. Required pinning `@tiptap/extension-image` to `3.27.1` to match the installed `@tiptap/core` exactly (mismatched peer versions silently broke `setImage` at runtime with no install-time warning)
-- ✅ **`&` → `&amp;` markdown corruption bug fixed** (uncommitted): `@tiptap/markdown` was HTML-entity-encoding literal `&` on every save, anywhere in the content. Fixed via new `src/lib/markdown.ts` (`fixEditorMarkdownEscaping`), applied in both `tiptap.tsx` and `output-editor.tsx`. One already-corrupted article (`01KWKYVH6NZTQ16CJESXC1HWP0`, AI-generated) was manually repaired in the DB — `&amp;` restored and broken nested-bullet lists (which had degraded into literal text / code blocks) flattened into working top-level bullets.
-- ✅ **Admin self-lockout safeguards** (uncommitted, `user-action.ts`): an admin can no longer demote their own account, and the last remaining admin can't be demoted at all. Also discovered and fixed a real pre-existing gap: this server action had **no session/role check whatsoever** — any signed-in user could previously call it to edit anyone's role, including self-promoting to admin. Both guards + the auth check verified live with throwaway test accounts (self-demotion blocked, last-admin blocked, normal non-self/non-last demotion still works).
+- ✅ **PR #171 — dark mode reactions, Tiptap image insert, admin auth hardening** (merged):
+  - Thumbs up/down icons no longer render pre-filled in either article or comment reactions — only fill after the user actually reacts (`likes.tsx` and `commentary-reactions.tsx`, `fill="none"` vs `fill="currentColor"`; the comment version was a second, separate occurrence of the same bug found after a regression report)
+  - New 🖼 image-insert toolbar button in the shared Tiptap editor (`src/components/tiptap.tsx`) — uploads to S3 via the existing `uploadImage` action and inserts at the cursor. Required pinning `@tiptap/extension-image` to `3.27.1` to match the installed `@tiptap/core` exactly (mismatched peer versions silently broke `setImage` at runtime with no install-time warning)
+  - `&` → `&amp;` markdown corruption bug fixed: `@tiptap/markdown` was HTML-entity-encoding literal `&` on every save, anywhere in the content. Fixed via new `src/lib/markdown.ts` (`fixEditorMarkdownEscaping`), applied in both `tiptap.tsx` and `output-editor.tsx`. One already-corrupted article (`01KWKYVH6NZTQ16CJESXC1HWP0`, AI-generated) was manually repaired in the DB
+  - Admin self-lockout safeguards (`user-action.ts`): an admin can no longer demote their own account, and the last remaining admin can't be demoted at all. Also fixed a real pre-existing gap: this server action had **no session/role check whatsoever** — any signed-in user could previously call it to edit anyone's role, including self-promoting to admin
+  - Assorted dark-mode styling fixes: profile sidebar colors/hover effect, edit-profile/change-email/change-password label contrast, subscription cancel button
+  - Deleted the untracked, unrelated `src/app/linus-test/` experimental directory
+- ✅ **PR #174 — contact form dark mode + in-article ad removal** (merged):
+  - Contact form Name/Email/Subject inputs were showing a brown/orange background in dark mode instead of matching the Message textarea's dark gray — root cause was `bg-sidebar-accent/40` having no `dark:` counterpart to beat the Textarea component's own `dark:bg-input/30`, so native `<input>`s (no such default) kept the raw sidebar-accent color, which is brown-orange in dark mode. Fixed by adding explicit `dark:bg-input/30 dark:border-input` to the shared `inputStyle` class in `ContactForm.tsx`
+  - Send Message button text + paper-plane icon now white in dark mode (`dark:text-white`)
+  - Contact page subtitle and Email/Address/Support Hours card text darkened in light mode (`text-black/60 dark:text-muted-foreground`) — was using a fixed-lightness `--muted-foreground` gray that read too light against a white background
+  - Removed the "in-article" ad format entirely: dropped from the Formats & Rates table on `/advertise` and from the Format dropdown on the admin "Add new advertisement" form, via the shared `AD_FORMATS` list in `src/lib/ad-formats.ts`. The `in-article-ad.tsx` component and its label in `ad-list.tsx` were deliberately left alone (dormant/unused per an earlier team decision, and any legacy DB rows with that format still need a readable label)
 
 ### Team's work (merged to main)
 
@@ -32,34 +38,23 @@
 - ✅ Styled transactional emails (React Email: reset-password, verify-email, subscription cancel/update/verify, weekly-newsletter)
 - ✅ Article summary limit raised to 1000 characters
 - ✅ Weather widget rework (`weather-app.tsx`)
+- ✅ Mobile-friendly comment section (PR #172); numerous small PRs #173–#180 covering navbar/chart fixes, cursor-pointer consistency, rounded-shadow styling, AI-helper dropdown in editor navbar, a new password-gate for profile settings, About page rewrite, article preview/width fixes
 
 ---
 
 ## In progress
 
-### Uncommitted local changes — not yet branched or PR'd
-Everything in "Peter's work" above marked **(uncommitted)** is sitting directly on `main` as working-tree changes. Per project rules, nothing gets committed/pushed until the user has tested and explicitly asks to branch + PR. Modified/untracked files as of end of session:
+### Uncommitted local changes
+Only one small item left uncommitted, on `main`:
 ```
-CLAUDE.md, STATUS.md, package.json, pnpm-lock.yaml,
-src/app/article/[articleID]/_components/likes.tsx,
-src/app/article/[articleID]/page.tsx,
-src/app/dashboard/(user)/profile/_components/edit-profile-form.tsx,
-src/app/dashboard/(user)/profile/_components/sidebar.tsx,
-src/app/dashboard/(user)/profile/layout.tsx,
-src/app/dashboard/(user)/profile/security/_components/change-email-form.tsx,
-src/app/dashboard/(user)/profile/security/_components/change-password-form.tsx,
-src/app/dashboard/(user)/profile/sub/_components/cancel-button.tsx,
-src/app/dashboard/admin/ai/_components/output-editor.tsx,
-src/app/dashboard/admin/users/[userId]/edit/_actions/user-action.ts,
-src/app/dashboard/admin/users/[userId]/edit/_components/edit-user-form.tsx,
-src/components/sidebar-ad.tsx, src/components/theme-toggle.tsx, src/components/tiptap.tsx
-?? src/app/linus-test/ (safe to delete, experimental)
-?? src/lib/markdown.ts (new file, part of the & escaping fix)
+src/app/contact/ContactForm.tsx — formatting-only (multi-line JSX/line-break style),
+                                  no functional change, safe to leave or commit anytime
 ```
+Everything else from this session (PR #171, PR #174) is merged.
 
 ### Known schema issue (still not fixed in main)
 - `UserInfo.role` field has NOT reintroduced in recent pulls — team seems to have stopped doing this, but still worth checking after every pull as a habit.
-- Fix is on branch `fix/remove-userinfo-role` — needs team to merge
+- A local branch `fix/remove-userinfo-role` exists but has no corresponding open PR on GitHub (checked 2026-07-24) and is not merged into `main` — likely stale/abandoned; re-evaluate whether it's still needed before reviving it.
 
 ### Environment quirks (see CLAUDE.md → Common problems & fixes for full detail)
 - `git fetch`/`pull` can hang indefinitely (exit 143) even though the underlying git process often completes — retry as a backgrounded command.
@@ -70,11 +65,8 @@ src/components/sidebar-ad.tsx, src/components/theme-toggle.tsx, src/components/t
 
 ## Next up
 
-### Before anything else
-- [ ] **Branch + commit + PR today's uncommitted fixes** once the user has tested them in the browser — do NOT commit/push proactively.
-
 ### Open PRs waiting for merge
-- [ ] `fix/remove-userinfo-role` — removes role from UserInfo schema
+- None currently open (checked via `gh pr list --state open` on 2026-07-24)
 
 ### Bugs to fix
 - [ ] **`add-article` author field** — article created with no author if typed alias doesn't match exactly. Should show dropdown of existing authors.
@@ -107,16 +99,18 @@ src/components/sidebar-ad.tsx, src/components/theme-toggle.tsx, src/components/t
 | Article markdown `&` corruption | Fixed going forward | `fixEditorMarkdownEscaping()` in `src/lib/markdown.ts`; old corrupted content needs manual repair |
 | Deeply nested markdown lists render as code blocks | Not fixed | AI-generated content with 4+ space indents; needs indentation normalization |
 | Admin could accidentally lock themselves out / any user could edit any role | ✅ Fixed | Self-demotion + last-admin guards, plus a missing admin-only auth check, added to `user-action.ts` |
+| Contact form inputs showed brown/orange background in dark mode | ✅ Fixed | Added explicit `dark:bg-input/30 dark:border-input` to `ContactForm.tsx`'s shared `inputStyle` |
+| Contact page muted text too low-contrast in light mode | ✅ Fixed | `text-black/60 dark:text-muted-foreground` override on the affected `<p>` elements |
 
 ---
 
 ## Git state
 
 ```
-main   ← up to date with origin/main (includes PR #156, weather widget rework)
+main   ← up to date with origin/main at 922b82d (includes PR #171, #174, #172–#180)
 ```
 
-All local changes today are uncommitted working-tree modifications on `main` — no new branches created this session.
+PR #171 and PR #174 (this session's work) are merged. One small formatting-only diff to `ContactForm.tsx` remains uncommitted on `main` (see "In progress" above). No new branches currently open.
 
 ## Local environment
 

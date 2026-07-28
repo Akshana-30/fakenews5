@@ -15,7 +15,6 @@ import EditorNavbar from "./dashboard/admin/_components/editor-navbar";
 import AdBanner from "@/components/ad-banner";
 import ScrollAwareNav from "@/components/navbar/_components/scroll-aware-nav";
 import { getViewerContext } from "@/lib/access";
-import { SearchBar } from "@/components/navbar/_components/search-bar";
 import { CookieBanner } from "./cookies/cookie-banner";
 import { getConsent } from "@/lib/cookie-actions";
 
@@ -51,18 +50,6 @@ export default async function RootLayout({
     let hasPermission = false;
     let editor = false;
 
-    //  if (session != null) {
-    //    const res = await auth.api.userHasPermission({
-    //      body: {
-    //        userId: session.user.id,
-    //      permissions: { article: ["create", "update", "delete"] },
-    // },
-    // headers: await headers(),
-    // });
-    // if (res?.success) {
-    //   hasPermission = true;
-    // }
-    // }
     if (session?.user.role === "editor") {
         editor = true;
     }
@@ -92,11 +79,11 @@ export default async function RootLayout({
         >
             <head>
                 {/* Prevents flash of wrong theme on load */}
-                <script
+                {/* <script
                     dangerouslySetInnerHTML={{
                         __html: `(function(){try{var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');if(t==='dark')document.documentElement.classList.add('dark');document.documentElement.setAttribute('data-theme',t);}catch(_){}})();`,
                     }}
-                />
+                /> */}
             </head>
 
             <body className="flex flex-col  bg-background dark:bg-background">

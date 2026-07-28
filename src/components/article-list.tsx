@@ -109,20 +109,20 @@ function ArticleItem({ article }: { article: Article }) {
 
     return (
         <div>
-            <Card className="mb-2 pt-0! max-w-full">
+            <Card className="mb-5 pt-0! max-w-full">
                 <Link href={`/article/${article.id}`}>
                     <div className="flex justify-end mr-5">
-                        <BookmarkButton articleId={article.id} className="w-5" />
+                        <BookmarkButton articleId={article.id} className="w-5 cursor-pointer" />
                     </div>
-                    <div className="flex mx-5">
-                        <div className="relative w-40 h-40 border mr-4">
+                    <div className="flex flex-col mx-5">
+                        <div className="relative w-full h-64 border mb-4">
                             {article.image ? (
                                 <Image
                                     src={article.image}
                                     alt={article.title}
                                     fill
-                                    sizes="160px"
-                                    className="object-cover "
+                                    sizes="(max-width: 768px) 100vw, 700px"
+                                    className="object-cover"
                                 />
                             ) : (
                                 <div className="flex w-full h-full items-center justify-center">
