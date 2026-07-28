@@ -69,10 +69,10 @@ export function NewsDropdownSM({ label, links }: { label: string; links: NavLink
                                 </SidebarLink>
                             </DropdownMenuItem>
                             {parent.children?.map((child) => (
-                                <DropdownMenuItem key={child.title} asChild>
-                                    <SidebarLink href={child.href}>
+                                <DropdownMenuItem key={child.title} asChild >
+                                    <Link href={child.href} className="pl-4 text-sm text-muted-foreground">
                                         {child.title}
-                                    </SidebarLink>
+                                    </Link>
                                 </DropdownMenuItem>
                             ))}
                         </div>
