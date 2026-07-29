@@ -1,10 +1,9 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { getCategoryById } from "@/_actions/article-actions";
-import { getCategories } from "@/_actions/category-actions";
+import { redirect, notFound } from "next/navigation";
 import RouteHeading from "@/components/route-heading";
-import EditCategoryForm from "./_components/edit-category-form";
+import EditCatForm from "./_components/edit-category";
+import prisma from "@/lib/prisma";
 
 export default async function EditCategoryPage({
     params,
@@ -18,15 +17,17 @@ export default async function EditCategoryPage({
         redirect("/");
     }
 
-    const categoryResult = await getCategoryById(categoryId);
-    if (!categoryResult.success || !categoryResult.data) {
-        redirect("/dashboard/admin/categories");
+    const category = await prisma.category.findUnique({
+        where: { id: categoryId },
+        select: { name: true, parentId: true },
+    });
+    if (!category) {
+        return notFound();
     }
 
-    const category = categoryResult.data;
-
-    const allResult = await getCategories();
-    const all = allResult.success ? allResult.data : [];
+    const all = await prisma.category.findMany({
+        select: { id: true, name: true, parentId: true },
+    });
 
     // Exclude this category and all of its descendants from the parent
     // options — assigning either as the parent would create a cycle.
@@ -47,10 +48,12 @@ export default async function EditCategoryPage({
 
     return (
         <div className="w-full">
-            <RouteHeading label={`Edit "${category.name}"`} />
-            <div className="p-6 max-w-lg">
-                <EditCategoryForm category={category} availableParents={availableParents} />
-            </div>
+            <RouteHeading label="Edit Category" />
+            <EditCatForm
+                categoryId={categoryId}
+                Category={category}
+                availableParents={availableParents}
+            />
         </div>
     );
 }
