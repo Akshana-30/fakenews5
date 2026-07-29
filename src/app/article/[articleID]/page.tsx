@@ -23,6 +23,35 @@ import Image from "next/image";
 import MarkViewed from "./_components/mark-viewed";
 import RouteHeading from "@/components/route-heading";
 
+// SVG hero images are inlined (instead of loaded via <Image>) so the plain
+// CSS rule in globals.css (.article-hero-svg .art-ink) can recolor their
+// black linework under dark mode — an <img>-loaded SVG is an opaque
+// resource the page's .dark class can never reach into.
+async function InlineSvgHero({ src, title }: { src: string; title: string }) {
+  let svg: string;
+  try {
+    const res = await fetch(src, { next: { revalidate: 3600 } });
+    svg = await res.text();
+  } catch {
+    return null;
+  }
+
+  svg = svg
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replaceAll('style="fill:#231f20;"', 'class="art-ink"')
+    .replaceAll('style="fill:#fff;"', 'class="art-paper"')
+    .replace("<svg ", '<svg preserveAspectRatio="xMidYMid slice" ');
+
+  return (
+    <div
+      role="img"
+      aria-label={title}
+      className="article-hero-svg absolute inset-0 [&>svg]:w-full [&>svg]:h-full"
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
+  );
+}
+
 export default async function ArticlePage({
   params,
 }: {
@@ -120,14 +149,18 @@ export default async function ArticlePage({
           })()}
         {article.data.image && (
           <div className="relative w-full h-[40vh] md:h-auto md:w-3/4 md:aspect-video mx-auto mt-2 overflow-hidden border border-border">
-            <Image
-              src={article.data.image}
-              alt={article.data.title}
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 768px) 100vw, 900px"
-            />
+            {article.data.image.toLowerCase().endsWith(".svg") ? (
+              <InlineSvgHero src={article.data.image} title={article.data.title} />
+            ) : (
+              <Image
+                src={article.data.image}
+                alt={article.data.title}
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 768px) 100vw, 900px"
+              />
+            )}
           </div>
         )}
         <h1 className="font-extrabold text-3xl text-center w-3/4 mx-auto my-2">
