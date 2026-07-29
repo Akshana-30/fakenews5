@@ -15,6 +15,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { Spinner } from "@/components/ui/spinner";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
@@ -28,27 +29,36 @@ const formSchema = z.object({
     .string()
     .min(1, "Title name is required")
     .max(25, "Maximum of 25 characters"),
+  parentId: z.string().nullable(),
 });
 
-type EditArticleFormProps = z.infer<typeof formSchema>;
+type CategoryOption = { id: string; name: string; parentId: string | null };
 
 export default function EditCatForm({
   categoryId,
   Category,
+  availableParents,
 }: {
   categoryId: string;
-  Category: EditArticleFormProps;
+  Category: { name: string; parentId: string | null };
+  availableParents: CategoryOption[];
 }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const form = useForm({
     defaultValues: {
       name: Category.name ?? "",
+      parentId: Category.parentId ?? "",
     },
-    validators: { onSubmit: formSchema },
+    validators: {
+      onSubmit: formSchema,
+    },
     onSubmit: async ({ value }) => {
       setLoading(true);
-      const result = await editCategory(categoryId, value);
+      const result = await editCategory(categoryId, {
+        name: value.name,
+        parentId: value.parentId || null,
+      });
       if (!result.success) {
         toast.error(result.error, { position: "top-center" });
         setLoading(false);
@@ -98,6 +108,30 @@ export default function EditCatForm({
                   </Field>
                 );
               }}
+            </form.Field>
+
+            <form.Field name="parentId">
+              {(field) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>Parent category</FieldLabel>
+                  <NativeSelect
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(ev) => field.handleChange(ev.target.value)}
+                  >
+                    <NativeSelectOption value="">
+                      None (top-level category)
+                    </NativeSelectOption>
+                    {availableParents.map((c) => (
+                      <NativeSelectOption key={c.id} value={c.id}>
+                        {c.name}
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
+                </Field>
+              )}
             </form.Field>
           </FieldGroup>
         </form>
