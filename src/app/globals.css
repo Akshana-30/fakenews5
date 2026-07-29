@@ -5,6 +5,23 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Inverts inlined SVG hero-image artwork in dark mode (black linework <-> white
+   knockout swap to black), so it isn't invisible against a dark background.
+   Plain (non-Tailwind) rule so it still applies to class names coming from
+   externally-fetched SVG markup, which Tailwind's JIT scanner never sees. */
+.article-hero-svg .art-ink {
+    fill: #231f20;
+}
+.dark .article-hero-svg .art-ink {
+    fill: #fff;
+}
+.article-hero-svg .art-paper {
+    fill: #fff;
+}
+.dark .article-hero-svg .art-paper {
+    fill: #231f20;
+}
+
 :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.2686 0 0);
