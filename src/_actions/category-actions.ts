@@ -60,3 +60,31 @@ export async function getCategoryLinks(): Promise<Result<CategoryLink[]>> {
 
     return { success: true, data: links };
 }
+
+export async function isCategoryNameUnique(name: string): Promise<Result<boolean>> {
+    try {
+        const res = await prisma.category.findFirst({ where: { name: name.toLocaleLowerCase() } });
+        if (res) {
+            return { success: true, data: false };
+        } else {
+            return { success: true, data: true };
+        }
+    } catch (err) {
+        return {
+            success: false,
+            error: `An unknown error occurred when trying to check if the category name is unique.\n\n${err}`,
+        };
+    }
+}
+
+export async function addCategory(name: string) {
+    try {
+        const res = await prisma.category.create({ data: { name: name.toLocaleLowerCase() } });
+        return { success: true, data: res };
+    } catch (err) {
+        return {
+            success: false,
+            error: `An unknown error occurred when trying to create a new category.\n\n${err}`,
+        };
+    }
+}
