@@ -11,7 +11,7 @@ import { format } from "date-fns";
 import { ContinueToReadCard } from "@/components/continue-read-card";
 import RouteHeading from "@/components/route-heading";
 import { Badge } from "@/components/ui/badge";
-import { ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 
 export default async function PreviewArticlePage({
     params,
@@ -37,13 +37,13 @@ export default async function PreviewArticlePage({
                     <div className="flex items-baseline flex-wrap gap-2 mt-2">
                         {parentCategory.map((c, i) => (
                             <div key={c.id}>
-                                <Badge className="p-3 text-md">
+                                <Badge className="bg-primary/60 p-3 text-white text-md hover:bg-primary hover:shadow-gray-500 hover:shadow-2xl dark:hover:shadow-white dark:hover:shadow-2xl dark:hover:bg-primary transition-colors">
                                     <Link
                                         href={`category/${c.id}`}
                                         className="flex items-center gap-1"
                                     >
                                         {c.name}
-                                        <ChevronRight />
+                                        <ArrowRight />
                                     </Link>
                                 </Badge>
                             </div>
@@ -106,9 +106,13 @@ export default async function PreviewArticlePage({
                         {childCategories.length > 0 &&
                             childCategories.map((c, i) => {
                                 return (
-                                    <Badge key={c.id}>
+                                    <Badge
+                                        key={c.id}
+                                        className="bg-primary/60 p-2 text-white text-md hover:bg-primary dark:hover:bg-primary transition-colors"
+                                    >
+                                        {" "}
                                         <Link href={`/category/${c.id}`}>{c.name}</Link>
-                                        <ChevronRight />
+                                        <ArrowRight />
                                     </Badge>
                                 );
                             })}
