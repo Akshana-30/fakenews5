@@ -41,7 +41,7 @@ async function generateNewsletter(userId: string) {
                 text += `In the list below you will find the newest articles from each category you're subscribed to.\n`;
                 text += `${c.name}: `;
                 res.article.map((a, id) => {
-                    text += `${a.title} (http://localhost:3000/article/${a.id})`;
+                    text += `${a.title} (https://thedailycommit.vercel.app/article/${a.id})`;
                     if (id < res.article.length - 1) {
                         text += ", ";
                     } else {
