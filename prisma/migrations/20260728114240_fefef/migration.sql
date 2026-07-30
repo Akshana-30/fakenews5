@@ -86,7 +86,7 @@ CREATE TABLE "Comment" (
     "user_id" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL,
-    "updatedAt" TIMESTAMP(3),
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "reply_to" TEXT,
 
     CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
@@ -116,6 +116,7 @@ CREATE TABLE "bookmark" (
 CREATE TABLE "category" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "parentId" TEXT,
 
     CONSTRAINT "category_pkey" PRIMARY KEY ("id")
 );
@@ -254,8 +255,19 @@ CREATE TABLE "advertisement" (
     "active" BOOLEAN NOT NULL DEFAULT false,
     "startsAt" TIMESTAMP(3),
     "endsAt" TIMESTAMP(3),
+    "placement" TEXT NOT NULL DEFAULT 'both',
 
     CONSTRAINT "advertisement_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "NewsletterSettings" (
+    "id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "active" BOOLEAN NOT NULL,
+
+    CONSTRAINT "NewsletterSettings_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -274,6 +286,22 @@ CREATE TABLE "_ArticleToAuthor" (
     CONSTRAINT "_ArticleToAuthor_AB_pkey" PRIMARY KEY ("A","B")
 );
 
+-- CreateTable
+CREATE TABLE "_CategoryToNewsletterSettings" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_CategoryToNewsletterSettings_AB_pkey" PRIMARY KEY ("A","B")
+);
+
+-- CreateTable
+CREATE TABLE "_AuthorToNewsletterSettings" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_AuthorToNewsletterSettings_AB_pkey" PRIMARY KEY ("A","B")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
@@ -290,7 +318,7 @@ CREATE INDEX "account_userId_idx" ON "account"("userId");
 CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "CommentReaction_commentId_key" ON "CommentReaction"("commentId");
+CREATE UNIQUE INDEX "CommentReaction_userId_commentId_key" ON "CommentReaction"("userId", "commentId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "category_name_key" ON "category"("name");
@@ -308,10 +336,19 @@ CREATE UNIQUE INDEX "user_info_user_id_key" ON "user_info"("user_id");
 CREATE UNIQUE INDEX "plan_name_key" ON "plan"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "NewsletterSettings_user_id_key" ON "NewsletterSettings"("user_id");
+
+-- CreateIndex
 CREATE INDEX "_ArticleToCategory_B_index" ON "_ArticleToCategory"("B");
 
 -- CreateIndex
 CREATE INDEX "_ArticleToAuthor_B_index" ON "_ArticleToAuthor"("B");
+
+-- CreateIndex
+CREATE INDEX "_CategoryToNewsletterSettings_B_index" ON "_CategoryToNewsletterSettings"("B");
+
+-- CreateIndex
+CREATE INDEX "_AuthorToNewsletterSettings_B_index" ON "_AuthorToNewsletterSettings"("B");
 
 -- AddForeignKey
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -338,6 +375,9 @@ ALTER TABLE "bookmark" ADD CONSTRAINT "bookmark_user_id_fkey" FOREIGN KEY ("user
 ALTER TABLE "bookmark" ADD CONSTRAINT "bookmark_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "article"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "category" ADD CONSTRAINT "category_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "author" ADD CONSTRAINT "author_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -360,3 +400,15 @@ ALTER TABLE "_ArticleToAuthor" ADD CONSTRAINT "_ArticleToAuthor_A_fkey" FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE "_ArticleToAuthor" ADD CONSTRAINT "_ArticleToAuthor_B_fkey" FOREIGN KEY ("B") REFERENCES "author"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_CategoryToNewsletterSettings" ADD CONSTRAINT "_CategoryToNewsletterSettings_A_fkey" FOREIGN KEY ("A") REFERENCES "category"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_CategoryToNewsletterSettings" ADD CONSTRAINT "_CategoryToNewsletterSettings_B_fkey" FOREIGN KEY ("B") REFERENCES "NewsletterSettings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AuthorToNewsletterSettings" ADD CONSTRAINT "_AuthorToNewsletterSettings_A_fkey" FOREIGN KEY ("A") REFERENCES "author"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AuthorToNewsletterSettings" ADD CONSTRAINT "_AuthorToNewsletterSettings_B_fkey" FOREIGN KEY ("B") REFERENCES "NewsletterSettings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
