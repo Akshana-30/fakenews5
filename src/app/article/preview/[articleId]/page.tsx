@@ -10,6 +10,7 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { ContinueToReadCard } from "@/components/continue-read-card";
 import RouteHeading from "@/components/route-heading";
+import { Badge } from "@/components/ui/badge";
 
 export default async function PreviewArticlePage({
     params,
@@ -26,23 +27,27 @@ export default async function PreviewArticlePage({
             totalReactions += r.val;
         }
 
+        const parentCategory = article.data.category.filter((c) => c.parentId === null);
+        const childCategories = article.data.category.filter((c) => c.parentId !== null);
+
         return (
             <div className="flex-row justify-center w-full px-4 py-2">
-                {article.data.category.length > 0 &&
-                    article.data.category.map((c, i) => {
-                        if (i + 1 !== article.data.category.length)
-                            return (
-                                <Link key={i} href={`/category/${c.id}`}>
-                                    <RouteHeading label={c.name}></RouteHeading>
-                                </Link>
-                            );
-                        else
-                            return (
-                                <Link key={i} href={`/category/${c.id}`}>
-                                    <RouteHeading label={c.name}></RouteHeading>
-                                </Link>
-                            );
-                    })}
+                {parentCategory.length > 0 && (
+                    <div className="flex items-baseline flex-wrap gap-2 mt-2">
+                        {parentCategory.map((c, i) => (
+                            <div key={c.id}>
+                                <Badge className="p-3 text-md">
+                                    <Link
+                                        href={`category/${c.id}`}
+                                        className="flex items-center gap-1"
+                                    >
+                                        {c.name}
+                                    </Link>
+                                </Badge>
+                            </div>
+                        ))}
+                    </div>
+                )}
                 {article.data.image && (
                     <div className="relative ">
                         <Image
@@ -80,17 +85,33 @@ export default async function PreviewArticlePage({
                     </ReactMarkdown>
                 </article>
                 <ContinueToReadCard />
-                {/* <InArticleAd /> */}
-                <div className="flex border-b-2 mt-2 pb-2 text-sm bg-gray-100 dark:bg-[#2d2d2d] p-4">
-                    <div className="flex border-r pr-2">
-                        <Views num={article.data.views} />
+                <div className="grid grid-cols-3 items-stretch border-b-2 text-sm bg-gray-100 dark:bg-[#2d2d2d] px-3 min-h-12">
+                    <div className="flex items-center">
+                        <div className="flex items-center pr-3">
+                            <Views num={article.data.views} />
+                        </div>
+
+                        <div className="self-center h-9 w-px bg-gray-300 dark:bg-gray-600" />
+
+                        <div className="flex items-center pl-2 pr-3">
+                            <Likes num={totalReactions} />
+                        </div>
+
+                        <div className="self-center h-9 w-px bg-gray-300 dark:bg-gray-600" />
                     </div>
 
-                    <div className="flex border-r pr-2">
-                        <Likes num={totalReactions} />
+                    <div className="flex items-center justify-center gap-1">
+                        {childCategories.length > 0 &&
+                            childCategories.map((c, i) => {
+                                return (
+                                    <Badge key={c.id}>
+                                        <Link href={`/category/${c.id}`}>{c.name}</Link>
+                                    </Badge>
+                                );
+                            })}
                     </div>
 
-                    <div className="flex ml-auto">
+                    <div className="flex items-center justify-end">
                         <p className="text-md font-semibold text-center mr-4">
                             by{" "}
                             {article.data.author.map((a, i) =>
