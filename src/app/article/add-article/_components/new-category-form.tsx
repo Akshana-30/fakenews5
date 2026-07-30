@@ -23,14 +23,13 @@ export default function NewCategoryForm() {
         },
         onSubmit: async ({ value }) => {
             setLoading(true);
-            alert(value.title);
             const isUnique = await isCategoryNameUnique(value.title);
             if (isUnique.success && !isUnique.data) {
                 toast.error("Category name must be unique.", { position: "top-center" });
                 setLoading(false);
                 return;
             }
-            const res = await addCategory(value.title);
+            const res = await addCategory(value.title, null);
             if (res.success && res.data) {
                 toast.success(
                     `Category "${res.data.name}" was succesfully added to the database.`,

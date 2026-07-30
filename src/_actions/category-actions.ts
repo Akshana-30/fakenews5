@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { Category, Result } from "@/lib/types";
+import { success } from "zod";
 
 export async function getCategories(): Promise<Result<Category[]>> {
     try {
@@ -77,14 +78,27 @@ export async function isCategoryNameUnique(name: string): Promise<Result<boolean
     }
 }
 
-export async function addCategory(name: string) {
+export async function addCategory(name: string, parentId: string | null) {
     try {
-        const res = await prisma.category.create({ data: { name: name.toLocaleLowerCase() } });
+        const res = await prisma.category.create({
+            data: { name: name.toLocaleLowerCase(), parentId: parentId },
+        });
         return { success: true, data: res };
     } catch (err) {
         return {
             success: false,
             error: `An unknown error occurred when trying to create a new category.\n\n${err}`,
         };
+    }
+}
+
+export async function getIdFromName(name: string) {
+    try {
+        const res = await prisma.category.findUnique({ where: { name: name.toLocaleLowerCase() } });
+        return { success: true, data: res };
+    } catch (err) {
+        const msg = `An unknown error occurred when trying to fetch id for category "${name}".\n\n${err}`;
+        console.error(msg);
+        return { success: false, error: msg };
     }
 }

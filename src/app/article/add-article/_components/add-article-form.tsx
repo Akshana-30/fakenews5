@@ -22,31 +22,20 @@ import {
     CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import z from "zod";
 import { useState } from "react";
-import { categoryArray } from "@/lib/category";
 import addArticle from "../_actions/add-article-action";
-import { CategoryLink } from "@/_actions/category-actions";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import NewCategoryForm from "./new-category-form";
 import { Category } from "@/lib/types";
+import NewSubcategoryForm from "./new-subcategory-form";
 
 type AddArticleResult = Awaited<ReturnType<typeof addArticle>>;
 
 const formSchema = z.object({
-    title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
-    summary: z.string().min(1, "Summary is required").max(1000, "Between 1-1000 characters"),
-    content: z.string().min(1, "Content text is required"),
+    title: z.string().min(1, "Title is required.").max(100, "Max 100 characters."),
+    summary: z.string().min(1, "Summary is required.").max(1000, "Between 1-1000 characters."),
+    content: z.string().min(1, "Content text is required."),
     image: z.string(),
     category: z.string(),
     subcategory: z.string(),
@@ -58,15 +47,16 @@ type AddArticleValues = z.infer<typeof formSchema>;
 export default function AddArticleForm({ categories }: { categories: Category[] }) {
     const [categoryOpen, setCategoryOpen] = useState(false);
     const [subcategoryOpen, setSubcategoryOpen] = useState(false);
-    const [selectedTopCategories, setSelectedTopCategories] = useState<Category[]>([]);
     const [categorySearch, setCategorySearch] = useState("");
     const [subcategorySearch, setSubcategorySearch] = useState("");
     const topLevelCategories: Category[] = [];
-    const [selectedTopCategoriesNames, setSelectedTopCategoriesNames] = useState<string[]>([]);
     const subCategories: Category[] = [];
+    const [selectedCategoryNames, setSelectedCategoryNames] = useState<string[]>([]);
+    const [selectedSubcategoryNames, setSelectedSubcategoryNames] = useState<string[]>([]);
     const [authorInput, setAuthorInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [imageUploading, setImageUploading] = useState(false);
+    const children: Category[] = [];
 
     for (const c of categories) {
         if (c.parentId === null) {
@@ -75,6 +65,14 @@ export default function AddArticleForm({ categories }: { categories: Category[] 
             subCategories.push(c);
         }
     }
+
+    const selectedCategoryIds = topLevelCategories
+        .filter((cat) => selectedCategoryNames.includes(cat.name))
+        .map((cat) => String(cat.id));
+
+    const filteredSubCategories = subCategories.filter((cat) =>
+        selectedCategoryIds.includes(String(cat.parentId)),
+    );
 
     const router = useRouter();
     const form = useForm({
@@ -109,10 +107,6 @@ export default function AddArticleForm({ categories }: { categories: Category[] 
             setLoading(false);
         },
     });
-
-    console.log(categories);
-    console.log(topLevelCategories);
-    console.log(subCategories);
 
     return (
         <Card className="w-2xl mx-auto">
@@ -299,7 +293,7 @@ export default function AddArticleForm({ categories }: { categories: Category[] 
                                                 <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                                                     <Command>
                                                         <CommandInput
-                                                            placeholder="Search category..."
+                                                            placeholder="Search category ..."
                                                             value={categorySearch}
                                                             onValueChange={setCategorySearch}
                                                         />
@@ -329,37 +323,31 @@ export default function AddArticleForm({ categories }: { categories: Category[] 
                                                                         value={cat.name}
                                                                         onSelect={() => {
                                                                             field.handleBlur();
-                                                                            if (
-                                                                                selectedTopCategories.length ===
-                                                                                0
-                                                                            ) {
-                                                                                field.handleChange(
+                                                                            const next =
+                                                                                selectedCategoryNames.includes(
                                                                                     cat.name,
-                                                                                );
-                                                                            } else {
-                                                                                field.handleChange(
-                                                                                    field.state
-                                                                                        .value +
-                                                                                        ", " +
-                                                                                        cat.name,
-                                                                                );
-                                                                            }
-                                                                            selectedTopCategories.push(
-                                                                                cat,
+                                                                                )
+                                                                                    ? selectedCategoryNames.filter(
+                                                                                          (n) =>
+                                                                                              n !==
+                                                                                              cat.name,
+                                                                                      )
+                                                                                    : [
+                                                                                          ...selectedCategoryNames,
+                                                                                          cat.name,
+                                                                                      ];
+                                                                            setSelectedCategoryNames(
+                                                                                next,
                                                                             );
-                                                                            selectedTopCategoriesNames.push(
-                                                                                cat.name,
+                                                                            field.handleChange(
+                                                                                next.join(", "),
                                                                             );
-                                                                            /*topCategoriesName.push(
-                                                                                cat.name,
-                                                                            );*/
-                                                                            router.refresh();
                                                                         }}
                                                                     >
                                                                         <Check
                                                                             className={cn(
                                                                                 "mr-2 h-4 w-4",
-                                                                                selectedTopCategoriesNames.includes(
+                                                                                selectedCategoryNames.includes(
                                                                                     cat.name,
                                                                                 )
                                                                                     ? "opacity-100"
@@ -436,55 +424,59 @@ export default function AddArticleForm({ categories }: { categories: Category[] 
                                                                             <DialogTitle>
                                                                                 New category
                                                                             </DialogTitle>
-                                                                            <NewCategoryForm />
+                                                                            <NewSubcategoryForm
+                                                                                categories={
+                                                                                    topLevelCategories
+                                                                                }
+                                                                            />
                                                                         </DialogContent>
                                                                     </Dialog>
-                                                                    {subCategories.map((cat) => (
-                                                                        <CommandItem
-                                                                            key={cat.name}
-                                                                            value={cat.name}
-                                                                            onSelect={() => {
-                                                                                field.handleBlur();
-                                                                                if (
-                                                                                    selectedTopCategories.length ===
-                                                                                    0
-                                                                                ) {
-                                                                                    field.handleChange(
-                                                                                        cat.name,
-                                                                                    );
-                                                                                } else {
-                                                                                    field.handleChange(
-                                                                                        field.state
-                                                                                            .value +
-                                                                                            ", " +
+                                                                    {filteredSubCategories.map(
+                                                                        (cat) => (
+                                                                            <CommandItem
+                                                                                key={cat.name}
+                                                                                value={cat.name}
+                                                                                onSelect={() => {
+                                                                                    field.handleBlur();
+                                                                                    const next =
+                                                                                        selectedSubcategoryNames.includes(
                                                                                             cat.name,
+                                                                                        )
+                                                                                            ? selectedSubcategoryNames.filter(
+                                                                                                  (
+                                                                                                      n,
+                                                                                                  ) =>
+                                                                                                      n !==
+                                                                                                      cat.name,
+                                                                                              )
+                                                                                            : [
+                                                                                                  ...selectedSubcategoryNames,
+                                                                                                  cat.name,
+                                                                                              ];
+                                                                                    setSelectedSubcategoryNames(
+                                                                                        next,
                                                                                     );
-                                                                                }
-                                                                                selectedTopCategories.push(
-                                                                                    cat,
-                                                                                );
-                                                                                selectedTopCategoriesNames.push(
-                                                                                    cat.name,
-                                                                                );
-                                                                                /*topCategoriesName.push(
-                                                                                cat.name,
-                                                                            );*/
-                                                                                router.refresh();
-                                                                            }}
-                                                                        >
-                                                                            <Check
-                                                                                className={cn(
-                                                                                    "mr-2 h-4 w-4",
-                                                                                    selectedTopCategoriesNames.includes(
-                                                                                        cat.name,
-                                                                                    )
-                                                                                        ? "opacity-100"
-                                                                                        : "opacity-0",
-                                                                                )}
-                                                                            />
-                                                                            {cat.name}
-                                                                        </CommandItem>
-                                                                    ))}
+                                                                                    field.handleChange(
+                                                                                        next.join(
+                                                                                            ", ",
+                                                                                        ),
+                                                                                    );
+                                                                                }}
+                                                                            >
+                                                                                <Check
+                                                                                    className={cn(
+                                                                                        "mr-2 h-4 w-4",
+                                                                                        selectedSubcategoryNames.includes(
+                                                                                            cat.name,
+                                                                                        )
+                                                                                            ? "opacity-100"
+                                                                                            : "opacity-0",
+                                                                                    )}
+                                                                                />
+                                                                                {cat.name}
+                                                                            </CommandItem>
+                                                                        ),
+                                                                    )}
                                                                 </CommandGroup>
                                                             </CommandList>
                                                         </Command>
