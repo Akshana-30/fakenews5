@@ -1,274 +1,182 @@
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { PrismaClient } from "../generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { nextCookies } from "better-auth/next-js";
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-import { admin as adminPlugin } from "better-auth/plugins";
-import { editor, admin, ac, user, basic, pro } from "./permissions";
-import Stripe from "stripe";
-import { stripe } from "@better-auth/stripe";
-import { getUserFromStripeId } from "@/_actions/user-actions";
-import { pretty, render, toPlainText } from "react-email";
-import VerifyEmail from "@/components/emails/verify-email";
-import ResetPasswordEmail from "@/components/emails/reset-password-email";
-import SubscriptionActive from "@/components/emails/subscription-verify-email";
-import SubscriptionCancelled from "@/components/emails/subscription-cancel-email";
-import SubscriptionUpdated from "@/components/emails/subscription-update-email";
+import { format, sub } from "date-fns";
+import prisma from "@/lib/prisma";
+import { transporter } from "@/lib/auth";
 
-dotenv.config();
+// The maximum numbers of articles per category, if it exists that many.
+const NUMBER_OF_NEW_ARTICLES_PER_CATEGORY = 3;
+const NUMBER_OF_NEW_ARTICLES_PER_AUTHOR = 2;
+const NUMBER_OF_NEW_ARTICLES_MOST_VIEWS = 3;
+const NUMBER_OF_NEW_ARTICLES_MOST_REACTIONS = 3;
 
-export const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+async function generateNewsletter(userId: string) {
+    const dateBack = sub(new Date(), { days: 7 }); // How far back in time we will select articles
+    let text = "";
 
-const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-05-27.dahlia", // Latest API version as of Stripe SDK v22.0.0
-});
+    const newsLetterSettings = await prisma.newsletterSettings.findUnique({
+        where: { user_id: userId },
+        include: { categories: true, authors: true },
+    });
+    if (!newsLetterSettings) {
+        return;
+    }
 
-const prisma = new PrismaClient({
-  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
-});
-
-export const auth = betterAuth({
-  trustedOrigins : ["https://thedailycommit.vercel.app"],
-  database: prismaAdapter(prisma, { provider: "postgresql" }),
-  user: {
-    changeEmail: {
-      enabled: true,
-    },
-  },
-  emailAndPassword: {
-    enabled: true,
-    autoSignIn: true,
-    requireEmailVerification: true,
-    resetPasswordTokenExpiresIn: 60 * 30,
-    sendResetPassword: async ({ user, url }) => {
-      const html = await pretty(await render(<ResetPasswordEmail url={url} />));
-      const text = toPlainText(html);
-
-      if (process.env.NODE_ENV !== "production") {
-        console.log(text);
-      }
-
-      await transporter.sendMail(
-        {
-          from: '"The Daily Commit" <noreply@thedailycommit.com>',
-          to: `${user.name} <${user.email}>`,
-          subject: "Reset your password",
-          html,
-          text,
-        },
-        function (error, info) {
-          if (error) {
-            console.error(`Unable to send email.\n\n${error}`);
-          } else {
-            console.log(`Email sent: ${info.messageId}`);
-          }
-        },
-      );
-    },
-  },
-  plugins: [
-    adminPlugin({ ac, roles: { admin, editor, user, basic, pro } }),
-    stripe({
-      stripeClient,
-      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
-      subscription: {
-        enabled: true,
-        plans: async () => {
-          const plans = await prisma.plan.findMany();
-          return plans.map((plan) => ({
-            name: plan.name,
-            priceId: plan.priceId,
-            annualDiscountPriceId:
-              plan.annualPriceId !== null ? plan.annualPriceId : undefined,
-            // could add: description: plan.description, price: plan.price, etc.
-          }));
-        },
-        onSubscriptionComplete: async ({
-          event,
-          subscription,
-          stripeSubscription,
-          plan,
-        }) => {
-          if (subscription.stripeCustomerId) {
-            const user = await getUserFromStripeId(
-              subscription.stripeCustomerId,
-            );
-            const newRole = plan.name.toLowerCase();
-
-            if (user.success && user.data) {
-              const res = await prisma.user.update({
-                where: { id: user.data.id },
-                data: { role: newRole },
-              });
-
-              const html = await pretty(
-                await render(
-                  <SubscriptionActive user={user.data} plan={plan} />,
-                ),
-              );
-              const text = toPlainText(html);
-
-              await transporter.sendMail(
-                {
-                  from: '"The Daily Commit" <noreply@thedailycommit.com>',
-                  to: `${user.data.name} <${user.data.email}>`,
-                  subject: "Welcome to The Daily Commit",
-                  html,
-                  text,
+    // Get the latest articles from each category that the user is subscribed to.
+    // Get a maximum of NUMBER_OF_NEW_ARTICLES_PER_CATEGORY articles.
+    if (newsLetterSettings?.categories) {
+        for (const c of newsLetterSettings.categories) {
+            const res = await prisma.category.findUnique({
+                where: { id: c.id },
+                include: {
+                    article: {
+                        where: { createdAt: { gte: dateBack } },
+                        orderBy: { createdAt: "desc" },
+                        take: NUMBER_OF_NEW_ARTICLES_PER_CATEGORY,
+                    },
                 },
-                function (error, info) {
-                  if (error) {
-                    console.error(`Unable to send email.\n\n${error}`);
-                  } else {
-                    console.log(`Email sent: ${info.messageId}`);
-                  }
-                },
-              );
+            });
+            if (res?.article && res.article.length > 0) {
+                text += `In the list below you will find the newest articles from each category you're subscribed to.\n`;
+                text += `${c.name}: `;
+                res.article.map((a, id) => {
+                    text += `${a.title} (http://localhost:3000/article/${a.id})`;
+                    if (id < res.article.length - 1) {
+                        text += ", ";
+                    } else {
+                        text += ".";
+                    }
+                });
             }
-          }
-        },
-        onSubscriptionCancel: async ({
-          event,
-          subscription,
-          stripeSubscription,
-          cancellationDetails,
-        }) => {
-          if (subscription.stripeCustomerId) {
-            const user = await getUserFromStripeId(
-              subscription.stripeCustomerId,
-            );
+            text += "\n\n";
+        }
 
-            if (user.success && user.data) {
-              await prisma.user.update({
-                where: { id: user.data.id },
-                data: { role: "user" }, // downgrade on cancel
-              });
-
-              const html = await pretty(
-                await render(
-                  <SubscriptionCancelled
-                    user={user.data}
-                    plan={{ name: subscription.plan }}
-                  />,
-                ),
-              );
-              const text = toPlainText(html);
-
-              if (process.env.NODE_ENV !== "production") {
-                console.log(text);
-              }
-
-              await transporter.sendMail(
-                {
-                  from: '"The Daily Commit" <noreply@thedailycommit.com>',
-                  to: `${user.data.name} <${user.data.email}>`,
-                  subject: "Cancellation of subscription",
-                  html,
-                  text,
-                },
-                function (error, info) {
-                  if (error) {
-                    console.error(`Unable to send email.\n\n${error}`);
-                  } else {
-                    console.log(`Email sent: ${info.messageId}`);
-                  }
-                },
-              );
+        if (newsLetterSettings.authors) {
+            text += `In the list below you will find the ${NUMBER_OF_NEW_ARTICLES_PER_AUTHOR} newest articles from each author you're subscribed to.\n`;
+            for (const a of newsLetterSettings.authors) {
+                text += `${a.alias}: `;
+                const res = await prisma.author.findUnique({
+                    where: { id: a.id },
+                    include: {
+                        articles: {
+                            where: { createdAt: { gte: dateBack } },
+                            orderBy: { createdAt: "desc" },
+                            take: NUMBER_OF_NEW_ARTICLES_PER_AUTHOR,
+                        },
+                    },
+                });
+                if (res?.articles && res.articles.length > 0) {
+                    res.articles.map((a, id) => {
+                        text += `${a.title} (http://localhost:3000/article/${a.id})`;
+                        if (id < res.articles.length - 1) {
+                            text += ", ";
+                        } else {
+                            text += ".";
+                        }
+                    });
+                }
             }
-          }
-        },
-        onSubscriptionUpdate: async ({
-          event,
-          subscription,
-          stripeSubscription,
-        }) => {
-          if (subscription.stripeCustomerId) {
-            const user = await getUserFromStripeId(
-              subscription.stripeCustomerId,
-            );
+        }
 
-            if (user.success && user.data) {
-              const newRole = subscription.plan;
-              await prisma.user.update({
-                where: { id: user.data.id },
-                data: { role: newRole },
-              });
+        // The most viewed articles, with a maximum of NUMBER_OF_NEW_ARTICLES_MOST_VIEWS
+        const res = await prisma.article.findMany({
+            where: { createdAt: { gte: dateBack } },
+            orderBy: { views: "desc" },
+            take: NUMBER_OF_NEW_ARTICLES_MOST_VIEWS,
+        });
+        if (res && res.length > 0) {
+            text += `\n\nBelow you will find the most viewed articles for the latest week:`;
+            res.map((a, id) => {
+                text += `${a.title} (http://localhost:3000/article/${a.id})`;
+                if (id < res.length - 1) {
+                    text += ", ";
+                } else {
+                    text += ".";
+                }
+            });
+        }
+    }
 
-              const html = await pretty(
-                await render(
-                  <SubscriptionUpdated
-                    user={user.data}
-                    planName={subscription.plan}
-                    billingInterval={subscription.billingInterval}
-                  />,
-                ),
-              );
-              const text = toPlainText(html);
+    // The articles with the most reactions (upvotes and/or downvotes)
+    text += "\n\n";
+    const articles = await prisma.article.findMany({
+        where: { createdAt: { gte: dateBack } },
+        include: { reactions: true },
+    });
+    const articlesWithReactions = articles.filter((a) => a.reactions.length > 0);
 
-              if (process.env.NODE_ENV !== "production") {
-                console.log(text);
-              }
+    if (articlesWithReactions.length > 0) {
+        const sorted = articlesWithReactions.sort(
+            (a, b) => b.reactions.length - a.reactions.length,
+        );
 
-              await transporter.sendMail(
-                {
-                  from: '"The Daily Commit" <noreply@thedailycommit.com>',
-                  to: `${user.data.name} <${user.data.email}>`,
-                  subject: "Update of your subscription",
-                  html,
-                  text,
-                },
-                function (error, info) {
-                  if (error) {
-                    console.error(`Unable to send email.\n\n${error}`);
-                  } else {
-                    console.log(`Email sent: ${info.messageId}`);
-                  }
-                },
-              );
+        text += `The articles that has had the most reactions (positive/negative): `;
+        const slicedArticles = sorted.slice(0, NUMBER_OF_NEW_ARTICLES_MOST_REACTIONS);
+        slicedArticles.map((a, i) => {
+            text += `${a.title} (http://localhost:3000/article/${a.id})`;
+            // Fixed: compare against slicedArticles.length, not the full sorted array
+            if (i < slicedArticles.length - 1) {
+                text += ", ";
+            } else {
+                text += ".";
             }
-          }
-        },
-      },
-    }),
-    nextCookies(),
-  ],
-  emailVerification: {
-    autoSignInAfterVerification: true,
-    sendOnSignUp: true,
-    sendVerificationEmail: async ({ user, url }) => {
-      const html = await pretty(await render(<VerifyEmail url={url} />));
-      const text = toPlainText(html);
+        });
+    }
 
-      if (process.env.NODE_ENV !== "production") {
-        console.log(text);
-      }
+    return text;
+}
 
-      await transporter.sendMail(
-        {
-          from: '"The Daily Commit" <noreply@thedailycommit.com>',
-          to: `${user.name} <${user.email}>`,
-          subject: "Verify your email",
-          html,
-          text,
-        },
-        function (error, info) {
-          if (error) {
-            console.error(`Unable to send email.\n\n${error}`);
-          } else {
-            console.log(`Email sent: ${info.messageId}`);
-          }
-        },
-      );
-    },
-  },
-});
+async function runNewsletterJob() {
+    const newsletters = await prisma.newsletterSettings.findMany();
+    const results: { user_id: string; email: string; status: "sent" | "failed" | "skipped" }[] = [];
+
+    for (const n of newsletters) {
+        if (!n.active) {
+            results.push({ user_id: n.user_id, email: n.email, status: "skipped" });
+            continue;
+        }
+
+        const newsletter = await generateNewsletter(n.user_id);
+        if (!newsletter) {
+            results.push({ user_id: n.user_id, email: n.email, status: "skipped" });
+            continue;
+        }
+
+        try {
+            await transporter.sendMail({
+                from: '"The Daily Commit" <noreply@thedailycommit.com>',
+                to: n.email,
+                subject: `The Daily Commit's newsletter (${format(new Date(), "dd/MM")})`,
+                text: newsletter, // ← the actual content, previously missing
+            });
+            results.push({ user_id: n.user_id, email: n.email, status: "sent" });
+        } catch (error) {
+            console.error(`Unable to send email to ${n.email}.\n\n${error}`);
+            results.push({ user_id: n.user_id, email: n.email, status: "failed" });
+        }
+    }
+
+    return results;
+}
+
+function checkAuth(request: Request): boolean {
+    const authHeader = request.headers.get("authorization");
+    const cronSecret = process.env.CRON_SECRET;
+    return Boolean(cronSecret) && authHeader === `Bearer ${cronSecret}`;
+}
+
+// Vercel Cron triggers via GET — this is the entry point the schedule actually calls.
+export async function GET(request: Request) {
+    if (!checkAuth(request)) {
+        return new Response("Unauthorized", { status: 401 });
+    }
+    const results = await runNewsletterJob();
+    return Response.json(results);
+}
+
+// Kept for manual/local triggering with the same auth check.
+export async function POST(request: Request) {
+    if (!checkAuth(request)) {
+        return new Response("Unauthorized", { status: 401 });
+    }
+    const results = await runNewsletterJob();
+    return Response.json(results);
+}
