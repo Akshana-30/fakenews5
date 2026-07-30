@@ -23,7 +23,7 @@ type AddArticleValues = z.infer<typeof formSchema>;
 
 export default async function addArticle(values: AddArticleValues): Promise<Result<Article>> {
     const data = formSchema.parse(values);
-
+    const categoryString = data.category + ", " + data.subcategory;
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
         return {
@@ -76,7 +76,7 @@ export default async function addArticle(values: AddArticleValues): Promise<Resu
         }
 
         const categoryIds = [];
-        const categoryNames = data.category.split(",");
+        const categoryNames = categoryString.split(",");
         console.log(categoryNames);
         for (const c of categoryNames) {
             const category = await prisma.category.findUnique({ where: { name: c.trim() } });

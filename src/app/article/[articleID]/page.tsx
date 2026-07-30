@@ -17,7 +17,8 @@ import remarkGfm from "remark-gfm";
 import remarkIns from "remark-ins";
 import Image from "next/image";
 import MarkViewed from "./_components/mark-viewed";
-import RouteHeading from "@/components/route-heading";
+import { Badge } from "@/components/ui/badge";
+import { ExternalLink } from "lucide-react";
 
 export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
     const { articleID } = await params;
@@ -69,44 +70,30 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         } else {
             bookmarked = false;
         }
+        console.log(article.data.category);
+
+        const parentCategory = article.data.category.filter((c) => c.parentId === null);
+        const childCategories = article.data.category.filter((c) => c.parentId !== null);
 
         return (
             <div className="flex-row justify-center w-full px-4 py-2">
                 <MarkViewed articleId={articleID} />
-                {article.data.category.length > 0 &&
-                    (() => {
-                        const parentCategory = article.data.category.find(
-                            (c) => c.parentId === null,
-                        );
-                        const childCategories = article.data.category.filter(
-                            (c) => c.parentId !== null,
-                        );
-
-                        if (!parentCategory) return null;
-
-                        return (
-                            <div className="flex items-baseline flex-wrap">
-                                <Link
-                                    href={`/category/${parentCategory.id}`}
-                                    className="align-middle"
-                                >
-                                    <RouteHeading label={parentCategory.name} />
-                                </Link>
-                                {childCategories.map((c) => (
-                                    <span key={c.id} className="flex items-baseline gap-2">
-                                        <Link href={`/category/${c.id}`} className="">
-                                            <span className="ml-2.5 text-muted-foreground/50 text-[18px]">
-                                                {">"}
-                                            </span>
-                                            <span className="ml-2.5 text-muted-foreground text-[20px]">
-                                                {c.name}
-                                            </span>
-                                        </Link>
-                                    </span>
-                                ))}
+                {parentCategory.length > 0 && (
+                    <div className="flex items-baseline flex-wrap gap-2 mt-2">
+                        {parentCategory.map((c, i) => (
+                            <div key={c.id}>
+                                <Badge className="p-3 text-md">
+                                    <Link
+                                        href={`category/${c.id}`}
+                                        className="flex items-center gap-1"
+                                    >
+                                        {c.name}
+                                    </Link>
+                                </Badge>
                             </div>
-                        );
-                    })()}
+                        ))}
+                    </div>
+                )}
                 {article.data.image && (
                     <div className="relative w-full h-[40vh] md:h-auto md:w-3/4 md:aspect-video mx-auto mt-2 overflow-hidden border border-border">
                         <Image
@@ -125,31 +112,51 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                 <div className="md:w-3/4 flex-row mx-auto max-w-none bg-gray-100 dark:bg-[#2d2d2d] text-black dark:text-white  p-4">
                     <p>{article.data.summary}</p>
                 </div>
-
                 <article className="md:w-3/4 flex-row mx-auto mt-2 mb-4 max-w-none prose dark:prose-invert dark:bg-[#2d2d2d] dark:text-white dark:prose-headings:text-white p-1">
                     <ReactMarkdown remarkPlugins={[remarkGfm, remarkIns]}>
                         {hasPermission ? article.data.content : article.data.content.slice(0, 500)}
                     </ReactMarkdown>
                 </article>
-                {/* <InArticleAd /> */}
-                <div className="flex border-b-2 mt-2 pb-2 text-sm bg-gray-100 dark:bg-[#2d2d2d] p-4">
-                    <div className="flex border-r pr-2">
-                        <Views num={views} />
+                <div className="grid grid-cols-3 items-stretch border-b-2 text-sm bg-gray-100 dark:bg-[#2d2d2d] px-3 min-h-12">
+                    <div className="flex items-center">
+                        <div className="flex items-center pr-3">
+                            <Views num={article.data.views} />
+                        </div>
+
+                        <div className="self-center h-9 w-px bg-gray-300 dark:bg-gray-600" />
+
+                        <div className="flex items-center pl-2 pr-3">
+                            <Likes
+                                articleId={article.data.id}
+                                userId={userId}
+                                userReaction={userReaction?.val}
+                                num={totalReactions}
+                            />{" "}
+                        </div>
+
+                        <div className="self-center h-9 w-px bg-gray-300 dark:bg-gray-600" />
+                        <div className="flex border-r pl-2 pr-2">
+                            <Bookmark
+                                articleId={articleID}
+                                userId={userId}
+                                bookmarked={bookmarked}
+                            />
+                        </div>
+                        <div className="self-center h-9 w-px bg-gray-300 dark:bg-gray-600" />
                     </div>
 
-                    <div className="flex border-r pr-2">
-                        <Likes
-                            articleId={article.data.id}
-                            userId={userId}
-                            userReaction={userReaction?.val}
-                            num={totalReactions}
-                        />
-                    </div>
-                    <div className="flex border-r pl-2 pr-2">
-                        <Bookmark articleId={articleID} userId={userId} bookmarked={bookmarked} />
+                    <div className="flex items-center justify-center gap-1">
+                        {childCategories.length > 0 &&
+                            childCategories.map((c, i) => {
+                                return (
+                                    <Badge key={c.id}>
+                                        <Link href={`/category/${c.id}`}>{c.name}</Link>
+                                    </Badge>
+                                );
+                            })}
                     </div>
 
-                    <div className="flex ml-auto">
+                    <div className="flex items-center justify-end">
                         <p className="text-md font-semibold text-center mr-4">
                             by{" "}
                             {article.data.author.map((a, i) =>
