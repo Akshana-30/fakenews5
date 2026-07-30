@@ -11,6 +11,7 @@ import { format } from "date-fns";
 import { ContinueToReadCard } from "@/components/continue-read-card";
 import RouteHeading from "@/components/route-heading";
 import { Badge } from "@/components/ui/badge";
+import { ChevronRight } from "lucide-react";
 
 export default async function PreviewArticlePage({
     params,
@@ -42,6 +43,7 @@ export default async function PreviewArticlePage({
                                         className="flex items-center gap-1"
                                     >
                                         {c.name}
+                                        <ChevronRight />
                                     </Link>
                                 </Badge>
                             </div>
@@ -106,6 +108,7 @@ export default async function PreviewArticlePage({
                                 return (
                                     <Badge key={c.id}>
                                         <Link href={`/category/${c.id}`}>{c.name}</Link>
+                                        <ChevronRight />
                                     </Badge>
                                 );
                             })}
