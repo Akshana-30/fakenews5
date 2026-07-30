@@ -34,8 +34,8 @@ export default function Logo() {
               <div className="flex-1 h-px bg-black dark:bg-white"></div>
             </div>
             <span className="inline-flex items-center whitespace-nowrap font-serif font-bold text-sm sm:text-5xl leading-tight tracking-tight -mb-1">
-              <span>Daily C</span>
-              <span className="relative inline-block w-[1.2em] h-[1.2em] mx-[-0.15em] align-middle rotate-70">
+              <span>Daily Commit</span>
+              {/* <span className="relative inline-block w-[1.2em] h-[1.2em] mx-[-0.15em] align-middle rotate-70">
                 <Image
                   src="/lightlogo.png"
                   alt=""
@@ -53,7 +53,7 @@ export default function Logo() {
                   priority
                 />
               </span>
-              <span>mmit</span>
+              <span>mmit</span> */}
             </span>
             <div className="border-b-4 border-primary md:mt-1"></div>
             <p className="text-center text-[7px] sm:text-xs tracking-tighter md:tracking-wide max-[540px]:mt-0 mt-0.5 md:mt-2 ">
