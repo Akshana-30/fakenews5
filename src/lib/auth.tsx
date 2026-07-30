@@ -38,6 +38,7 @@ const prisma = new PrismaClient({
 });
 
 export const auth = betterAuth({
+  trustedOrigins : ["https://fakenews5.vercel.app/sign-in"]
   database: prismaAdapter(prisma, { provider: "postgresql" }),
   user: {
     changeEmail: {
