@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 import { addCategory, getIdFromName, isCategoryNameUnique } from "@/_actions/category-actions";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1, "Subcategory name is required.").max(100, "Max 100 characters."),
@@ -35,6 +36,7 @@ export default function NewSubcategoryForm({ categories = [] }: { categories: Ca
     const topLevelCategories: Category[] = [];
     const [selectedCategoryName, setSelectedCategoryName] = useState<string>("");
     const [selectedCategory, setSelectedCategory] = useState("");
+    const router = useRouter();
 
     //console.log(categories);
     for (const c of categories) {
@@ -62,6 +64,7 @@ export default function NewSubcategoryForm({ categories = [] }: { categories: Ca
             const parent = await getIdFromName(value.topCategory);
             if (parent.success && parent.data) {
                 const res = await addCategory(value.name, parent.data.id);
+                router.refresh();
                 if (res.success && res.data) {
                     toast.success(
                         `Category "${res.data.name}" was succesfully added to the database.`,

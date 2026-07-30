@@ -4,6 +4,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useForm } from "@tanstack/react-form";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
@@ -14,6 +15,7 @@ const formSchema = z.object({
 
 export default function NewCategoryForm() {
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
     const form = useForm({
         defaultValues: {
             title: "",
@@ -30,6 +32,7 @@ export default function NewCategoryForm() {
                 return;
             }
             const res = await addCategory(value.title, null);
+            router.refresh();
             if (res.success && res.data) {
                 toast.success(
                     `Category "${res.data.name}" was succesfully added to the database.`,
