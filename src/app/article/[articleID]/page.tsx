@@ -1,9 +1,5 @@
 "use server";
-import {
-  getArticle,
-  getUserReaction,
-  hasUserBookmarkedArticle,
-} from "@/_actions/article-actions";
+import { getArticle, getUserReaction, hasUserBookmarkedArticle } from "@/_actions/article-actions";
 import Link from "next/link";
 import Likes from "./_components/likes";
 import Bookmark from "./_components/bookmark";
@@ -23,220 +19,174 @@ import Image from "next/image";
 import MarkViewed from "./_components/mark-viewed";
 import RouteHeading from "@/components/route-heading";
 
-// SVG hero images are inlined (instead of loaded via <Image>) so the plain
-// CSS rule in globals.css (.article-hero-svg .art-ink) can recolor their
-// black linework under dark mode — an <img>-loaded SVG is an opaque
-// resource the page's .dark class can never reach into.
-async function InlineSvgHero({ src, title }: { src: string; title: string }) {
-  let svg: string;
-  try {
-    const res = await fetch(src, { next: { revalidate: 3600 } });
-    svg = await res.text();
-  } catch {
-    return null;
-  }
-
-  svg = svg
-    .replace(/<script[\s\S]*?<\/script>/gi, "")
-    .replaceAll('style="fill:#231f20;"', 'class="art-ink"')
-    .replaceAll('style="fill:#fff;"', 'class="art-paper"')
-    .replace("<svg ", '<svg preserveAspectRatio="xMidYMid slice" ');
-
-  return (
-    <div
-      role="img"
-      aria-label={title}
-      className="article-hero-svg absolute inset-0 [&>svg]:w-full [&>svg]:h-full"
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
-  );
-}
-
-export default async function ArticlePage({
-  params,
-}: {
-  params: Promise<{ articleID: string }>;
-}) {
-  
-
+export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
     const { articleID } = await params;
     const userId = await getUserId();
     const article = await getArticle(articleID);
 
-
-  let hasPermission = false;
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (session) {
-    const checkPermission = await auth.api.userHasPermission({
-      body: {
-        userId: session?.user.id,
-        permissions: {
-          article: ["read", "like", "dislike", "comment"],
-        },
-      },
+    let hasPermission = false;
+    const session = await auth.api.getSession({
+        headers: await headers(),
     });
-    if (checkPermission.success === true) {
-      hasPermission = true;
-    }
-  }
-
-  if (userId && hasPermission && article.success && article.data) {
-    //console.log(referer, currentUrl);
-    const views = article.data.views;
-
-    // Calculate the total reactions (upvotes/downvotes) to one score
-    const reactions = article.data.reactions;
-    let totalReactions = 0;
-    for (const r of reactions) {
-      totalReactions += r.val;
+    if (session) {
+        const checkPermission = await auth.api.userHasPermission({
+            body: {
+                userId: session?.user.id,
+                permissions: {
+                    article: ["read", "like", "dislike", "comment"],
+                },
+            },
+        });
+        if (checkPermission.success === true) {
+            hasPermission = true;
+        }
     }
 
-    // Figure out if the user has reacted to the article and in that case if it
-    // was an upvote or downvote, reaction.data will be 1 for upvote, otherwise -1.
-    let userReaction;
-    const reaction = await getUserReaction(articleID, userId);
-    if (reaction.success && reaction.data) {
-      userReaction = reaction.data;
-    }
+    if (userId && hasPermission && article.success && article.data) {
+        //console.log(referer, currentUrl);
+        const views = article.data.views;
 
-    // Find out wether the user has bookmarked the article in question
-    let bookmarked;
-    const bookmark = await hasUserBookmarkedArticle(articleID, userId);
-    if (bookmark.success && bookmark.data === true) {
-      bookmarked = true;
+        // Calculate the total reactions (upvotes/downvotes) to one score
+        const reactions = article.data.reactions;
+        let totalReactions = 0;
+        for (const r of reactions) {
+            totalReactions += r.val;
+        }
+
+        // Figure out if the user has reacted to the article and in that case if it
+        // was an upvote or downvote, reaction.data will be 1 for upvote, otherwise -1.
+        let userReaction;
+        const reaction = await getUserReaction(articleID, userId);
+        if (reaction.success && reaction.data) {
+            userReaction = reaction.data;
+        }
+
+        // Find out wether the user has bookmarked the article in question
+        let bookmarked;
+        const bookmark = await hasUserBookmarkedArticle(articleID, userId);
+        if (bookmark.success && bookmark.data === true) {
+            bookmarked = true;
+        } else {
+            bookmarked = false;
+        }
+
+        return (
+            <div className="flex-row justify-center w-full px-4 py-2">
+                <MarkViewed articleId={articleID} />
+                {article.data.category.length > 0 &&
+                    (() => {
+                        const parentCategory = article.data.category.find(
+                            (c) => c.parentId === null,
+                        );
+                        const childCategories = article.data.category.filter(
+                            (c) => c.parentId !== null,
+                        );
+
+                        if (!parentCategory) return null;
+
+                        return (
+                            <div className="flex items-baseline flex-wrap">
+                                <Link
+                                    href={`/category/${parentCategory.id}`}
+                                    className="align-middle"
+                                >
+                                    <RouteHeading label={parentCategory.name} />
+                                </Link>
+                                {childCategories.map((c) => (
+                                    <span key={c.id} className="flex items-baseline gap-2">
+                                        <Link href={`/category/${c.id}`} className="">
+                                            <span className="ml-2.5 text-muted-foreground/50 text-[18px]">
+                                                {">"}
+                                            </span>
+                                            <span className="ml-2.5 text-muted-foreground text-[20px]">
+                                                {c.name}
+                                            </span>
+                                        </Link>
+                                    </span>
+                                ))}
+                            </div>
+                        );
+                    })()}
+                {article.data.image && (
+                    <div className="relative w-full h-[40vh] md:h-auto md:w-3/4 md:aspect-video mx-auto mt-2 overflow-hidden border border-border">
+                        <Image
+                            src={article.data.image}
+                            alt={article.data.title}
+                            fill
+                            className="object-cover"
+                            priority
+                            sizes="(max-width: 768px) 100vw, 900px"
+                        />
+                    </div>
+                )}
+                <h1 className="font-extrabold text-3xl text-center w-3/4 mx-auto my-2">
+                    {article.data.title}
+                </h1>
+                <div className="md:w-3/4 flex-row mx-auto max-w-none bg-gray-100 dark:bg-[#2d2d2d] text-black dark:text-white  p-4">
+                    <p>{article.data.summary}</p>
+                </div>
+
+                <article className="md:w-3/4 flex-row mx-auto mt-2 mb-4 max-w-none prose dark:prose-invert dark:bg-[#2d2d2d] dark:text-white dark:prose-headings:text-white p-1">
+                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkIns]}>
+                        {hasPermission ? article.data.content : article.data.content.slice(0, 500)}
+                    </ReactMarkdown>
+                </article>
+                {/* <InArticleAd /> */}
+                <div className="flex border-b-2 mt-2 pb-2 text-sm bg-gray-100 dark:bg-[#2d2d2d] p-4">
+                    <div className="flex border-r pr-2">
+                        <Views num={views} />
+                    </div>
+
+                    <div className="flex border-r pr-2">
+                        <Likes
+                            articleId={article.data.id}
+                            userId={userId}
+                            userReaction={userReaction?.val}
+                            num={totalReactions}
+                        />
+                    </div>
+                    <div className="flex border-r pl-2 pr-2">
+                        <Bookmark articleId={articleID} userId={userId} bookmarked={bookmarked} />
+                    </div>
+
+                    <div className="flex ml-auto">
+                        <p className="text-md font-semibold text-center mr-4">
+                            by{" "}
+                            {article.data.author.map((a, i) =>
+                                i + 1 !== article.data.author.length
+                                    ? `${a.alias}, `
+                                    : `${a.alias}`,
+                            )}
+                        </p>
+                        {article.data.location ? article.data.location + ", " : ""}
+                        {format(article.data.createdAt, "yyyy-MM-dd HH:mm")}
+                    </div>
+                </div>
+                <h1 className="font-extrabold text-2xl text-center my-2">Comments</h1>
+                <div className="border-b-2 md:max-w-3xl mx-auto">
+                    {article.data.comments ? (
+                        <CommentarySection
+                            comments={article.data.comments}
+                            articleId={article.data.id}
+                        />
+                    ) : (
+                        ""
+                    )}
+                </div>
+                {userId !== null ? (
+                    <div className="mt-4">
+                        <TopLevelCommentForm articleId={article.data.id} />
+                    </div>
+                ) : (
+                    <Link href="login">Log in to write a comment.</Link>
+                )}
+            </div>
+        );
+    } else if (article.success === false) {
+        return <ArticleDoesntExist />;
+    } else if (!hasPermission) {
+        redirect(`preview/${articleID}`);
     } else {
-      bookmarked = false;
+        redirect(`preview/${articleID}`);
     }
-
-    return (
-      <div className="flex-row justify-center w-full px-4 py-2">
-        <MarkViewed articleId={articleID} />
-        {article.data.category.length > 0 &&
-          (() => {
-            const parentCategory = article.data.category.find(
-              (c) => c.parentId === null,
-            );
-            const childCategories = article.data.category.filter(
-              (c) => c.parentId !== null,
-            );
-
-            if (!parentCategory) return null;
-
-            return (
-              <div className="flex items-baseline flex-wrap">
-                <Link
-                  href={`/category/${parentCategory.id}`}
-                  className="align-middle"
-                >
-                  <RouteHeading label={parentCategory.name} />
-                </Link>
-                {childCategories.map((c) => (
-                  <span key={c.id} className="flex items-baseline gap-2">
-                    <Link href={`/category/${c.id}`} className="">
-                      <span className="ml-2.5 text-muted-foreground/50 text-[18px]">
-                        {'>'}
-                      </span>
-                      <span className="ml-2.5 text-muted-foreground text-[20px]">
-                        {c.name}
-                      </span>
-                    </Link>
-                  </span>
-                ))}
-              </div>
-            );
-          })()}
-        {article.data.image && (
-          <div className="relative w-full h-[40vh] md:h-auto md:w-3/4 md:aspect-video mx-auto mt-2 overflow-hidden border border-border">
-            {article.data.image.toLowerCase().endsWith(".svg") ? (
-              <InlineSvgHero src={article.data.image} title={article.data.title} />
-            ) : (
-              <Image
-                src={article.data.image}
-                alt={article.data.title}
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 768px) 100vw, 900px"
-              />
-            )}
-          </div>
-        )}
-        <h1 className="font-extrabold text-3xl text-center w-3/4 mx-auto my-2">
-          {article.data.title}
-        </h1>
-        <div className="md:w-3/4 flex-row mx-auto max-w-none bg-gray-100 dark:bg-[#2d2d2d] text-black dark:text-white  p-4">
-          <p>{article.data.summary}</p>
-        </div>
-
-        <article className="md:w-3/4 flex-row mx-auto mt-2 mb-4 max-w-none prose dark:prose-invert dark:bg-[#2d2d2d] dark:text-white dark:prose-headings:text-white p-1">
-          <ReactMarkdown remarkPlugins={[remarkGfm, remarkIns]}>
-            {hasPermission
-              ? article.data.content
-              : article.data.content.slice(0, 500)}
-          </ReactMarkdown>
-        </article>
-        {/* <InArticleAd /> */}
-        <div className="flex border-b-2 mt-2 pb-2 text-sm bg-gray-100 dark:bg-[#2d2d2d] p-4">
-          <div className="flex border-r pr-2">
-            <Views num={views} />
-          </div>
-
-          <div className="flex border-r pr-2">
-            <Likes
-              articleId={article.data.id}
-              userId={userId}
-              userReaction={userReaction?.val}
-              num={totalReactions}
-            />
-          </div>
-          <div className="flex border-r pl-2 pr-2">
-            <Bookmark
-              articleId={articleID}
-              userId={userId}
-              bookmarked={bookmarked}
-            />
-          </div>
-
-          <div className="flex ml-auto">
-            <p className="text-md font-semibold text-center mr-4">
-              by{" "}
-              {article.data.author.map((a, i) =>
-                i + 1 !== article.data.author.length
-                  ? `${a.alias}, `
-                  : `${a.alias}`,
-              )}
-            </p>
-            {article.data.location ? article.data.location + ", " : ""}
-            {format(article.data.createdAt, "yyyy-MM-dd HH:mm")}
-          </div>
-        </div>
-        <h1 className="font-extrabold text-2xl text-center my-2">Comments</h1>
-        <div className="border-b-2 md:max-w-3xl mx-auto">
-          {article.data.comments ? (
-            <CommentarySection
-              comments={article.data.comments}
-              articleId={article.data.id}
-            />
-          ) : (
-            ""
-          )}
-        </div>
-        {userId !== null ? (
-          <div className="mt-4">
-            <TopLevelCommentForm articleId={article.data.id} />
-          </div>
-        ) : (
-          <Link href="login">Log in to write a comment.</Link>
-        )}
-      </div>
-    );
-  } else if (article.success === false) {
-    return <ArticleDoesntExist />;
-  } else if (!hasPermission) {
-    redirect(`preview/${articleID}`);
-  } else {
-    redirect(`preview/${articleID}`);
-  }
 }

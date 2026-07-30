@@ -136,19 +136,16 @@ model Bookmark {
     @@map("bookmark")
 }
 
- 
- 
 model Category {
-    id              String                  @id @default(ulid())
-    name            String                  @unique
-    parentId        String?                 
-    parent          Category?                @relation("CategoryHierarchy" ,fields: [parentId],references: [id])   
-    subcategory     Category[]              @relation("CategoryHierarchy")
-    article         Article[]         
-    newsletter      NewsletterSettings[]
+    id          String               @id @default(ulid())
+    name        String               @unique
+    parentId    String?
+    parent      Category?            @relation("CategoryHierarchy", fields: [parentId], references: [id])
+    subcategory Category[]           @relation("CategoryHierarchy")
+    article     Article[]
+    newsletter  NewsletterSettings[]
 
-    @@map("category") 
-
+    @@map("category")
 }
 
 model Author {
