@@ -18,13 +18,7 @@ import remarkIns from "remark-ins";
 import Image from "next/image";
 import MarkViewed from "./_components/mark-viewed";
 import { Badge } from "@/components/ui/badge";
-import {
-    ArrowRight,
-    ChevronRight,
-    ChevronRightCircleIcon,
-    CircleArrowRight,
-    ExternalLink,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
     const { articleID } = await params;
