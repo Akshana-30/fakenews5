@@ -70,7 +70,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         } else {
             bookmarked = false;
         }
-        console.log(article.data.category);
 
         const parentCategory = article.data.category.filter((c) => c.parentId === null);
         const childCategories = article.data.category.filter((c) => c.parentId !== null);
@@ -88,7 +87,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                                         href={`/category/${c.id}`}
                                         className="flex items-center gap-0.5"
                                     >
-                                        {c.name}
+                                        {capitalizeFirstLetter(c.name)}
                                         {/* <ArrowRight className="-mr-1 ml-0.5" size={16} /> */}
                                     </Link>
                                 </div>
@@ -155,7 +154,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                                         key={c.id}
                                         className="bg-primary/60 p-2 text-white text-md hover:bg-primary dark:hover:bg-primary transition-colors"
                                     >
-                                        <Link href={`/category/${c.id}`}>{c.name}</Link>
+                                        <Link href={`/category/${c.id}`}>
+                                            {capitalizeFirstLetter(c.name)}
+                                        </Link>
                                         <ArrowRight />
                                     </Badge>
                                 );
@@ -202,4 +203,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
     } else {
         redirect(`preview/${articleID}`);
     }
+}
+
+function capitalizeFirstLetter(val: string) {
+    return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 }
