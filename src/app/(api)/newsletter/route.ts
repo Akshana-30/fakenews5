@@ -1,6 +1,12 @@
 import { format, sub } from "date-fns";
 import prisma from "@/lib/prisma";
 import { transporter } from "@/lib/auth";
+import { render, toPlainText } from "react-email";
+import WeeklyNewsletter, {
+    type NewsletterArticle,
+    type NewsletterCategorySection,
+    type NewsletterAuthorSection,
+} from "@/components/emails/weekly-newsletter";
 
 // The maximum numbers of articles per category, if it exists that many.
 const NUMBER_OF_NEW_ARTICLES_PER_CATEGORY = 3;
@@ -8,123 +14,97 @@ const NUMBER_OF_NEW_ARTICLES_PER_AUTHOR = 2;
 const NUMBER_OF_NEW_ARTICLES_MOST_VIEWS = 3;
 const NUMBER_OF_NEW_ARTICLES_MOST_REACTIONS = 3;
 
-async function generateNewsletter(userId: string) {
-    const dateBack = sub(new Date(), { days: 7 }); // How far back in time we will select articles
-    let text = "";
+const ARTICLE_SELECT = { id: true, title: true, summary: true } as const;
 
+function toArticle(a: { id: string; title: string; summary: string | null }): NewsletterArticle {
+    return { id: a.id, title: a.title, summary: a.summary ?? "" };
+}
+
+interface NewsletterData {
+    categories: NewsletterCategorySection[];
+    authors: NewsletterAuthorSection[];
+    mostViewed: NewsletterArticle[];
+    mostReactions: NewsletterArticle[];
+}
+
+async function generateNewsletterData(
+    userId: string,
+    dateBack: Date,
+): Promise<NewsletterData | null> {
     const newsLetterSettings = await prisma.newsletterSettings.findUnique({
         where: { user_id: userId },
         include: { categories: true, authors: true },
     });
     if (!newsLetterSettings) {
-        return;
+        return null;
     }
 
-    // Get the latest articles from each category that the user is subscribed to.
-    // Get a maximum of NUMBER_OF_NEW_ARTICLES_PER_CATEGORY articles.
-    if (newsLetterSettings?.categories) {
-        for (const c of newsLetterSettings.categories) {
-            const res = await prisma.category.findUnique({
-                where: { id: c.id },
-                include: {
-                    article: {
-                        where: { createdAt: { gte: dateBack } },
-                        orderBy: { createdAt: "desc" },
-                        take: NUMBER_OF_NEW_ARTICLES_PER_CATEGORY,
-                    },
+    // Latest articles from each subscribed category.
+    const categories: NewsletterCategorySection[] = [];
+    for (const c of newsLetterSettings.categories) {
+        const res = await prisma.category.findUnique({
+            where: { id: c.id },
+            include: {
+                article: {
+                    where: { createdAt: { gte: dateBack } },
+                    orderBy: { createdAt: "desc" },
+                    take: NUMBER_OF_NEW_ARTICLES_PER_CATEGORY,
+                    select: ARTICLE_SELECT,
                 },
-            });
-            if (res?.article && res.article.length > 0) {
-                text += `In the list below you will find the newest articles from each category you're subscribed to.\n`;
-                text += `${c.name}: `;
-                res.article.map((a, id) => {
-                    text += `${a.title} (https://thedailycommit.vercel.app/article/${a.id})`;
-                    if (id < res.article.length - 1) {
-                        text += ", ";
-                    } else {
-                        text += ".";
-                    }
-                });
-            }
-            text += "\n\n";
-        }
-
-        if (newsLetterSettings.authors) {
-            text += `In the list below you will find the ${NUMBER_OF_NEW_ARTICLES_PER_AUTHOR} newest articles from each author you're subscribed to.\n`;
-            for (const a of newsLetterSettings.authors) {
-                text += `${a.alias}: `;
-                const res = await prisma.author.findUnique({
-                    where: { id: a.id },
-                    include: {
-                        articles: {
-                            where: { createdAt: { gte: dateBack } },
-                            orderBy: { createdAt: "desc" },
-                            take: NUMBER_OF_NEW_ARTICLES_PER_AUTHOR,
-                        },
-                    },
-                });
-                if (res?.articles && res.articles.length > 0) {
-                    res.articles.map((a, id) => {
-                        text += `${a.title} (https://thedailycommit.vercel.app/article/${a.id})`;
-                        if (id < res.articles.length - 1) {
-                            text += ", ";
-                        } else {
-                            text += ".";
-                        }
-                    });
-                }
-            }
-        }
-
-        // The most viewed articles, with a maximum of NUMBER_OF_NEW_ARTICLES_MOST_VIEWS
-        const res = await prisma.article.findMany({
-            where: { createdAt: { gte: dateBack } },
-            orderBy: { views: "desc" },
-            take: NUMBER_OF_NEW_ARTICLES_MOST_VIEWS,
+            },
         });
-        if (res && res.length > 0) {
-            text += `\n\nBelow you will find the most viewed articles for the latest week:`;
-            res.map((a, id) => {
-                text += `${a.title} (https://thedailycommit.vercel.app/article/${a.id})`;
-                if (id < res.length - 1) {
-                    text += ", ";
-                } else {
-                    text += ".";
-                }
-            });
+        if (res?.article && res.article.length > 0) {
+            categories.push({ name: c.name, articles: res.article.map(toArticle) });
         }
     }
 
-    // The articles with the most reactions (upvotes and/or downvotes)
-    text += "\n\n";
-    const articles = await prisma.article.findMany({
+    // Latest articles from each subscribed author.
+    const authors: NewsletterAuthorSection[] = [];
+    for (const a of newsLetterSettings.authors) {
+        const res = await prisma.author.findUnique({
+            where: { id: a.id },
+            include: {
+                articles: {
+                    where: { createdAt: { gte: dateBack } },
+                    orderBy: { createdAt: "desc" },
+                    take: NUMBER_OF_NEW_ARTICLES_PER_AUTHOR,
+                    select: ARTICLE_SELECT,
+                },
+            },
+        });
+        if (res?.articles && res.articles.length > 0) {
+            authors.push({ alias: a.alias, articles: res.articles.map(toArticle) });
+        }
+    }
+
+    // Most viewed articles this week.
+    const mostViewedRaw = await prisma.article.findMany({
+        where: { createdAt: { gte: dateBack } },
+        orderBy: { views: "desc" },
+        take: NUMBER_OF_NEW_ARTICLES_MOST_VIEWS,
+        select: ARTICLE_SELECT,
+    });
+    const mostViewed = mostViewedRaw.map(toArticle);
+
+    // Articles with the most reactions (upvotes and/or downvotes) this week.
+    const articlesWithReactions = await prisma.article.findMany({
         where: { createdAt: { gte: dateBack } },
         include: { reactions: true },
     });
-    const articlesWithReactions = articles.filter((a) => a.reactions.length > 0);
+    const sorted = articlesWithReactions
+        .filter((a) => a.reactions.length > 0)
+        .sort((a, b) => b.reactions.length - a.reactions.length)
+        .slice(0, NUMBER_OF_NEW_ARTICLES_MOST_REACTIONS);
+    const mostReactions = sorted.map(toArticle);
 
-    if (articlesWithReactions.length > 0) {
-        const sorted = articlesWithReactions.sort(
-            (a, b) => b.reactions.length - a.reactions.length,
-        );
-
-        text += `The articles that has had the most reactions (positive/negative): `;
-        const slicedArticles = sorted.slice(0, NUMBER_OF_NEW_ARTICLES_MOST_REACTIONS);
-        slicedArticles.map((a, i) => {
-            text += `${a.title} (http://localhost:3000/article/${a.id})`;
-            // Fixed: compare against slicedArticles.length, not the full sorted array
-            if (i < slicedArticles.length - 1) {
-                text += ", ";
-            } else {
-                text += ".";
-            }
-        });
-    }
-
-    return text;
+    return { categories, authors, mostViewed, mostReactions };
 }
 
 async function runNewsletterJob() {
+    const now = new Date();
+    const dateBack = sub(now, { days: 7 });
+    const dateLabel = `${format(dateBack, "dd/MM")} - ${format(now, "dd/MM")}`;
+
     const newsletters = await prisma.newsletterSettings.findMany();
     const results: { user_id: string; email: string; status: "sent" | "failed" | "skipped" }[] = [];
 
@@ -134,18 +114,35 @@ async function runNewsletterJob() {
             continue;
         }
 
-        const newsletter = await generateNewsletter(n.user_id);
-        if (!newsletter) {
+        const data = await generateNewsletterData(n.user_id, dateBack);
+        if (
+            !data ||
+            (data.categories.length === 0 &&
+                data.authors.length === 0 &&
+                data.mostViewed.length === 0 &&
+                data.mostReactions.length === 0)
+        ) {
             results.push({ user_id: n.user_id, email: n.email, status: "skipped" });
             continue;
         }
 
         try {
+            const html = await render(
+                WeeklyNewsletter({
+                    dateLabel,
+                    categories: data.categories,
+                    authors: data.authors,
+                    mostViewed: data.mostViewed,
+                    mostReactions: data.mostReactions,
+                }),
+            );
+
             await transporter.sendMail({
                 from: '"The Daily Commit" <noreply@thedailycommit.com>',
                 to: n.email,
-                subject: `The Daily Commit's newsletter (${format(new Date(), "dd/MM")})`,
-                text: newsletter, // ← the actual content, previously missing
+                subject: `The Daily Commit's newsletter (${format(now, "dd/MM")})`,
+                html,
+                text: toPlainText(html),
             });
             results.push({ user_id: n.user_id, email: n.email, status: "sent" });
         } catch (error) {
