@@ -2,154 +2,133 @@
 
 import z from "zod";
 import prisma from "@/lib/prisma";
-import { Result } from "@/lib/types";
+import { Article, Result } from "@/lib/types";
 import { categoryArray } from "@/lib/category";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const formSchema = z.object({
-    title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
-    summary: z.string().min(1, "Summary is required").max(1000, "Between 1-1000 characters"),
-    content: z.string().min(1, "Content text is required"),
+    title: z.string().min(1, "Title is required.").max(100, "Max 100 characters."),
+    summary: z.string().min(1, "Summary is required.").max(1000, "Between 1-1000 characters."),
+    content: z.string().min(1, "Content text is required."),
     image: z.string(),
-    category: z
-        .string()
-        .min(1, "Category is required")
-        .refine((val) => (categoryArray as readonly string[]).includes(val), {
-            message: "Select a valid category",
-        }),
-    subcategory: z.array(z.string()),
+    category: z.string(),
+    subcategory: z.string(),
     location: z.string(),
     author: z.array(z.string()),
 });
 
 type EditArticleValues = z.infer<typeof formSchema>;
 
-export type CategoryConflict = {
-    name: string;
-    currentParentName: string | null;
-    requestedParentName: string | null;
+type EditedArticle = {
+    title: string;
+    summary: string;
+    content: string;
+    image: string;
+    category: string;
+    subcategory: string;
+    location: string;
+    author: string[];
 };
-
-class TopLevelReassignmentBlockedError extends Error {}
-
-// Same resolution logic as add-article-action: find-or-create under the
-// desired parent, reuse if already correctly placed, or log a conflict
-// (leaving it untouched) if it exists under a different parent and hasn't
-// been confirmed for reassignment yet.
-async function resolveCategory(
-    name: string,
-    desiredParentId: string | null,
-    desiredParentName: string | null,
-    confirmed: Set<string>,
-    conflicts: CategoryConflict[],
-    isSubcategoryCall: boolean = false,
-) {
-    const existing = await prisma.category.findFirst({
-        where: { name: { equals: name, mode: "insensitive" } },
-    });
-
-    if (!existing) {
-        return prisma.category.create({ data: { name, parentId: desiredParentId } });
-    }
-    if (existing.parentId === desiredParentId) {
-        return existing;
-    }
-
-    if (isSubcategoryCall && existing.parentId === null) {
-        throw new TopLevelReassignmentBlockedError(
-            `"${existing.name}" already exists as a top-level category and can't be used as a subcategory. Please choose a different subcategory name.`,
-        );
-    }
-
-    if (confirmed.has(existing.name.toLowerCase())) {
-        return prisma.category.update({ where: { id: existing.id }, data: { parentId: desiredParentId } });
-    }
-
-    const currentParent = existing.parentId
-        ? await prisma.category.findUnique({ where: { id: existing.parentId }, select: { name: true } })
-        : null;
-
-    conflicts.push({
-        name: existing.name,
-        currentParentName: currentParent?.name ?? null,
-        requestedParentName: desiredParentName,
-    });
-    return existing;
-}
 
 export default async function editArticle(
     articleId: string,
     values: EditArticleValues,
-    confirmedReassignments: string[] = [],
-): Promise<Result<string> | { success: false; needsConfirmation: true; conflicts: CategoryConflict[] }> {
+): Promise<Result<Article>> {
     const data = formSchema.parse(values);
-    const confirmed = new Set(confirmedReassignments.map((n) => n.toLowerCase()));
-
-    const uniqueSubNames = Array.from(
-        new Map(data.subcategory.map((n) => [n.toLowerCase(), n])).values(),
-    );
-
-    const clashingNames = uniqueSubNames.filter((n) =>
-        categoryArray.some((c) => c.toLowerCase() === n.toLowerCase()),
-    );
-    if (clashingNames.length > 0) {
+    let categoryString = "";
+    if (data.category.length > 0 && data.subcategory.length > 0) {
+        categoryString = data.category + ", " + data.subcategory;
+    } else if (data.category.length > 1 && data.subcategory.length < 1) {
+        categoryString = data.category;
+    }
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
         return {
             success: false,
-            error: `Subcategory can't share a name with a main category (${clashingNames.join(", ")}).`,
+            error: "You must be signed in to publish an article.",
         };
     }
 
-    const authors = await prisma.author.findMany({
-        where: { alias: { in: data.author } },
-        select: { id: true },
+    const { success } = await auth.api.userHasPermission({
+        body: {
+            userId: session.user.id,
+            permissions: { article: ["update"] },
+        },
     });
+    if (!success) redirect("/");
 
     try {
-        const conflicts: CategoryConflict[] = [];
-        const parentCategory = await resolveCategory(data.category, null, null, confirmed, conflicts);
+        // Connect any typed aliases that already exist as authors
+        const existingAuthors = await prisma.author.findMany({
+            where: {
+                alias: { in: data.author },
+            },
+            select: { id: true, alias: true },
+        });
 
-        const subcategories = [];
-        for (const name of uniqueSubNames) {
-            subcategories.push(
-                await resolveCategory(
-                    name,
-                    parentCategory.id,
-                    parentCategory.name,
-                    confirmed,
-                    conflicts,
-                    true,
-                ),
-            );
+        const authorIds = existingAuthors.map(({ id }) => ({ id }));
+
+        // The writer is always credited. If they have no Author record yet,
+        // create one on the fly — named by their typed alias if it's new,
+        // otherwise by their account name.
+        let writerAuthor = await prisma.author.findUnique({
+            where: { userId: session.user.id },
+        });
+
+        if (!writerAuthor) {
+            const matchedAliases = existingAuthors.map((a) => a.alias);
+            const newAlias =
+                data.author.find((alias) => !matchedAliases.includes(alias)) ?? session.user.name;
+
+            writerAuthor = await prisma.author.create({
+                data: {
+                    alias: newAlias,
+                    userId: session.user.id,
+                },
+            });
         }
 
-        if (conflicts.length > 0) {
-            return { success: false, needsConfirmation: true, conflicts };
+        if (!authorIds.some(({ id }) => id === writerAuthor.id)) {
+            authorIds.push({ id: writerAuthor.id });
         }
 
-        const updated = await prisma.article.update({
-            where: { id: articleId },
+        const categoryIds = [];
+        const categoryNames = categoryString.split(",");
+        for (const c of categoryNames) {
+            const category = await prisma.category.findUnique({ where: { name: c.trim() } });
+            if (category) {
+                categoryIds.push({ id: category?.id });
+            }
+        }
+
+        const newArticle = await prisma.article.update({
             data: {
                 title: data.title,
                 content: data.content,
                 summary: data.summary,
-                image: data.image ?? "",
+                image: data.image,
                 location: data.location,
                 author: {
-                    set: authors.map(({ id }) => ({ id })),
+                    connect: authorIds,
                 },
                 category: {
-                    set: [],
-                    connect: [
-                        { id: parentCategory.id },
-                        ...subcategories.map((c) => ({ id: c.id })),
-                    ],
+                    connect: categoryIds,
                 },
             },
+            include: {
+                bookmark: true,
+                author: true,
+                comments: { include: { reactions: true } },
+                reactions: true,
+                category: true,
+            },
+            where: { id: articleId },
         });
-        return { success: true, data: updated.id };
+
+        return { success: true, data: newArticle };
     } catch (err) {
-        if (err instanceof TopLevelReassignmentBlockedError) {
-            return { success: false, error: err.message };
-        }
-        return { success: false, error: `Error updating article: ${err}` };
+        return { success: false, error: `Error ${err}` };
     }
 }
