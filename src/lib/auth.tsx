@@ -38,7 +38,7 @@ const prisma = new PrismaClient({
 });
 
 export const auth = betterAuth({
-    trustedOrigins : ["https://thedailycommit.vercel.app"],
+  trustedOrigins : ["https://thedailycommit.vercel.app"],
   database: prismaAdapter(prisma, { provider: "postgresql" }),
   user: {
     changeEmail: {
