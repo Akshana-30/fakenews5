@@ -1,8 +1,6 @@
 import { format, sub } from "date-fns";
-import dotenv from "dotenv";
 import prisma from "@/lib/prisma";
 import { transporter } from "@/lib/auth";
-dotenv.config();
 
 // The maximum numbers of articles per category, if it exists that many.
 const NUMBER_OF_NEW_ARTICLES_PER_CATEGORY = 3;
@@ -11,7 +9,6 @@ const NUMBER_OF_NEW_ARTICLES_MOST_VIEWS = 3;
 const NUMBER_OF_NEW_ARTICLES_MOST_REACTIONS = 3;
 
 async function generateNewsletter(userId: string) {
-    const { default: prisma } = await import("@/lib/prisma");
     const dateBack = sub(new Date(), { days: 7 }); // How far back in time we will select articles
     let text = "";
 
@@ -49,7 +46,6 @@ async function generateNewsletter(userId: string) {
                     }
                 });
             }
-            // console.log(res);
             text += "\n\n";
         }
 
@@ -105,67 +101,82 @@ async function generateNewsletter(userId: string) {
         where: { createdAt: { gte: dateBack } },
         include: { reactions: true },
     });
-    const articlesWithReactions = [];
-    for (const a of articles) {
-        if (a.reactions.length > 0) {
-            articlesWithReactions.push(a);
-        }
-    }
+    const articlesWithReactions = articles.filter((a) => a.reactions.length > 0);
+
     if (articlesWithReactions.length > 0) {
-        const sorted = articlesWithReactions.sort(function (a, b) {
-            return b.reactions.length - a.reactions.length;
-        });
+        const sorted = articlesWithReactions.sort(
+            (a, b) => b.reactions.length - a.reactions.length,
+        );
 
-        if (sorted.length > 0) {
-            text += `The articles that has had the most reactions (positive/negative): `;
-            const slicedArticles = sorted.slice(0, NUMBER_OF_NEW_ARTICLES_MOST_REACTIONS);
-            slicedArticles.map((a, i) => {
-                text += `${a.title} (http://localhost:3000/article/${a.id})`;
-                if (i < sorted.length - 1) {
-                    text += ", ";
-                } else {
-                    text += ".";
-                }
-            });
-        }
+        text += `The articles that has had the most reactions (positive/negative): `;
+        const slicedArticles = sorted.slice(0, NUMBER_OF_NEW_ARTICLES_MOST_REACTIONS);
+        slicedArticles.map((a, i) => {
+            text += `${a.title} (http://localhost:3000/article/${a.id})`;
+            // Fixed: compare against slicedArticles.length, not the full sorted array
+            if (i < slicedArticles.length - 1) {
+                text += ", ";
+            } else {
+                text += ".";
+            }
+        });
     }
 
-    // console.log(user);
     return text;
 }
 
-export async function POST(request: Request) {
-    const authHeader = request.headers.get("authorization");
-    const cronSecret = process.env.CRON_SECRET;
-
-    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-        return new Response("Unauthorized", {
-            status: 401,
-        });
-    }
-
+async function runNewsletterJob() {
     const newsletters = await prisma.newsletterSettings.findMany();
-    const letters = [];
+    const results: { user_id: string; email: string; status: "sent" | "failed" | "skipped" }[] = [];
 
     for (const n of newsletters) {
-        if (n.active) {
-            const newsletter = await generateNewsletter(n.user_id);
-            letters.push(newsletter);
-            console.log(newsletter);
-            transporter.sendMail(
-                {
-                    from: '"The Daily Commit" <noreply@thedailycommit.com>',
-                    to: n.email,
-                    subject: `The Daily Commit's newsletter (${format(new Date(), "dd/MM")})`,
-                },
-                function (error, info) {
-                    console.error(`Unable to send email.\n\n${error}`);
-                },
-            );
+        if (!n.active) {
+            results.push({ user_id: n.user_id, email: n.email, status: "skipped" });
+            continue;
+        }
+
+        const newsletter = await generateNewsletter(n.user_id);
+        if (!newsletter) {
+            results.push({ user_id: n.user_id, email: n.email, status: "skipped" });
+            continue;
+        }
+
+        try {
+            await transporter.sendMail({
+                from: '"The Daily Commit" <noreply@thedailycommit.com>',
+                to: n.email,
+                subject: `The Daily Commit's newsletter (${format(new Date(), "dd/MM")})`,
+                text: newsletter, // ← the actual content, previously missing
+            });
+            results.push({ user_id: n.user_id, email: n.email, status: "sent" });
+        } catch (error) {
+            console.error(`Unable to send email to ${n.email}.\n\n${error}`);
+            results.push({ user_id: n.user_id, email: n.email, status: "failed" });
         }
     }
-    return new Response(JSON.stringify(letters), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-    });
+
+    return results;
+}
+
+function checkAuth(request: Request): boolean {
+    const authHeader = request.headers.get("authorization");
+    const cronSecret = process.env.CRON_SECRET;
+    return Boolean(cronSecret) && authHeader === `Bearer ${cronSecret}`;
+}
+
+// Vercel Cron triggers via GET — this is the entry point the schedule actually calls.
+export async function GET(request: Request) {
+    if (!checkAuth(request)) {
+        return new Response("Unauthorized", { status: 401 });
+    }
+    const results = await runNewsletterJob();
+    return Response.json(results);
+}
+
+// Kept for manual/local triggering with the same auth check.
+export async function POST(request: Request) {
+    if (!checkAuth(request)) {
+        return new Response("Unauthorized", { status: 401 });
+    }
+    const results = await runNewsletterJob();
+    return Response.json(results);
 }
