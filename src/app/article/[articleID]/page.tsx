@@ -82,16 +82,16 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                     <div className="flex items-baseline flex-wrap gap-2 mt-2">
                         {parentCategory.map((c, i) => (
                             <div key={c.id}>
-                                <Badge className="bg-primary/60 p-3 text-white text-md hover:bg-primary hover:shadow-gray-500 hover:shadow-2xl dark:hover:shadow-white dark:hover:shadow-2xl dark:hover:bg-primary transition-colors">
+                                <div className="cursor-pointer border rounded-md px-2 hover:border-b-primary! hover:bg-[#f4ede0]! hover:dark:text-background rounded-b-none text-sm md:text-[16px]">
                                     {" "}
                                     <Link
                                         href={`category/${c.id}`}
                                         className="flex items-center gap-0.5"
                                     >
                                         {c.name}
-                                        <ArrowRight className="-mr-1 ml-0.5" size={16} />
+                                        {/* <ArrowRight className="-mr-1 ml-0.5" size={16} /> */}
                                     </Link>
-                                </Badge>
+                                </div>
                             </div>
                         ))}
                     </div>
