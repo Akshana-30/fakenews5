@@ -40,6 +40,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
     title: z.string().min(1, "Title is required").max(100, "Max 100 characters"),
@@ -168,6 +169,30 @@ export default function EditArticleForm({ articleId, defaultValues }: EditArticl
                             }}
                         </form.Field>
 
+                        <form.Field name="summary">
+                            {(field) => {
+                                const isInvalid =
+                                    field.state.meta.isTouched && !field.state.meta.isValid;
+                                return (
+                                    <Field data-invalid={isInvalid}>
+                                        <FieldLabel htmlFor={field.name}>Summary</FieldLabel>
+                                        <Textarea
+                                            className="border-r border-b"
+                                            id={field.name}
+                                            name={field.name}
+                                            value={field.state.value}
+                                            onBlur={field.handleBlur}
+                                            onChange={(ev) => field.handleChange(ev.target.value)}
+                                            aria-invalid={isInvalid}
+                                        />
+                                        {isInvalid && (
+                                            <FieldError errors={field.state.meta.errors} />
+                                        )}
+                                    </Field>
+                                );
+                            }}
+                        </form.Field>
+
                         <form.Field name="content">
                             {(field) => {
                                 const isInvalid =
@@ -181,30 +206,6 @@ export default function EditArticleForm({ articleId, defaultValues }: EditArticl
                                                 field.handleChange(markdown);
                                                 field.handleBlur();
                                             }}
-                                        />
-                                        {isInvalid && (
-                                            <FieldError errors={field.state.meta.errors} />
-                                        )}
-                                    </Field>
-                                );
-                            }}
-                        </form.Field>
-
-                        <form.Field name="summary">
-                            {(field) => {
-                                const isInvalid =
-                                    field.state.meta.isTouched && !field.state.meta.isValid;
-                                return (
-                                    <Field data-invalid={isInvalid}>
-                                        <FieldLabel htmlFor={field.name}>Summary</FieldLabel>
-                                        <Input
-                                            className="border-r border-b"
-                                            id={field.name}
-                                            name={field.name}
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(ev) => field.handleChange(ev.target.value)}
-                                            aria-invalid={isInvalid}
                                         />
                                         {isInvalid && (
                                             <FieldError errors={field.state.meta.errors} />
