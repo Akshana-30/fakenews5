@@ -158,7 +158,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                                             {capitalizeFirstLetter(c.name)}
                                         </Link>
                                         <ArrowRight />
-                                    </Badge>
+                                    
                                         <Link href={`/category/${c.id}`}>{c.name}</Link>
                                         {/* <ArrowRight /> */}
                                     </div>
