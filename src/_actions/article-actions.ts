@@ -2,6 +2,8 @@
 
 import prisma from "@/lib/prisma";
 import { Result } from "@/lib/types";
+import { redirect } from "next/navigation";
+import { success } from "zod";
 
 type Article = {
     id: string;
@@ -55,8 +57,8 @@ type Author = {
 type Category = {
     id: string;
     name: string;
-    parentId: string|null;
-    articleCount ?: number;
+    parentId: string | null;
+    articleCount?: number;
 };
 
 type CommentReaction = {
@@ -138,16 +140,15 @@ export async function getMostPopularArticles(limit = 3): Promise<Result<ArticleS
     }
 }
 
-export async function getAuthors(): Promise<Result<Author[]>>{
+export async function getAuthors(): Promise<Result<Author[]>> {
     try {
         const authors = await prisma.author.findMany({
-            select: { id: true, alias: true, userId: true}
-        })
-        return {success: true, data: authors}
+            select: { id: true, alias: true, userId: true },
+        });
+        return { success: true, data: authors };
     } catch (err) {
         return { success: false, error: `Couldn't fetch authors.\n\n${err}` };
     }
-
 }
 
 export async function getArticle(articleId: string): Promise<Result<Article>> {
@@ -469,29 +470,6 @@ export async function addView(articleId: string): Promise<Result<number>> {
         return { success: false, error: `Couldn't add view to article ${articleId}.` };
     }
 }
-
-// export async function hasUserViewedArticle(
-//     articleId: string,
-//     userId: string,
-// ): Promise<Result<boolean>> {
-//     try {
-//         const article = await getArticle(articleId);
-//         if (article.success && article.data) {
-//             for (const v of article.data.views) {
-//                 if (v.userId === userId) {
-//                     return { success: true, data: true };
-//                 }
-//             }
-//             return { success: true, data: false };
-//         } else {
-//             console.error(`Couldn't access views to article ${articleId}.\n\n`);
-//             return { success: false, error: `Couldn't access views to article ${articleId}.\n\n` };
-//         }
-//     } catch (err) {
-//         console.error(`Couldn't access views to article ${articleId}.\n\n`);
-//         return { success: false, error: `Couldn't access views to article ${articleId}.\n\n` };
-//     }
-// }
 
 export type ArticleWithScore = {
     a: {

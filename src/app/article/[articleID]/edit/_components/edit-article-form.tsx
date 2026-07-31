@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
-import editArticle, { CategoryConflict } from "../_actions/edit-article-action";
 import { Editor } from "@/components/tiptap";
 import { uploadImage } from "@/lib/upload-action";
 import Image from "next/image";
@@ -40,7 +39,11 @@ import { Category } from "@/lib/types";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import NewCategoryForm from "@/app/article/add-article/_components/new-category-form";
 import NewSubcategoryForm from "@/app/article/add-article/_components/new-subcategory-form";
+<<<<<<< HEAD
 import { Textarea } from "@/components/ui/textarea";
+=======
+import editArticle from "../_actions/edit-article-action";
+>>>>>>> 7265a7a (edit article submit action)
 
 const formSchema = z.object({
     title: z.string().min(1, "Title is required.").max(100, "Max 100 characters."),
@@ -90,8 +93,6 @@ export default function EditArticleForm({
     const [loading, setLoading] = useState(false);
     const [imageUploading, setImageUploading] = useState(false);
 
-    console.log(allCategories);
-
     for (const c of allCategories) {
         if (c.parentId === null) {
             topLevelCategories.push(c);
@@ -125,7 +126,13 @@ export default function EditArticleForm({
         },
         onSubmit: async ({ value }) => {
             setLoading(true);
-            alert(value.title);
+            const res = await editArticle(articleId, value);
+            if (res.success && res.data) {
+                toast.success("Article was successfully updated.");
+                router.refresh();
+            } else {
+                toast.error("Couldn't update article.");
+            }
             setLoading(false);
         },
     });

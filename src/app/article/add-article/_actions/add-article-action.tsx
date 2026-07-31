@@ -23,7 +23,12 @@ type AddArticleValues = z.infer<typeof formSchema>;
 
 export default async function addArticle(values: AddArticleValues): Promise<Result<Article>> {
     const data = formSchema.parse(values);
-    const categoryString = data.category + ", " + data.subcategory;
+    let categoryString = "";
+    if (data.category.length > 1 && data.subcategory.length > 1) {
+        categoryString = data.category + ", " + data.subcategory;
+    } else if (data.category.length > 1 && data.subcategory.length < 1) {
+        categoryString = data.category;
+    }
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
         return {
@@ -31,6 +36,7 @@ export default async function addArticle(values: AddArticleValues): Promise<Resu
             error: "You must be signed in to publish an article.",
         };
     }
+    console.log("category", categoryString);
 
     const { success } = await auth.api.userHasPermission({
         body: {
@@ -77,7 +83,6 @@ export default async function addArticle(values: AddArticleValues): Promise<Resu
 
         const categoryIds = [];
         const categoryNames = categoryString.split(",");
-        console.log(categoryNames);
         for (const c of categoryNames) {
             const category = await prisma.category.findUnique({ where: { name: c.trim() } });
             if (category) {
@@ -85,7 +90,6 @@ export default async function addArticle(values: AddArticleValues): Promise<Resu
             }
         }
 
-        console.log(categoryIds);
         const newArticle = await prisma.article.create({
             data: {
                 title: data.title,
