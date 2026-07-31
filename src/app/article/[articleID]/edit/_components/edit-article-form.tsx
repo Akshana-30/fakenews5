@@ -39,11 +39,8 @@ import { Category } from "@/lib/types";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import NewCategoryForm from "@/app/article/add-article/_components/new-category-form";
 import NewSubcategoryForm from "@/app/article/add-article/_components/new-subcategory-form";
-<<<<<<< HEAD
 import { Textarea } from "@/components/ui/textarea";
-=======
 import editArticle from "../_actions/edit-article-action";
->>>>>>> 7265a7a (edit article submit action)
 
 const formSchema = z.object({
     title: z.string().min(1, "Title is required.").max(100, "Max 100 characters."),
