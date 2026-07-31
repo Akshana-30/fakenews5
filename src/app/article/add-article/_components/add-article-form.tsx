@@ -29,6 +29,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/
 import NewCategoryForm from "./new-category-form";
 import { Category } from "@/lib/types";
 import NewSubcategoryForm from "./new-subcategory-form";
+import { Textarea } from "@/components/ui/textarea";
 
 type AddArticleResult = Awaited<ReturnType<typeof addArticle>>;
 
@@ -153,7 +154,7 @@ export default function AddArticleForm({ categories }: { categories: Category[] 
                                 return (
                                     <Field data-invalid={isInvalid}>
                                         <FieldLabel htmlFor={field.name}>Summary</FieldLabel>
-                                        <Input
+                                        <Textarea
                                             className="border-r border-b"
                                             id={field.name}
                                             name={field.name}

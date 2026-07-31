@@ -18,7 +18,7 @@ import remarkIns from "remark-ins";
 import Image from "next/image";
 import MarkViewed from "./_components/mark-viewed";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default async function ArticlePage({ params }: { params: Promise<{ articleID: string }> }) {
     const { articleID } = await params;
@@ -82,14 +82,16 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                     <div className="flex items-baseline flex-wrap gap-2 mt-2">
                         {parentCategory.map((c, i) => (
                             <div key={c.id}>
-                                <Badge className="p-3 text-md">
+                                <div className="cursor-pointer border rounded-md px-2 hover:border-b-primary! hover:bg-[#f4ede0]! hover:dark:text-background rounded-b-none text-sm md:text-[16px]">
+                                    {" "}
                                     <Link
                                         href={`category/${c.id}`}
-                                        className="flex items-center gap-1"
+                                        className="flex items-center gap-0.5"
                                     >
                                         {c.name}
+                                        {/* <ArrowRight className="-mr-1 ml-0.5" size={16} /> */}
                                     </Link>
-                                </Badge>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -149,8 +151,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                         {childCategories.length > 0 &&
                             childCategories.map((c, i) => {
                                 return (
-                                    <Badge key={c.id}>
+                                    <Badge
+                                        key={c.id}
+                                        className="bg-primary/60 p-2 text-white text-md hover:bg-primary dark:hover:bg-primary transition-colors"
+                                    >
                                         <Link href={`/category/${c.id}`}>{c.name}</Link>
+                                        <ArrowRight />
                                     </Badge>
                                 );
                             })}
