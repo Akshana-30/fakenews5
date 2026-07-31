@@ -56,7 +56,6 @@ export default function AddArticleForm({ categories }: { categories: Category[] 
     const [authorInput, setAuthorInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [imageUploading, setImageUploading] = useState(false);
-    const children: Category[] = [];
 
     for (const c of categories) {
         if (c.parentId === null) {
