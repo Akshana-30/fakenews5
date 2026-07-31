@@ -70,7 +70,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
         } else {
             bookmarked = false;
         }
-        console.log(article.data.category);
 
         const parentCategory = article.data.category.filter((c) => c.parentId === null);
         const childCategories = article.data.category.filter((c) => c.parentId !== null);
@@ -88,7 +87,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                                         href={`/category/${c.id}`}
                                         className="flex items-center gap-0.5"
                                     >
-                                        {c.name}
+                                        {capitalizeFirstLetter(c.name)}
                                         {/* <ArrowRight className="-mr-1 ml-0.5" size={16} /> */}
                                     </Link>
                                 </div>
@@ -155,6 +154,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                                         key={c.id}
                                         className="cursor-pointer border rounded-md px-2 hover:border-b-primary! hover:bg-[#f4ede0]! hover:dark:text-background rounded-b-none text-sm md:text-[16px]"
                                     >
+                                        <Link href={`/category/${c.id}`}>
+                                            {capitalizeFirstLetter(c.name)}
+                                        </Link>
+                                        <ArrowRight />
+                                    </Badge>
                                         <Link href={`/category/${c.id}`}>{c.name}</Link>
                                         {/* <ArrowRight /> */}
                                     </div>
@@ -202,4 +206,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
     } else {
         redirect(`preview/${articleID}`);
     }
+}
+
+function capitalizeFirstLetter(val: string) {
+    return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 }
