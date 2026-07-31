@@ -150,15 +150,18 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
                         {childCategories.length > 0 &&
                             childCategories.map((c, i) => {
                                 return (
-                                    <Badge
+                                    <div
                                         key={c.id}
-                                        className="bg-primary/60 p-2 text-white text-md hover:bg-primary dark:hover:bg-primary transition-colors"
+                                        className="cursor-pointer border rounded-md px-2 hover:border-b-primary! hover:bg-[#f4ede0]! hover:dark:text-background rounded-b-none text-sm md:text-[16px]"
                                     >
                                         <Link href={`/category/${c.id}`}>
                                             {capitalizeFirstLetter(c.name)}
                                         </Link>
                                         <ArrowRight />
                                     </Badge>
+                                        <Link href={`/category/${c.id}`}>{c.name}</Link>
+                                        {/* <ArrowRight /> */}
+                                    </div>
                                 );
                             })}
                     </div>
