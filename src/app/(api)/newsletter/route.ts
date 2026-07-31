@@ -38,7 +38,7 @@ async function generateNewsletter(userId: string) {
                 text += `In the list below you will find the newest articles from each category you're subscribed to.\n`;
                 text += `${c.name}: `;
                 res.article.map((a, id) => {
-                    text += `${a.title} (http://localhost:3000/article/${a.id})`;
+                    text += `${a.title} (https://thedailycommit.vercel.app/article/${a.id})`;
                     if (id < res.article.length - 1) {
                         text += ", ";
                     } else {
@@ -65,7 +65,7 @@ async function generateNewsletter(userId: string) {
                 });
                 if (res?.articles && res.articles.length > 0) {
                     res.articles.map((a, id) => {
-                        text += `${a.title} (http://localhost:3000/article/${a.id})`;
+                        text += `${a.title} (https://thedailycommit.vercel.app/article/${a.id})`;
                         if (id < res.articles.length - 1) {
                             text += ", ";
                         } else {
@@ -85,7 +85,7 @@ async function generateNewsletter(userId: string) {
         if (res && res.length > 0) {
             text += `\n\nBelow you will find the most viewed articles for the latest week:`;
             res.map((a, id) => {
-                text += `${a.title} (http://localhost:3000/article/${a.id})`;
+                text += `${a.title} (https://thedailycommit.vercel.app/article/${a.id})`;
                 if (id < res.length - 1) {
                     text += ", ";
                 } else {
